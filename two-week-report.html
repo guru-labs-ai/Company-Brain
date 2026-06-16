@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guru Labs — 2-Week Sprint Report | Jun 8–21, 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0d14; color: #e2e8f0; padding: 28px 32px; min-height: 100vh; }
+    @media print { .print-btn { display: none; } body { padding: 16px; } }
+
+    .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 14px; border-bottom: 1px solid #1e2433; padding-bottom: 18px; }
+    .header-left h1 { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .header-left .sub { font-size: 13px; color: #64748b; margin-top: 5px; }
+    .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #34d399; margin-right: 5px; animation: pulse 2s infinite; vertical-align: middle; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+    .report-badge { background: #1a1333; border: 1px solid #4c1d95; color: #c4b5fd; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 20px; }
+    .print-btn { background: #1e2433; border: 1px solid #2a3148; color: #94a3b8; font-size: 12px; padding: 7px 16px; border-radius: 8px; cursor: pointer; margin-top: 6px; }
+    .print-btn:hover { border-color: #6366f1; color: #a78bfa; }
+
+    .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: #1e2433; }
+    .st-green { color: #34d399; } .st-blue { color: #60a5fa; } .st-purple { color: #a78bfa; }
+    .st-yellow { color: #f59e0b; } .st-orange { color: #fb923c; } .st-red { color: #f87171; }
+    .st-pink { color: #f472b6; }
+    .section-note { font-size: 11px; color: #64748b; font-weight: 500; text-transform: none; letter-spacing: 0; margin-left: 8px; }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
+    @media (max-width: 900px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+    .kpi-card { background: #111622; border: 1px solid #1e2433; border-radius: 12px; padding: 15px; text-align: center; }
+    .kpi-val { font-size: 30px; font-weight: 800; line-height: 1; }
+    .kpi-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .kpi-sub { font-size: 10px; color: #475569; margin-top: 2px; }
+    .kv-purple { color: #a78bfa; } .kv-green { color: #34d399; } .kv-yellow { color: #f59e0b; }
+    .kv-red { color: #f87171; } .kv-blue { color: #60a5fa; } .kv-pink { color: #f472b6; }
+
+    /* Portfolio status rollup */
+    .portfolio-strip { background: #0d1320; border: 1px solid #1e2433; border-radius: 14px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+    .ps-title { font-size: 13px; font-weight: 800; color: #f1f5f9; }
+    .ps-title .ps-src { display: block; font-size: 10px; color: #64748b; font-weight: 500; margin-top: 3px; }
+    .ps-stat { display: flex; align-items: center; gap: 8px; }
+    .ps-num { font-size: 26px; font-weight: 800; line-height: 1; }
+    .ps-lbl { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ps-divider { width: 1px; height: 34px; background: #1e2433; }
+    .ps-green { color: #34d399; } .ps-yellow { color: #f59e0b; } .ps-blue { color: #60a5fa; } .ps-gray { color: #94a3b8; }
+
+    .sprint-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    @media (max-width: 650px) { .sprint-compare { grid-template-columns: 1fr; } }
+    .sprint-card { background: #111622; border: 1px solid #1e2433; border-radius: 14px; padding: 18px 20px; }
+    .sprint-card.s45 { border-top: 3px solid #34d399; }
+    .sprint-card.s46 { border-top: 3px solid #6366f1; }
+    .sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .sc-title { font-size: 15px; font-weight: 800; color: #f1f5f9; }
+    .sc-dates { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .sc-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .badge-done { background: #0f2419; color: #34d399; border: 1px solid #166534; }
+    .badge-live { background: #1a1333; color: #a78bfa; border: 1px solid #4c1d95; }
+    .badge-next { background: #061a1a; color: #22d3ee; border: 1px solid #164e63; }
+    .sc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+    .sc-stat { background: #0f1117; border-radius: 8px; padding: 10px 4px; text-align: center; }
+    .sc-val { font-size: 20px; font-weight: 800; }
+    .sc-lbl { font-size: 9px; color: #64748b; text-transform: uppercase; margin-top: 2px; }
+    .sv-d { color: #34d399; } .sv-p { color: #f59e0b; } .sv-t { color: #818cf8; } .sv-b { color: #f87171; }
+    .sc-bar-wrap { background: #0f1117; border-radius: 20px; height: 7px; overflow: hidden; margin-bottom: 5px; }
+    .sc-bar-fill { height: 100%; border-radius: 20px; transition: width 0.8s ease; }
+    .sc-bar-meta { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-bottom: 14px; }
+    .sc-focus { border-top: 1px solid #1e2433; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .sc-focus-item { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 7px; line-height: 1.4; }
+    .dot6 { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .prod-card { background: #111622; border: 1px solid #1e2433; border-radius: 14px; padding: 18px; }
+    .prod-card.featured { border-color: #2a3148; }
+    .prod-card.is-new { border-left: 3px solid #6366f1; }
+    .prod-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
+    .prod-icon { font-size: 22px; flex-shrink: 0; }
+    .prod-name { font-size: 14px; font-weight: 800; color: #f1f5f9; line-height: 1.2; }
+    .prod-sub { font-size: 11px; color: #64748b; margin-top: 3px; line-height: 1.4; }
+    .prod-goal { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; font-weight: 600; color: #cbd5e1; background: #0f1320; border: 1px solid #1e2433; border-radius: 8px; padding: 8px 11px; margin-bottom: 8px; line-height: 1.35; }
+    .prod-goal .gtxt b { color: #e2e8f0; font-weight: 700; }
+    .goal-count { flex-shrink: 0; font-size: 11px; font-weight: 800; color: #c4b5fd; background: #1a1333; border: 1px solid #4c1d95; border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
+    .goal-count.gc-zero { color: #93c5fd; background: #0c1a2e; border-color: #1e3a5f; }
+    .goal-count.gc-done { color: #6ee7b7; background: #0f2419; border-color: #166534; }
+    .goal-bar { background: #0f1117; border-radius: 20px; height: 5px; overflow: hidden; margin: 0 0 12px; }
+    .goal-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #6366f1, #a78bfa); transition: width .8s ease; }
+    .goal-bar-fill.gb-zero { background: #1e3a5f; }
+    .prod-status-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
+    .chip-green { background: #0f2419; color: #34d399; border: 1px solid #166534; }
+    .chip-yellow { background: #1c1107; color: #f59e0b; border: 1px solid #78350f; }
+    .chip-blue { background: #0c1a2e; color: #60a5fa; border: 1px solid #1e3a5f; }
+    .chip-purple { background: #1a1333; color: #c4b5fd; border: 1px solid #4c1d95; }
+    .chip-gray { background: #151a24; color: #94a3b8; border: 1px solid #2a3148; }
+    .new-tag { font-size: 9px; font-weight: 700; color: #818cf8; background: #141a2e; border: 1px solid #312e81; border-radius: 5px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px; }
+    .prod-counts { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+    .pc2 { font-size: 11px; font-weight: 600; }
+    .pc-d { color: #34d399; } .pc-p { color: #f59e0b; } .pc-t { color: #818cf8; } .pc-b { color: #f87171; }
+    .pc-tag { font-size: 9px; color: #475569; background: #0f1117; border-radius: 5px; padding: 2px 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .prod-divider { height: 1px; background: #1a1f2e; margin: 10px 0; }
+    .prod-bullets { display: flex; flex-direction: column; gap: 5px; }
+    .prod-bullet { font-size: 12px; color: #94a3b8; display: flex; align-items: flex-start; gap: 7px; line-height: 1.4; }
+    .pb-icon { flex-shrink: 0; font-size: 11px; margin-top: 1px; }
+    .pb-done { color: #34d399; } .pb-prog { color: #f59e0b; } .pb-todo { color: #818cf8; } .pb-block { color: #f87171; }
+
+    .support-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .support-card { background: #111622; border: 1px solid #1e2433; border-radius: 12px; padding: 16px; }
+    .support-card.is-new { border-left: 3px solid #6366f1; }
+    .sup-title { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .sup-sub { font-size: 11px; color: #64748b; margin-bottom: 10px; }
+    .sup-items { display: flex; flex-direction: column; gap: 5px; }
+    .sup-item { font-size: 12px; color: #94a3b8; display: flex; align-items: flex-start; gap: 7px; line-height: 1.4; }
+
+    .person-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .person-card { background: #111622; border: 1px solid #1e2433; border-radius: 12px; padding: 14px 16px; }
+    .person-card.all-done { border-color: #166534; background: #0a1a0e; }
+    .person-card.has-blocked { border-left: 3px solid #7f1d1d; }
+    .person-card.new-hire { border-color: #164e63; background: #060d18; border-left: 3px solid #22d3ee; }
+    .pc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .pc-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .pc-name { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+    .pc-role { font-size: 11px; color: #64748b; }
+    .pc-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .pill { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+    .pill-d { background: #0f2419; color: #34d399; }
+    .pill-p { background: #1c1107; color: #f59e0b; }
+    .pill-b { background: #1f0707; color: #f87171; }
+    .pill-g { background: #1a1f2e; color: #818cf8; }
+    .pill-new { background: #061a1a; color: #22d3ee; border: 1px solid #164e63; }
+    .pc-summary { font-size: 12px; color: #94a3b8; line-height: 1.6; border-top: 1px solid #1a1f2e; padding-top: 8px; }
+    .pc-summary strong { color: #e2e8f0; }
+
+    .blockers-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .blocker-item { background: #110a0a; border: 1px solid #2a1010; border-left: 3px solid #ef4444; border-radius: 10px; padding: 14px 16px; }
+    .bi-title { font-size: 13px; font-weight: 700; color: #f87171; margin-bottom: 4px; }
+    .bi-detail { font-size: 12px; color: #fca5a5; line-height: 1.5; }
+    .bi-meta { font-size: 11px; color: #ef4444; margin-top: 5px; font-weight: 600; }
+
+    .highlight-banner { background: linear-gradient(135deg, #0a1a0e, #0c1a0a); border: 1px solid #166534; border-left: 4px solid #34d399; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px; }
+    .hb-icon { font-size: 24px; flex-shrink: 0; }
+    .hb-text { font-size: 13px; color: #a7f3d0; line-height: 1.6; }
+    .hb-text strong { color: #34d399; }
+    .hb-text ul { margin-top: 6px; margin-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+
+    .monday-banner { background: linear-gradient(135deg, #0a0f1c, #0d0a1a); border: 1px solid #4c1d95; border-left: 4px solid #a78bfa; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px; }
+    .mb-text { font-size: 13px; color: #c4b5fd; line-height: 1.6; }
+    .mb-text strong { color: #a78bfa; }
+    .mb-text ul { margin-top: 6px; margin-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+
+    .data-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #0d1320; border: 1px solid #1e2433; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+    .data-note strong { color: #94a3b8; }
+
+    @media (max-width: 600px) {
+      body { padding: 16px 14px; }
+      .header-left h1 { font-size: 20px; }
+      .kpi-val { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>Guru Labs — 2-Week Sprint Report</h1>
+    <div class="sub">Sprint 45 + Sprint 46 &nbsp;·&nbsp; Jun 8–21, 2026 &nbsp;·&nbsp; For Matt &nbsp;·&nbsp; <span class="live-dot"></span><span id="last-updated" style="color:#34d399;font-size:12px">Loading live data…</span></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+    <div class="report-badge">PORTFOLIO + SPRINT VIEW</div>
+    <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- TEAM STRUCTURE BANNER -->
+<div class="highlight-banner">
+  <div class="hb-icon">🏗️</div>
+  <div class="hb-text">
+    <strong>1 dedicated PM per product.</strong> DRM → Raja &nbsp;·&nbsp; Rekindle → Asif &nbsp;·&nbsp; AI Sponsor → Mariam &nbsp;·&nbsp; GHL/Funnels → Abdul. Senior PM still being hired to oversee agentic products + all PMs.
+    <ul>
+      <li><strong>Abdul</strong> leads GHL sprint planning, Hyros/AIR rollout, domain + Namecheap migration, AI Sponsor connector. Built the company Funnel Portfolio Map (Jun 16).</li>
+      <li><strong>Jan + Elena</strong> now active in #ops — subscriptions, tools access, customer success, social, Fathom reviews. Mariam coordinates priorities + follow-through across PMs.</li>
+      <li><strong>Imran</strong> staying on the team — owns the Audos webinar fixes + AEvents evergreen (12 active tasks this sprint).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MONDAY AGENDA BANNER -->
+<div class="monday-banner">
+  <div style="font-size:24px;flex-shrink:0">📅</div>
+  <div class="mb-text">
+    <strong>Monday Jun 22 — Sprint 47 Kickoff Agenda</strong>
+    <ul>
+      <li><strong>Revenue KPIs</strong> per product/funnel — company is in its revenue-focused phase (Matt mandate; target line being added)</li>
+      <li><strong>GitHub governance</strong> — confirm all 3 products migrated to <em>guru-labs-ai</em>; lock access (2 owners: Mariam + company account; everyone else Write on their own repo only)</li>
+      <li><strong>AI Foundations review</strong> — each PM presents their product review (context window, guardrails, evals, GraphRAG, inference, chunking, KV cache)</li>
+      <li><strong>Domain + Namecheap migration</strong> — access structure + 2FA handoff (Abdul + Mubashir)</li>
+      <li><strong>Hyros + AIR rollout</strong> — pricing to Jan/Elena for budget; confirm phased plan</li>
+    </ul>
+  </div>
+</div>
+
+<!-- KPI BAR -->
+<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 45 (closed) + Sprint 46 (active)</span></div>
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-val kv-purple" id="kpi-tasks">—</div>
+    <div class="kpi-label">Tasks Tracked</div>
+    <div class="kpi-sub">Across S45 + S46</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val kv-green" id="kpi-completed">—</div>
+    <div class="kpi-label">Completed</div>
+    <div class="kpi-sub">Done or closed</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val kv-yellow" id="kpi-inprog">—</div>
+    <div class="kpi-label">In Progress</div>
+    <div class="kpi-sub">Active in S46</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val kv-pink" id="kpi-curpct">—</div>
+    <div class="kpi-label">S46 Completion</div>
+    <div class="kpi-sub" id="kpi-cursub">Sprint 46 progress</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val kv-blue" id="kpi-contributors">—</div>
+    <div class="kpi-label">Contributors</div>
+    <div class="kpi-sub">Active in S46</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val kv-red" id="kpi-blockers">—</div>
+    <div class="kpi-label">Blockers</div>
+    <div class="kpi-sub">Need resolution</div>
+  </div>
+</div>
+
+<!-- PORTFOLIO ROLLUP -->
+<div class="section-title st-green">Product Portfolio — Status Rollup</div>
+<div class="portfolio-strip">
+  <div class="ps-title">14 products / funnels<br>across 5 brands<span class="ps-src">Source: Abdul's Funnel Portfolio Map (Jun 16, 2026)</span></div>
+  <div class="ps-divider"></div>
+  <div class="ps-stat"><div class="ps-num ps-green">5</div><div><div class="ps-lbl">🟢 Live</div></div></div>
+  <div class="ps-stat"><div class="ps-num ps-yellow">5</div><div><div class="ps-lbl">🟡 Building</div></div></div>
+  <div class="ps-stat"><div class="ps-num ps-blue">4</div><div><div class="ps-lbl">🔵 Planned</div></div></div>
+  <div class="ps-divider"></div>
+  <div class="ps-stat" style="font-size:12px;color:#64748b;max-width:260px;line-height:1.5">Brands: Conscious AI · Audos · Upwork · Conscious Ninjas · Matt's Personal. Full matrix (Brand × Funnel Tier) lives in Miro.</div>
+</div>
+
+<!-- SPRINT COMPARISON -->
+<div class="section-title st-blue">Sprint Breakdown <span class="section-note">completion % is tracked here, at sprint level — live</span></div>
+<div class="sprint-compare">
+
+  <div class="sprint-card s45">
+    <div class="sc-top">
+      <div><div class="sc-title">Sprint 45</div><div class="sc-dates">Jun 8 – Jun 14, 2026</div></div>
+      <div class="sc-badge badge-done" id="s45-badge">CLOSED · —</div>
+    </div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-val sv-d" id="s45-done">—</div><div class="sc-lbl">Done</div></div>
+      <div class="sc-stat"><div class="sc-val sv-p" id="s45-inprog">—</div><div class="sc-lbl">In Prog</div></div>
+      <div class="sc-stat"><div class="sc-val sv-t" id="s45-pending">—</div><div class="sc-lbl">To Do</div></div>
+      <div class="sc-stat"><div class="sc-val sv-b" id="s45-blocked">—</div><div class="sc-lbl">Blocked</div></div>
+    </div>
+    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s45-bar" style="width:0%;background:linear-gradient(90deg,#34d399,#10b981)"></div></div>
+    <div class="sc-bar-meta"><span id="s45-total">— total tasks</span><span style="color:#34d399;font-weight:700" id="s45-pct">—% complete</span></div>
+    <div class="sc-focus">
+      <div class="sc-focus-item"><div class="dot6" style="background:#34d399"></div>Closed sprint — AI Sponsor landing/registration/chat live; DRM scoring + feedback shipped; webinar funnel groundwork.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>Smaller sprint (cleanup + handoffs) feeding the larger Sprint 46 build queue.</div>
+    </div>
+  </div>
+
+  <div class="sprint-card s46">
+    <div class="sc-top">
+      <div><div class="sc-title">Sprint 46</div><div class="sc-dates">Jun 15 – Jun 21, 2026 · current</div></div>
+      <div class="sc-badge badge-live" id="s46-badge">ACTIVE · —</div>
+    </div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-val sv-d" id="s46-done">—</div><div class="sc-lbl">Done</div></div>
+      <div class="sc-stat"><div class="sc-val sv-p" id="s46-active">—</div><div class="sc-lbl">Active</div></div>
+      <div class="sc-stat"><div class="sc-val sv-t" id="s46-todo">—</div><div class="sc-lbl">To Do</div></div>
+      <div class="sc-stat"><div class="sc-val sv-b" id="s46-blocked">—</div><div class="sc-lbl">Blocked</div></div>
+    </div>
+    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s46-bar" style="width:0%;background:linear-gradient(90deg,#6366f1,#a78bfa)"></div></div>
+    <div class="sc-bar-meta"><span id="s46-total">— total tasks</span><span style="color:#a78bfa;font-weight:700" id="s46-pct">—% done</span></div>
+    <div class="sc-focus">
+      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>AI Sponsor — backend deploy to live server (Mariam + Mubashir); beta-ready push; security & privacy.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#f59e0b"></div>Audos Webinar — Imran heavy: .ics, replay emails, AEvents evergreen, SMS + redirect fixes.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#ec4899"></div>DRM — mobile dashboard, calendar/booking branding, AI Assistant image bug (blocked).</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#10b981"></div>Repos → company GitHub + Namecheap domain migration in progress (Abdul, Raja, Asif, Mubashir).</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRODUCTS -->
+<div class="section-title st-yellow">Product Progress — How Close to Each Goal <span class="section-note">goal + "X of Y to goal" from the Jun 15 KPI scoreboard · ✓ done / ⟳ in progress / ○ next · status = lifecycle stage</span></div>
+<div class="products-grid">
+
+  <!-- DRM -->
+  <div class="prod-card featured">
+    <div class="prod-header">
+      <div class="prod-icon">💑</div>
+      <div style="flex:1">
+        <div class="prod-name">DRM — Dating Relationship Manager</div>
+        <div class="prod-sub">Agentic · Raja (PM)</div>
+      </div>
+      <span class="prod-status-chip chip-green">🟢 Live</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Launch + first 10 paid customers</span><span class="goal-count">3 of 6 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>V1 features live — scoring, leaderboard, post-date feedback</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Stripe billing fixed to "DRM"</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>SEO blog live (datingrelationshipmanager.ai/blog)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Auth + RBAC in build (Raja)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Clear 3 P1 launch blockers (AI image upload, login, SSL)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Ads live → first 10 paid customers</div>
+    </div>
+  </div>
+
+  <!-- AI SPONSOR -->
+  <div class="prod-card featured">
+    <div class="prod-header">
+      <div class="prod-icon">🤝</div>
+      <div style="flex:1">
+        <div class="prod-name">AI Sponsor — 12-Step Recovery AI</div>
+        <div class="prod-sub">Agentic · Mariam (PM)</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Beta launch (85 users) + WhatsApp live</span><span class="goal-count">2 of 6 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Live on getaisponsor.com — landing + 9-screen onboarding + working chat</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Repo in company GitHub (guru-labs-ai)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Backend deployed to live server (Mariam + Mubashir)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Stripe payments integrated</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>WhatsApp number live + Wapisimo wired (Jan)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Beta onboarded — 11 users + 78 waitlist</div>
+    </div>
+  </div>
+
+  <!-- AUDOS WEBINAR -->
+  <div class="prod-card featured">
+    <div class="prod-header">
+      <div class="prod-icon">🎯</div>
+      <div style="flex:1">
+        <div class="prod-name">Audos Webinar Funnel</div>
+        <div class="prod-sub">Webinar · Imran</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Evergreen webinar funnel live & selling</span><span class="goal-count">2 of 6 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Funnel + architecture built</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Zoom → GHL transfer + Close-lead $3K CAPI workflow</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Replay + post-webinar email sequence (Imran)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>.ics + "Join" link + Thank-You funnel-bypass fixes</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>AEvents evergreen setup + cold ads (Imran + Abdul)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Brand-alignment design (Cielo)</div>
+    </div>
+  </div>
+
+  <!-- AUDOS BLACK -->
+  <div class="prod-card featured">
+    <div class="prod-header">
+      <div class="prod-icon">🏆</div>
+      <div style="flex:1">
+        <div class="prod-name">Audos Black — HT Accelerator</div>
+        <div class="prod-sub">High-ticket · Hamza</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> HT funnel selling ($25K ticket)</span><span class="goal-count">2 of 6 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Funnel live — applications incoming</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>AI Happy Hour CDMX + Hackathon site shipped</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Checkout + thank-you page fix (Hamza)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Full E2E regression (Bilal)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Workshop email automation (needs format + date)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>First HT closes</div>
+    </div>
+  </div>
+
+  <!-- REKINDLE -->
+  <div class="prod-card featured">
+    <div class="prod-header">
+      <div class="prod-icon">🔥</div>
+      <div style="flex:1">
+        <div class="prod-name">Rekindle — Family Reconnection AI</div>
+        <div class="prod-sub">Agentic · Asif (PM)</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Full launch + 15 paid</span><span class="goal-count">1 of 6 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>PM onboarded + market/competitor research + Harmoni 32-bug audit</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>REKIN AI build + explore (Asif)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Simply Noted (Letterstream) API integrated</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Stripe / Polsia errors fixed</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>DNS / Namecheap 2FA → go live</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>First 15 paid customers</div>
+    </div>
+  </div>
+
+  <!-- CONSCIOUS AI ACADEMY -->
+  <div class="prod-card">
+    <div class="prod-header">
+      <div class="prod-icon">🧠</div>
+      <div style="flex:1">
+        <div class="prod-name">Conscious AI Academy + Funnels</div>
+        <div class="prod-sub">Low-ticket · Cielo / Annus</div>
+      </div>
+      <span class="prod-status-chip chip-green">🟢 Live</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> LT→HT funnels converting + ads scaling</span><span class="goal-count">2 of 5 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Academy LT funnel live (consciousaiacademy.com)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Meta CAPI events firing + Hyros on all campaigns</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Email campaign to Conscious AI leads (Annus, in review)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Accelerator + LT ads optimization (Icon Team)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Hyros extension to CA funnels + LP video (Matt)</div>
+    </div>
+  </div>
+
+  <!-- CONSCIOUS AI HIGH-TICKET -->
+  <div class="prod-card is-new">
+    <div class="prod-header">
+      <div class="prod-icon">💎</div>
+      <div style="flex:1">
+        <div class="prod-name">Conscious AI High-Ticket</div>
+        <div class="prod-sub">High-ticket · owner TBD</div>
+      </div>
+      <span class="prod-status-chip chip-blue">🔵 Planned</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> HT tier defined + live</span><span class="goal-count gc-zero">0 of 3 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Scope + offer confirmed with Matt</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Funnel built</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Live + first HT sale</div>
+    </div>
+  </div>
+
+  <!-- AUDOS LT STACK -->
+  <div class="prod-card is-new">
+    <div class="prod-header">
+      <div class="prod-icon">🧱</div>
+      <div style="flex:1">
+        <div class="prod-name">Audos LT Stack</div>
+        <div class="prod-sub">Low-ticket · Cielo + Abdul</div>
+      </div>
+      <span class="prod-status-chip chip-green">🟢 Live</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> LT stack converting at scale</span><span class="goal-count">1 of 3 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>LT front-end live ($7–$10 + order bumps)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Offer + order-bump optimization</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Ads driving consistent LT volume</div>
+    </div>
+  </div>
+
+  <!-- AI SEO BLOG ENGINE -->
+  <div class="prod-card is-new">
+    <div class="prod-header">
+      <div class="prod-icon">📝</div>
+      <div style="flex:1">
+        <div class="prod-name">AI SEO Blog Engine</div>
+        <div class="prod-sub">Cross-product · Mariam</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Automated AI-SEO acquisition across products</span><span class="goal-count">2 of 5 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Strategy / playbook drafted (Claude-for-SEO)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>DRM blog live as the pilot</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Rolling engine out (3x/week model)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Live across all products</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Automated via Claude API</div>
+    </div>
+  </div>
+
+  <!-- UPWORK HIRING LT -->
+  <div class="prod-card is-new">
+    <div class="prod-header">
+      <div class="prod-icon">💼</div>
+      <div style="flex:1">
+        <div class="prod-name">Upwork Hiring LT</div>
+        <div class="prod-sub">Low-ticket · Cielo</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> LT offer live + selling</span><span class="goal-count gc-zero">0 of 4 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Offer creation + V2 (Loom feedback) (Cielo)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Meta ads pipeline (Hamza)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Domain bought + FB page</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Live + selling</div>
+    </div>
+  </div>
+
+  <!-- CONSCIOUS NINJAS -->
+  <div class="prod-card is-new">
+    <div class="prod-header">
+      <div class="prod-icon">🥷</div>
+      <div style="flex:1">
+        <div class="prod-name">Conscious Ninjas Enterprise</div>
+        <div class="prod-sub">Agency offering · Cielo + Hamza</div>
+      </div>
+      <span class="prod-status-chip chip-yellow">🟡 Building</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Agency offering live + first clients</span><span class="goal-count gc-zero">0 of 4 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Website build (Cielo, in review)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Meta ads pipeline (Hamza)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Offer / packaging defined</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>First agency clients</div>
+    </div>
+  </div>
+
+  <!-- MATT PERSONAL BRAND -->
+  <div class="prod-card">
+    <div class="prod-header">
+      <div class="prod-icon">🪄</div>
+      <div style="flex:1">
+        <div class="prod-name">Matt Crowe — Personal Brand</div>
+        <div class="prod-sub">P2 / low priority · Cielo</div>
+      </div>
+      <span class="prod-status-chip chip-blue">🔵 Planned</span>
+    </div>
+    <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Personal sites live (P2)</span><span class="goal-count">1 of 5 ✓</span></div>
+    <div class="prod-bullets">
+      <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Brand + YouTube research + design concept v1</div>
+      <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>mattcrowe.com + kampercrowe.com build (Cielo)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>prybar.vc</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Tanya branding iteration (~8 wks)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>YouTube + social live (Ivona)</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUPPORTING WORK -->
+<div class="section-title st-orange">Supporting Work — Ops, Infra &amp; Migrations</div>
+<div class="support-grid">
+
+  <div class="support-card is-new">
+    <div class="sup-title">Company GitHub Migration</div>
+    <div class="sup-sub">In progress · Abdul + Raja + Asif + Mubashir</div>
+    <div class="sup-items">
+      <div class="sup-item"><span style="color:#34d399">✓</span> AI Sponsor migrated to guru-labs-ai org (Mariam)</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> DRM + Rekindle repos migrating (active S46 task)</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Access model: 2 owners (Mariam + company account); devs = Write on own repo only</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> Lock down org permissions on Monday's call; move company brain repo decision</div>
+    </div>
+  </div>
+
+  <div class="support-card">
+    <div class="sup-title">Domain + Namecheap Migration</div>
+    <div class="sup-sub">Abdul + Mubashir · access structure in progress</div>
+    <div class="sup-items">
+      <div class="sup-item"><span style="color:#34d399">✓</span> Full domain inventory + DNS + risk register; provider chosen (Namecheap)</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Namecheap domain migration + access structure (active S46)</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Matt grants 2FA access — registrar + connected services</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> STANDUPEIGHTX.COM auto-renews Jul 4 ($37.98) — decide keep/drop</div>
+    </div>
+  </div>
+
+  <div class="support-card">
+    <div class="sup-title">Hyros + AIR Rollout</div>
+    <div class="sup-sub">Audit done · phased rollout pending Matt sign-off</div>
+    <div class="sup-items">
+      <div class="sup-item"><span style="color:#34d399">✓</span> Audos HT + Webinar — Hyros + Meta Pixel + GA4 + Clarity live</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> AI Sponsor, DRM, Conscious AI — not yet installed</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Hyros AIR — nowhere installed; rollout staged</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> AIR pricing → Jan/Elena for budget; confirm plan Monday</div>
+    </div>
+  </div>
+
+  <div class="support-card">
+    <div class="sup-title">Ads — Icon Team</div>
+    <div class="sup-sub">Campaign live · Meta refund recovery open</div>
+    <div class="sup-items">
+      <div class="sup-item"><span style="color:#34d399">✓</span> 15 UGC ads; Meta campaign live (UGC + static, UTMs + CAPI)</div>
+      <div class="sup-item"><span style="color:#34d399">✓</span> Generating Audos Black applications; $500 UGC test approved (Keith)</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Refund due from Meta — LT ads seed money ~$17K (Matt + Mariam)</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> Retargeting rotation; YouTube podcast ads; CA LT + Accelerator optimization</div>
+    </div>
+  </div>
+
+  <div class="support-card">
+    <div class="sup-title">Ops Team — Jan + Elena</div>
+    <div class="sup-sub">Active in #ops · report to Mariam (PM)</div>
+    <div class="sup-items">
+      <div class="sup-item"><span style="color:#34d399">✓</span> #ops channel running; onboarding to ClickUp, Slack, GHL, 1Password done</div>
+      <div class="sup-item"><span style="color:#f59e0b">⟳</span> Jan: share Anthropic + Wapisimo API keys + AI Sponsor WhatsApp number</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> Subscriptions + card-on-file audit; tools access matrix</div>
+      <div class="sup-item"><span style="color:#818cf8">○</span> Customer success across all products; social; weekly Fathom reviews</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PEOPLE -->
+<div class="section-title st-green">Per-Person Velocity — Sprint 46 (Live)</div>
+<div class="person-grid">
+
+  <div class="person-card all-done">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#6366f1">MG</div>
+      <div><div class="pc-name">Mariam Gvenetadze</div><div class="pc-role">Project Manager · AI Sponsor PM · Priorities + Follow-through</div></div>
+    </div>
+    <div class="pc-pills" id="pills-mariam">
+      <span class="pill pill-d">21 done</span><span class="pill pill-p">7 active</span><span class="pill pill-g">35 total</span>
+    </div>
+    <div class="pc-summary"><strong>Leading the sprint (35 tasks).</strong> AI Sponsor backend deploy + beta-ready push + security/privacy; repo migration to company GitHub; revenue target for Monday agenda; Meta refund recovery with Matt. Coordinating Jan + Elena and all PM follow-through.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#78350f">MI</div>
+      <div><div class="pc-name">Muhammad Imran</div><div class="pc-role">GHL Engineer — Audos Webinar + AEvents</div></div>
+    </div>
+    <div class="pc-pills" id="pills-imran">
+      <span class="pill pill-d">1 done</span><span class="pill pill-p">12 active</span><span class="pill pill-g">14 total</span>
+    </div>
+    <div class="pc-summary"><strong>Staying on the team.</strong> Heaviest active load this sprint — almost entirely the Audos webinar: .ics calendar, broken "Join" link, replay + post-webinar email sequence, Thank-You funnel bypass, SMS formatting, header styling, and AEvents Evergreen webinar setup.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#10b981">AR</div>
+      <div><div class="pc-name">Abdul Rehman</div><div class="pc-role">GHL PM · Sprint Planning Lead · Tech Ops</div></div>
+    </div>
+    <div class="pc-pills" id="pills-abdul">
+      <span class="pill pill-d">8 done</span><span class="pill pill-p">5 active</span><span class="pill pill-g">28 total</span>
+    </div>
+    <div class="pc-summary"><strong>Most senior technical PM until Senior PM hired.</strong> Built the company Funnel Portfolio Map. Running repo migration to guru-labs-ai + Namecheap domain migration + access structure; GHL email-send review with Matt; AEvents evergreen with Imran; Hyros/AIR rollout staged.</div>
+  </div>
+
+  <div class="person-card has-blocked">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#ec4899">RQ</div>
+      <div><div class="pc-name">Raja Muhammad Qasim (Raj)</div><div class="pc-role">PM + Dev — DRM</div></div>
+    </div>
+    <div class="pc-pills" id="pills-raja">
+      <span class="pill pill-p">6 active</span><span class="pill pill-b">2 blocked</span><span class="pill pill-g">27 total</span>
+    </div>
+    <div class="pc-summary"><strong>Big DRM build queue (27 tasks).</strong> Active: mobile dashboard rendering, booking-invitation branding, Google Calendar event titles. Blocked: AI Assistant image-upload failure + reported bug batch. Also on repo migration. Day-2 of sprint — nothing closed yet.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#06b6d4">CR</div>
+      <div><div class="pc-name">Cielo Marie Robles</div><div class="pc-role">Design, Frontend &amp; Brand Sites</div></div>
+    </div>
+    <div class="pc-pills" id="pills-cielo">
+      <span class="pill pill-d">7 done</span><span class="pill pill-p">6 active</span><span class="pill pill-g">29 total</span>
+    </div>
+    <div class="pc-summary"><strong>High output across brands (29 tasks).</strong> Conscious Ninjas website, Audos Hackathon site, Upwork LT offer + V2 Loom feedback, webinar brand-alignment design — several in review. Also the 4 Matt personal-brand sites (parked behind revenue work).</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#8b5cf6">AA</div>
+      <div><div class="pc-name">Asif Ali</div><div class="pc-role">PM — Rekindle AI</div></div>
+    </div>
+    <div class="pc-pills" id="pills-asif">
+      <span class="pill pill-p">3 active</span><span class="pill pill-g">16 total</span>
+    </div>
+    <div class="pc-summary"><strong>Rekindle build.</strong> Polsia vs Audos competitive research; REKIN AI explore + build; repo migration. Blocked on Pulsio credits + DNS 2FA to go live. Will do the 3–5hr AI Foundations review for Monday.</div>
+  </div>
+
+  <div class="person-card all-done">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#0ea5e9">MH</div>
+      <div><div class="pc-name">Muhammad Hamza</div><div class="pc-role">GHL Engineer — Audos Black + Ads Pipeline</div></div>
+    </div>
+    <div class="pc-pills" id="pills-hamza">
+      <span class="pill pill-p">2 active</span><span class="pill pill-g">2 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> Audos Black checkout + thank-you page fix; Meta setup + ads pipeline for Conscious Ninjas + Upwork products. Lighter queue — available for more Meta/CAPI work.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#8b5cf6">BG</div>
+      <div><div class="pc-name">Bilal Ghaffar</div><div class="pc-role">QA Lead — All Products</div></div>
+    </div>
+    <div class="pc-pills" id="pills-bilal">
+      <span class="pill pill-d">1 done</span><span class="pill pill-g">6 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> DRM bug logging + regression; Audos Black E2E regression; AI Sponsor QA (mobile priority) queued. Auditing closed tickets that skipped the QA stage.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#0ea5e9">MB</div>
+      <div><div class="pc-name">Muhammad Mubashir</div><div class="pc-role">Full-Stack AI/ML Engineer</div></div>
+    </div>
+    <div class="pc-pills" id="pills-mubashir">
+      <span class="pill pill-p">3 active</span><span class="pill pill-g">4 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> AI Sponsor backend deploy to live server (with Mariam); Namecheap domain migration + access structure (with Abdul); repo migration. ~10 hrs/week for AI Sponsor / Claude work.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#14b8a6">AI</div>
+      <div><div class="pc-name">Annus Irfan</div><div class="pc-role">GHL — Conscious AI CAPI &amp; Infra</div></div>
+    </div>
+    <div class="pc-pills" id="pills-annus">
+      <span class="pill pill-d">2 done</span><span class="pill pill-p">1 active</span><span class="pill pill-g">3 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> Email campaign with Zoom link to Conscious AI leads (in review). CAPI events maintained (Schedule, Closed Won/Lost). Conscious AI test email awaiting Matt approval.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#a855f7">IV</div>
+      <div><div class="pc-name">Ivona</div><div class="pc-role">Marketing, Brand, Events &amp; Admin</div></div>
+    </div>
+    <div class="pc-pills" id="pills-ivona">
+      <span class="pill pill-d">2 done</span><span class="pill pill-g">3 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> Matt Crowe YouTube + social strategy; merch order; reporter + researcher outreach blocked pending Matt. Marketing + brand support across products.</div>
+  </div>
+
+  <div class="person-card">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#f59e0b">AD</div>
+      <div><div class="pc-name">Adaeze Udogu</div><div class="pc-role">VA — Research &amp; Admin (40 hrs/wk)</div></div>
+    </div>
+    <div class="pc-pills" id="pills-adaeze">
+      <span class="pill pill-p">2 active</span><span class="pill pill-g">2 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> 100 Instagram coaches/creators list for DRM cold outreach; Elite Sports Coaches contact database (in review).</div>
+  </div>
+
+  <div class="person-card new-hire">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#22d3ee">JN</div>
+      <div><div class="pc-name">Jan (Janielyn Regaspi)</div><div class="pc-role">Operations — Joined Jun 4</div></div>
+    </div>
+    <div class="pc-pills" id="pills-jan">
+      <span class="pill pill-p">1 active</span><span class="pill pill-g">1 total</span>
+    </div>
+    <div class="pc-summary"><strong>S46:</strong> Sharing Anthropic + Wapisimo API keys + AI Sponsor WhatsApp number (unblocks live WhatsApp). Subscriptions, tools access, social, Fathom reviews, inbox zero. Reports to Mariam.</div>
+  </div>
+
+  <div class="person-card new-hire">
+    <div class="pc-top">
+      <div class="pc-avatar" style="background:#22d3ee">EL</div>
+      <div><div class="pc-name">Elena</div><div class="pc-role">Operations — Joined Jun 4</div></div>
+    </div>
+    <div class="pc-pills">
+      <span class="pill pill-new">RAMPING UP</span>
+    </div>
+    <div class="pc-summary">Customer success across all products (DRM, AI Sponsor, Rekindle, GHL funnels); budget/vendor coordination; Hyros AIR pricing with Abdul. No ClickUp tasks assigned yet this sprint — onboarding into systems. Reports to Mariam.</div>
+  </div>
+
+</div>
+
+<!-- BLOCKERS -->
+<div class="section-title st-red">Active Blockers <span class="section-note">live — flagged "blocked" in ClickUp S46</span></div>
+<div class="blockers-list">
+  <div class="blocker-item">
+    <div class="bi-title">1. DRM — AI Assistant Image Upload Fails + Reported Bug Batch</div>
+    <div class="bi-detail">Image upload in the AI Assistant fails with a generic error; a batch of reported DRM bugs is blocked behind it. Holds up the pre-ads quality pass.</div>
+    <div class="bi-meta">Owner: Raja · Blocking DRM ads readiness</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">2. Outreach — Reporters + Researcher (Waiting on Matt)</div>
+    <div class="bi-detail">Family-estrangement reporter outreach and the Lucy researcher outreach are both blocked pending Matt's input. Feeds Rekindle PR + credibility.</div>
+    <div class="bi-meta">Action: Matt to unblock · Owners: Matt / Ivona</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">3. Audos Black — Workshop Email Automation Sequence</div>
+    <div class="bi-detail">The workshop email-automation sequence can't be built until the workshop format + date are confirmed. Blocking the post-application nurture flow.</div>
+    <div class="bi-meta">Owner: Audos Black (Hamza) · Needs format + date decision</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">4. Guru Labs LinkedIn — No Account Access</div>
+    <div class="bi-detail">"Log into Guru Labs LinkedIn account" is blocked — credentials/access needed before LinkedIn / EIR posts can go out.</div>
+    <div class="bi-meta">Action: provide LinkedIn access (1Password) · Blocks content distribution</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">5. Indeed.com Job Posting — AI Accelerator Acquisition Channel</div>
+    <div class="bi-detail">Indeed "job" posting as a customer-acquisition channel for the AI Accelerator is blocked — needs decision/access to proceed.</div>
+    <div class="bi-meta">Owner: unassigned · Needs owner + go-ahead</div>
+  </div>
+</div>
+
+<!-- DATA NOTE -->
+<div class="data-note">
+  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 45 closed + Sprint 46 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map.
+</div>
+
+<script>
+const CONFIG = {
+  sPrev: '901327314020',  // Sprint 45 — Jun 8–14 (closed)
+  sCur:  '901327556049',  // Sprint 46 — Jun 15–21 (active)
+  sPrevStart: new Date(Date.UTC(2026, 5, 8)),
+  sPrevEnd:   new Date(Date.UTC(2026, 5, 14)),
+  sCurStart:  new Date(Date.UTC(2026, 5, 15)),
+  sCurEnd:    new Date(Date.UTC(2026, 5, 21)),
+  key: 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH',
+  refreshMs: 600000
+};
+
+// ClickUp username -> person card slug
+const PEOPLE = {
+  'Mariam Gvenetadze':   'mariam',
+  'Muhammad Imran':      'imran',
+  'Abdul Rehman':        'abdul',
+  'Raja Muhammad Qasim': 'raja',
+  'Cielo Marie Robles':  'cielo',
+  'Asif Ali':            'asif',
+  'Muhammad Hamza':      'hamza',
+  'Bilal Ghaffar':       'bilal',
+  'Muhammad Mubashir':   'mubashir',
+  'Annus Irfan':         'annus',
+  'Ivona':               'ivona',
+  'Adaeze Udogu':        'adaeze',
+  'Janielyn Regaspi':    'jan'
+};
+
+function cat(status) {
+  const s = (status || '').toLowerCase();
+  if (['done','closed','complete'].includes(s)) return 'done';
+  if (['in progress','in review','in build'].includes(s)) return 'active';
+  if (s === 'blocked') return 'blocked';
+  return 'todo';
+}
+
+async function fetchAll(listId) {
+  let tasks = [], page = 0;
+  while (true) {
+    try {
+      const r = await fetch(
+        `https://api.clickup.com/api/v2/list/${listId}/task?include_closed=true&subtasks=true&page=${page}`,
+        { headers: { Authorization: CONFIG.key } }
+      );
+      const d = await r.json();
+      if (!d.tasks || !d.tasks.length) break;
+      tasks = tasks.concat(d.tasks);
+      if (d.last_page) break;
+      page++;
+      if (page > 15) break;
+    } catch(e) { break; }
+  }
+  return tasks;
+}
+
+function calcStats(tasks) {
+  const s = { done: 0, active: 0, todo: 0, blocked: 0, total: tasks.length, people: {} };
+  tasks.forEach(t => {
+    const c = cat(t.status && t.status.status);
+    s[c]++;
+    (t.assignees || []).forEach(a => {
+      const n = a.username;
+      if (!s.people[n]) s.people[n] = { done: 0, active: 0, blocked: 0, todo: 0, total: 0 };
+      s.people[n][c]++;
+      s.people[n].total++;
+    });
+  });
+  s.pct = s.total ? Math.round(s.done / s.total * 100) : 0;
+  return s;
+}
+
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function setW(id, pct) { const el = document.getElementById(id); if (el) el.style.width = pct + '%'; }
+function pillsHTML(done, active, blocked, total) {
+  let h = `<span class="pill pill-d">${done} done</span>`;
+  if (active > 0) h += `<span class="pill pill-p">${active} active</span>`;
+  if (blocked > 0) h += `<span class="pill pill-b">${blocked} blocked</span>`;
+  h += `<span class="pill pill-g">${total} total</span>`;
+  return h;
+}
+
+// Live per-product task counts — blended tag + name-keyword bucketing.
+// Status badges stay static (Abdul's portfolio map); only the active/queued/blocked
+// counts are live, and they sharpen automatically as ClickUp tagging improves.
+const PROD_BUCKETS = [
+  { name: /^DRM/i,                 re: /drm|dating relationship/i },
+  { name: /AI Sponsor/i,           re: /sponsor/i },
+  { name: /Audos Webinar/i,        re: /webinar/i },
+  { name: /Audos Black/i,          re: /audos.?black|hackathon|happy hour/i },
+  { name: /Rekindle/i,             re: /rekindle|harmoni|letterstream|estrangement|reconnect/i },
+  { name: /Conscious AI Academy/i, re: /conscious ai|consciousai|academy|capi|hyros/i },
+  { name: /AI SEO/i,               re: /seo|blog/i },
+  { name: /Upwork/i,               re: /upwork/i },
+  { name: /Conscious Ninjas/i,     re: /ninja/i },
+  { name: /Matt Crowe/i,           re: /mattcrowe|kampercrowe|prybar|matt crowe|personal brand/i }
+];
+
+function fillProductCounts(tasks) {
+  const agg = {};
+  tasks.forEach(t => {
+    const hay = ((t.name || '') + ' ' + (t.tags || []).map(x => x.name).join(' ')).toLowerCase();
+    for (const b of PROD_BUCKETS) {
+      if (b.re.test(hay)) {
+        const k = b.name.source;
+        (agg[k] = agg[k] || { done: 0, active: 0, todo: 0, blocked: 0 })[cat(t.status && t.status.status)]++;
+        break;
+      }
+    }
+  });
+  document.querySelectorAll('.prod-card').forEach(card => {
+    const nameEl = card.querySelector('.prod-name');
+    const countsEl = card.querySelector('.prod-counts');
+    if (!nameEl || !countsEl) return;
+    const b = PROD_BUCKETS.find(x => x.name.test(nameEl.textContent));
+    if (!b) return;
+    const a = agg[b.name.source];
+    if (!a) return; // no matched tasks — keep static fallback
+    let h = '';
+    if (a.done)    h += `<span class="pc2 pc-d">✓ ${a.done} done</span>`;
+    if (a.active)  h += `<span class="pc2 pc-p">⟳ ${a.active} active</span>`;
+    if (a.todo)    h += `<span class="pc2 pc-t">○ ${a.todo} queued</span>`;
+    if (a.blocked) h += `<span class="pc2 pc-b">🚧 ${a.blocked} blocked</span>`;
+    h += `<span class="pc-tag">S46 live</span>`;
+    countsEl.innerHTML = h;
+  });
+}
+
+async function refresh() {
+  set('last-updated', 'Refreshing…');
+  try {
+    const [prevTasks, curTasks] = await Promise.all([fetchAll(CONFIG.sPrev), fetchAll(CONFIG.sCur)]);
+    const prev = calcStats(prevTasks);
+    const cur  = calcStats(curTasks);
+    fillProductCounts(curTasks);
+
+    // KPI bar
+    set('kpi-tasks',        prev.total + cur.total);
+    set('kpi-completed',    prev.done + cur.done);
+    set('kpi-inprog',       cur.active);
+    set('kpi-curpct',       cur.pct + '%');
+    set('kpi-cursub',       cur.done + '/' + cur.total + ' tasks closed');
+    set('kpi-contributors', Object.keys(cur.people).length);
+    set('kpi-blockers',     cur.blocked + prev.blocked);
+
+    // Sprint 45 (closed)
+    set('s45-done',    prev.done);
+    set('s45-inprog',  prev.active);
+    set('s45-pending', prev.todo);
+    set('s45-blocked', prev.blocked);
+    setW('s45-bar',    prev.pct);
+    set('s45-total',   prev.total + ' total tasks');
+    set('s45-pct',     prev.pct + '% complete');
+    set('s45-badge',   'CLOSED · ' + prev.pct + '%');
+
+    // Sprint 46 (active)
+    const now = new Date();
+    set('s46-done',    cur.done);
+    set('s46-active',  cur.active);
+    set('s46-todo',    cur.todo);
+    set('s46-blocked', cur.blocked);
+    setW('s46-bar',    cur.pct);
+    set('s46-total',   cur.total + ' total tasks');
+    set('s46-pct',     cur.pct + '% done');
+    if (now >= CONFIG.sCurStart && now <= CONFIG.sCurEnd) {
+      const dayNum = Math.min(7, Math.max(1, Math.floor((now - CONFIG.sCurStart) / 86400000) + 1));
+      set('s46-badge', 'ACTIVE · Day ' + dayNum + ' of 7');
+    } else if (now > CONFIG.sCurEnd) {
+      set('s46-badge', 'CLOSED · ' + cur.pct + '%');
+      const b = document.getElementById('s46-badge');
+      if (b) b.className = 'sc-badge badge-done';
+    }
+
+    // Per-person pills (Sprint 46 live)
+    Object.entries(PEOPLE).forEach(([name, slug]) => {
+      const el = document.getElementById('pills-' + slug);
+      if (!el) return;
+      const p = cur.people[name];
+      if (p && p.total > 0) el.innerHTML = pillsHTML(p.done, p.active, p.blocked, p.total);
+    });
+
+    const t = new Date();
+    set('last-updated', 'Live · Updated ' + t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  } catch(e) {
+    set('last-updated', 'Could not refresh — retrying in 10 min');
+    console.error(e);
+  }
+}
+
+// Seed last-known values so the page is NEVER blank if the live fetch is slow,
+// cached, or briefly unavailable. refresh() overwrites all of these with live data
+// within ~1-2s. Updated whenever the report is rebuilt.
+(function seed() {
+  const F = {
+    'kpi-tasks': 241, 'kpi-completed': 83, 'kpi-inprog': 44, 'kpi-curpct': '26%',
+    'kpi-cursub': '54/205 tasks closed', 'kpi-contributors': 14, 'kpi-blockers': 6,
+    's45-done': 29, 's45-inprog': 0, 's45-pending': 7, 's45-blocked': 0,
+    's45-total': '36 total tasks', 's45-pct': '81% complete', 's45-badge': 'CLOSED · 81%',
+    's46-done': 54, 's46-active': 44, 's46-todo': 101, 's46-blocked': 6,
+    's46-total': '205 total tasks', 's46-pct': '26% done', 's46-badge': 'ACTIVE'
+  };
+  for (const k in F) { const el = document.getElementById(k); if (el) el.textContent = F[k]; }
+  const b45 = document.getElementById('s45-bar'); if (b45) b45.style.width = '81%';
+  const b46 = document.getElementById('s46-bar'); if (b46) b46.style.width = '26%';
+})();
+
+// Derive a % + progress bar from each card's "X of Y to goal" milestone count, so the
+// percentage is ALWAYS consistent with the count (single source of truth = the milestones).
+function applyGoalBars() {
+  document.querySelectorAll('.prod-card').forEach(card => {
+    const goal = card.querySelector('.prod-goal');
+    const badge = goal && goal.querySelector('.goal-count');
+    if (!goal || !badge) return;
+    const m = badge.textContent.match(/(\d+)\s*of\s*(\d+)/);
+    if (!m) return;
+    const x = +m[1], y = +m[2], pct = y ? Math.round(x / y * 100) : 0;
+    badge.textContent = `${x} of ${y} · ${pct}%`;
+    if (!card.querySelector('.goal-bar')) {
+      const wrap = document.createElement('div'); wrap.className = 'goal-bar';
+      const fill = document.createElement('div'); fill.className = 'goal-bar-fill' + (pct === 0 ? ' gb-zero' : '');
+      fill.style.width = pct + '%';
+      wrap.appendChild(fill);
+      goal.insertAdjacentElement('afterend', wrap);
+    }
+  });
+}
+applyGoalBars();
+
+refresh();
+setInterval(refresh, CONFIG.refreshMs);
+</script>
+</body>
+</html>
