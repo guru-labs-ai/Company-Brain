@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GHL Team Tracker — Sprint 48</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; min-height: 100vh; }
+
+    .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+    .header .subtitle { font-size: 13px; color: #64748b; margin-top: 3px; }
+    .sprint-tag { display: inline-block; background: #1e1b4b; border: 1px solid #4338ca44; color: #818cf8; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-left: 8px; letter-spacing: 0.4px; vertical-align: middle; }
+    .updated { font-size: 12px; color: #475569; background: #1e2433; padding: 6px 12px; border-radius: 20px; white-space: nowrap; }
+
+    .notice { background: #0f1a10; border: 1px solid #16653444; border-left: 3px solid #34d399; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px; }
+    .notice-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+    .notice-text { font-size: 12.5px; color: #94a3b8; line-height: 1.5; }
+    .notice-text strong { color: #34d399; }
+
+    .summary-bar { background: #1a1f2e; border: 1px solid #2a3148; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+    .summary-item { text-align: center; }
+    .summary-value { font-size: 26px; font-weight: 700; }
+    .summary-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+    .s-total .summary-value { color: #a78bfa; }
+    .s-done .summary-value { color: #34d399; }
+    .s-active .summary-value { color: #f59e0b; }
+    .s-overdue .summary-value { color: #f87171; }
+    .s-est .summary-value { color: #60a5fa; }
+    .summary-divider { width: 1px; height: 40px; background: #2a3148; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 28px; }
+
+    .card { background: #1a1f2e; border: 1px solid #2a3148; border-radius: 14px; padding: 20px; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+    .name-block { margin-left: 12px; flex: 1; }
+    .name-block .name { font-size: 15px; font-weight: 600; color: #f1f5f9; }
+    .name-block .role { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .contracted-badge { font-size: 11px; background: #0f1117; border: 1px solid #2a3148; color: #94a3b8; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 14px; }
+    .stat { background: #0f1117; border-radius: 8px; padding: 8px 6px; text-align: center; }
+    .stat-val { font-size: 18px; font-weight: 700; }
+    .stat-lbl { font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+    .stat.done .stat-val { color: #34d399; }
+    .stat.progress .stat-val { color: #f59e0b; }
+    .stat.review .stat-val { color: #60a5fa; }
+    .stat.open .stat-val { color: #818cf8; }
+    .stat.overdue .stat-val { color: #f87171; }
+
+    .est-row { background: #0f1117; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .est-label { font-size: 11px; color: #64748b; }
+    .est-value { font-size: 14px; font-weight: 700; color: #60a5fa; }
+    .est-tasks { font-size: 11px; color: #475569; margin-left: 6px; }
+    .est-none { color: #475569; font-style: italic; }
+
+    .recent-label { font-size: 10px; color: #475569; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .recent-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-top: 1px solid #1e2433; }
+    .recent-item:first-of-type { border-top: none; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .dot-done { background: #34d399; }
+    .dot-progress { background: #f59e0b; }
+    .dot-review { background: #60a5fa; }
+    .dot-open { background: #818cf8; }
+    .dot-other { background: #475569; }
+    .recent-name { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+
+    .flag-btn { margin-top: 14px; width: 100%; padding: 8px; background: transparent; border: 1px solid #f8717133; color: #f87171; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .flag-btn:hover { background: #f8717115; }
+
+    /* Slack section */
+    .slack-section { background: #1a1f2e; border: 1px solid #2a3148; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .slack-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .slack-icon { width: 32px; height: 32px; border-radius: 8px; background: #4a154b; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .slack-title { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+    .slack-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .slack-feed { display: flex; flex-direction: column; gap: 10px; }
+    .slack-item { background: #0f1117; border-radius: 10px; padding: 12px 14px; border-left: 3px solid #2a3148; }
+    .slack-item.critical { border-left-color: #f87171; }
+    .slack-item.warning  { border-left-color: #f59e0b; }
+    .slack-item.success  { border-left-color: #34d399; }
+    .slack-item.info     { border-left-color: #60a5fa; }
+    .slack-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+    .slack-date { font-size: 10px; color: #475569; }
+    .slack-who { font-size: 11px; font-weight: 700; color: #94a3b8; }
+    .slack-dot { width: 4px; height: 4px; border-radius: 50%; background: #2a3148; }
+    .slack-body { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+    .slack-body strong { color: #e2e8f0; }
+    .slack-pill { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+    .pill-red    { background: #f8717122; color: #f87171; }
+    .pill-yellow { background: #f59e0b22; color: #f59e0b; }
+    .pill-green  { background: #34d39922; color: #34d399; }
+    .pill-blue   { background: #60a5fa22; color: #60a5fa; }
+
+    .loading { text-align: center; padding: 60px; color: #475569; }
+    .error-msg { background: #1a0f0f; border: 1px solid #f8717133; border-radius: 10px; padding: 16px; color: #f87171; font-size: 13px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>GHL Team Tracker <span class="sprint-tag">Sprint 48</span></h1>
+    <div class="subtitle">GHL Team · PM: Abdul Rehman · Jun 29 – Jul 5, 2026</div>
+  </div>
+  <div class="updated" id="updated">Loading…</div>
+</div>
+
+<div class="notice">
+  <div class="notice-icon">✅</div>
+  <div class="notice-text">
+    <strong>Tracker reactivated June 10, 2026.</strong> Now tracking the current GHL team under Abdul Rehman (GHL PM + Sprint Planning Lead).
+    Hours reflect ClickUp time estimates; tasks with no estimate are counted but show 0h.
+  </div>
+</div>
+
+<div class="summary-bar" id="summary-bar">
+  <div class="loading">Loading team data…</div>
+</div>
+
+<div id="capacity-watch"></div>
+
+<div class="grid" id="grid"></div>
+
+<!-- Slack #funnels highlights -->
+<div class="slack-section">
+  <div class="slack-header">
+    <div class="slack-icon">💬</div>
+    <div>
+      <div class="slack-title">#funnels + GHL — Sprint 48 Highlights</div>
+      <div class="slack-sub">Key updates from Slack &middot; last synced July 1, 2026</div>
+    </div>
+  </div>
+  <div class="slack-feed">
+        <!-- SLACK-FEED-START -->
+    <div class="slack-item critical">
+      <div class="slack-meta">
+        <span class="slack-who">Bilal (QA) &rarr; #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jun 30, 2026</span>
+        <span class="slack-pill pill-red">QA Issue</span>
+      </div>
+      <div class="slack-body"><strong>Audos Webinar: new UX issue logged &mdash; redundant &ldquo;SAVE MY SEAT&rdquo; sticky header button on the registration page should switch to a &ldquo;Back to Home&rdquo; escape route</strong>, since the user is already on the sign-up card. <a href="https://app.clickup.com/t/90132046592/86aja3rxx" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a></div>
+    </div>
+
+    <div class="slack-item warning">
+      <div class="slack-meta">
+        <span class="slack-who">Mariam &rarr; #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jun 30, 2026</span>
+        <span class="slack-pill pill-yellow">Process Reminder</span>
+      </div>
+      <div class="slack-body"><strong>ClickUp standards are now mandatory (per Matt): add a time estimate, tag every task, and log actual hours + deliverable link after completion.</strong> Sprint 48 opened with only ~1 in 3 tasks estimated and half without tags. Deliverables must live in ClickUp Docs or company Google files &mdash; not personal drives.</div>
+    </div>
+
+    <div class="slack-item critical">
+      <div class="slack-meta">
+        <span class="slack-who">Bilal (QA) &rarr; #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jun 29, 2026</span>
+        <span class="slack-pill pill-red">9 Issues Logged</span>
+      </div>
+      <div class="slack-body"><strong>Guru Labs Webinar initial audit complete: 9 issues across 3 severity tiers.</strong> Critical blockers: Header Logo 404, broken countdown timer on booking page, NXDOMAIN referral links on Thank You page. Compliance risk: TCPA &mdash; SMS opt-in checkboxes not enforced, allowing registration without consent. Backend integrations (email, SMS, GHL workflows) still pending dev deploy. <a href="https://app.clickup.com/t/90132046592/86aj9h71v" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a> <a href="https://app.clickup.com/t/90132046592/86aj9hvtp" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#2</a> <a href="https://app.clickup.com/t/90132046592/86aj9hx56" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#3</a></div>
+    </div>
+
+    <div class="slack-item info">
+      <div class="slack-meta">
+        <span class="slack-who">Mariam &rarr; #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jun 29, 2026</span>
+        <span class="slack-pill pill-blue">Action Required</span>
+      </div>
+      <div class="slack-body"><strong>Sprint 48 Planning / Review / Retrospective doc is open &mdash; all team members need to fill it in this week.</strong> <a href="https://app.clickup.com/90132046592/v/dc/2ky4krr0-21073/2ky4krr0-22793" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">Sprint Doc</a></div>
+    </div>
+    <!-- SLACK-FEED-END -->
+  </div>
+</div>
+
+<script>
+const API_KEY = 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH';
+const TEAM_ID = '90132046592';
+const SPRINT_LABEL = 'Sprint 48';
+
+const CONTRACTORS = [
+  { id: 88819194,  name: 'Abdul Rehman',       initials: 'AR', color: '#6366f1', contracted: 'PM',      role: 'GHL PM · Sprint Lead · Tech Ops', slack_hours: [] },
+  { id: 118030756, name: 'Muhammad Hamza',     initials: 'MH', color: '#0f9d9f', contracted: '15h/wk', role: 'GHL Engineer', slack_hours: [] },
+  { id: 63026775,  name: 'Annus Irfan',        initials: 'AI', color: '#ea80fc', contracted: '10h/wk', role: 'GHL Engineer', slack_hours: [] },
+  { id: 296679871, name: 'Muhammad Mubashir',  initials: 'MM', color: '#38bdf8', contracted: '—',      role: 'Full-Stack / ML Eng', slack_hours: [] },
+  { id: 118028211, name: 'Cielo Marie Robles', initials: 'CR', color: '#c51162', contracted: '20h/wk', role: 'Designer', slack_hours: [] },
+  { id: 118039047, name: 'Bilal Ghaffar',      initials: 'BG', color: '#0388d1', contracted: '—',      role: 'QA', slack_hours: [] },
+  { id: 89285313,  name: 'Muhammad Imran',     initials: 'MI', color: '#795548', contracted: '20h/wk', role: 'GHL Engineer', slack_hours: [], note: 'Staying on the team (confirmed June 12). Current scope: .ics calendar bug, SMS confirmation fixes, AEvents evergreen webinar.' },
+];
+
+// Load status from ACTIONABLE tasks (to-do + in-progress) — excludes review/done/blocked,
+// which are not work the person can actively push. This is the honest "do they have enough?" signal.
+function loadStatus(actionable) {
+  if (actionable === 0) return { key: 'idle',    label: '🔴 Needs work',  color: '#f87171' };
+  if (actionable <= 2)  return { key: 'light',   label: '🟠 Light',       color: '#f59e0b' };
+  if (actionable <= 7)  return { key: 'healthy', label: '🟢 Healthy',     color: '#34d399' };
+  return                      { key: 'heavy',   label: '🟣 Heavy load',  color: '#a78bfa' };
+}
+
+function statusClass(s) {
+  s = s.toLowerCase();
+  if (s.includes('complete') || s.includes('done') || s.includes('closed')) return 'done';
+  if (s.includes('review')) return 'review';
+  if (s.includes('progress') || s.includes('active')) return 'progress';
+  return 'open';
+}
+
+function dotClass(s) {
+  return `dot-${statusClass(s)}`;
+}
+
+async function fetchAllTasks() {
+  const ids = CONTRACTORS.map(c => c.id);
+  let allTasks = [];
+  let page = 0;
+  while (true) {
+    const params = ids.map(id => `assignees[]=${id}`).join('&');
+    const url = `https://api.clickup.com/api/v2/team/${TEAM_ID}/task?${params}&include_closed=true&subtasks=true&page=${page}`;
+    const res = await fetch(url, { headers: { 'Authorization': API_KEY } });
+    const data = await res.json();
+    const tasks = data.tasks || [];
+    if (!tasks.length) break;
+    allTasks = allTasks.concat(tasks);
+    if (tasks.length < 100) break;
+    page++;
+  }
+  // Filter to current sprint only
+  return allTasks.filter(t => (t.list?.name || '').includes(SPRINT_LABEL));
+}
+
+function buildStats(tasks) {
+  const now = Date.now();
+  const stats = {};
+  CONTRACTORS.forEach(c => {
+    stats[c.id] = { open: 0, progress: 0, review: 0, done: 0, blocked: 0, overdue: 0, est_ms: 0, with_est: 0, spent_ms: 0, with_spent: 0, total: 0, recent: [] };
+  });
+
+  tasks.forEach(t => {
+    const status = t.status?.status || '';
+    const sc = statusClass(status);
+    const isBlocked = /blocked|on hold/.test(status.toLowerCase());
+    const due = t.due_date ? parseInt(t.due_date) : null;
+    const est = t.time_estimate ? parseInt(t.time_estimate) : 0;
+    const spent = t.time_spent ? parseInt(t.time_spent) : 0;
+
+    t.assignees?.forEach(a => {
+      if (!stats[a.id]) return;
+      const s = stats[a.id];
+      s.total++;
+      s[sc]++;
+      if (isBlocked) s.blocked++; // blocked/on-hold land in 'open' via statusClass; track separately so they don't count as actionable
+      if (due && due < now && sc !== 'done') s.overdue++;
+      if (est) { s.est_ms += est; s.with_est++; }
+      if (spent) { s.spent_ms += spent; s.with_spent++; }
+      if (s.recent.length < 5) s.recent.push({ name: t.name, status });
+    });
+  });
+  return stats;
+}
+
+function renderSummary(stats, tasks) {
+  // Count each task ONCE — shared assignments must not inflate the totals
+  const now = Date.now();
+  let total = 0, done = 0, active = 0, overdue = 0, est_ms = 0, with_est = 0;
+  tasks.forEach(t => {
+    const sc = statusClass(t.status?.status || '');
+    total++;
+    if (sc === 'done') done++;
+    if (sc === 'progress' || sc === 'review') active++;
+    const due = t.due_date ? parseInt(t.due_date) : null;
+    if (due && due < now && sc !== 'done') overdue++;
+    if (t.time_estimate) { est_ms += parseInt(t.time_estimate); with_est++; }
+  });
+  const est_h = (est_ms / 3600000).toFixed(1);
+  document.getElementById('summary-bar').innerHTML = `
+    <div class="summary-item s-total"><div class="summary-value">${total}</div><div class="summary-label">${SPRINT_LABEL} Tasks</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-item s-done"><div class="summary-value">${done}</div><div class="summary-label">Done</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-item s-active"><div class="summary-value">${active}</div><div class="summary-label">In Progress / Review</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-item s-overdue"><div class="summary-value">${overdue}</div><div class="summary-label">Overdue</div></div>
+    <div class="summary-divider"></div>
+    ${(() => {
+      const coverage = total > 0 ? with_est / total : 0;
+      if (coverage >= 0.8) {
+        return `<div class="summary-item s-est"><div class="summary-value">${est_h}h</div><div class="summary-label">Est. Hours (${with_est}/${total} tasks)</div></div>`;
+      }
+      return `<div class="summary-item s-est"><div class="summary-value" style="color:#f87171;font-size:18px;">⚠ No reliable data</div><div class="summary-label">Only ${with_est}/${total} tasks have estimates (${Math.round(coverage*100)}%) — ${est_h}h known, rest unestimated</div></div>`;
+    })()}
+  `;
+}
+
+function renderCapacityWatch(stats) {
+  // Actionable = to-do + in-progress. Flag anyone under-fed (≤2) and anyone overloaded (8+).
+  const rows = CONTRACTORS
+    .filter(c => c.role !== 'QA' && c.role !== 'Designer') // engineers/PM only — the capacity question
+    .map(c => {
+      const s = stats[c.id] || { open:0, progress:0, review:0, blocked:0 };
+      const actionable = s.progress + Math.max(0, s.open - s.blocked);
+      return { name: c.name, actionable, review: s.review, blocked: s.blocked, load: loadStatus(actionable) };
+    });
+  const light = rows.filter(r => r.actionable <= 2).sort((a,b) => a.actionable - b.actionable);
+  const heavy = rows.filter(r => r.actionable >= 8);
+
+  let inner = '';
+  if (light.length) {
+    inner += light.map(r => {
+      const rev = r.review ? ` <span style="color:#60a5fa;">(${r.review} in review)</span>` : '';
+      const blk = r.blocked ? ` <span style="color:#f87171;">(${r.blocked} blocked)</span>` : '';
+      return `<span style="display:inline-block;background:${r.load.color}18;border:1px solid ${r.load.color}44;border-radius:8px;padding:6px 12px;margin:4px 6px 4px 0;font-size:12.5px;color:#e2e8f0;"><strong>${r.name}</strong> — ${r.load.label.replace(/^[^ ]+ /,'')} · ${r.actionable} actionable${rev}${blk}</span>`;
+    }).join('');
+  }
+  let heavyLine = heavy.length
+    ? `<div style="font-size:12px;color:#a78bfa;margin-top:10px;">🟣 Overloaded: ${heavy.map(r => `<strong>${r.name}</strong> (${r.actionable})`).join(', ')} — likely a bottleneck; check for blockers to redistribute.</div>`
+    : '';
+
+  const box = document.getElementById('capacity-watch');
+  if (!light.length && !heavy.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div style="background:#160f1a;border:1px solid #f8717133;border-left:3px solid #f87171;border-radius:12px;padding:14px 18px;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:700;color:#f87171;margin-bottom:8px;">⚠️ Capacity Watch — engineers who may need more work this sprint</div>
+      <div>${inner || '<span style="color:#34d399;font-size:12.5px;">All engineers have a healthy actionable queue.</span>'}</div>
+      ${heavyLine}
+      <div style="font-size:11px;color:#64748b;margin-top:10px;line-height:1.5;">"Actionable" = to-do + in-progress tasks in ${SPRINT_LABEL} (excludes review/done/blocked — those aren't work they can push). Sprint-only view: backlog work they could pull is not counted here.</div>
+    </div>`;
+}
+
+function renderCards(stats) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  CONTRACTORS.forEach(c => {
+    const s = stats[c.id] || { open:0,progress:0,review:0,done:0,blocked:0,overdue:0,est_ms:0,with_est:0,total:0,recent:[] };
+    const actionable = s.progress + Math.max(0, s.open - s.blocked);
+    const load = loadStatus(actionable);
+    const est_h = s.est_ms / 3600000;
+    const slack_h = (c.slack_hours || []).reduce((sum, e) => sum + e.h, 0);
+    const total_h = est_h + slack_h;
+    const has_any = total_h > 0;
+
+    const recentHTML = s.recent.length ? s.recent.map(r => `
+      <div class="recent-item">
+        <div class="status-dot ${dotClass(r.status)}"></div>
+        <div class="recent-name">${r.name.substring(0, 65)}${r.name.length > 65 ? '…' : ''}</div>
+      </div>
+    `).join('') : `<div style="font-size:12px;color:#475569;padding:6px 0;">No ${SPRINT_LABEL} tasks found</div>`;
+
+    const estDetail = s.with_est > 0
+      ? `<span class="est-value">${total_h.toFixed(1)}h</span><span class="est-tasks">(${s.with_est} task${s.with_est !== 1 ? 's' : ''} with est.)</span>`
+      : `<span class="est-value est-none">—</span>`;
+
+    grid.innerHTML += `
+      <div class="card">
+        <div class="card-header">
+          <div class="avatar" style="background:${c.color}22;color:${c.color}">${c.initials}</div>
+          <div class="name-block">
+            <div class="name">${c.name}</div>
+            <div class="role">${c.role || 'GHL Team'}</div>
+          </div>
+          <div class="contracted-badge">${c.contracted}</div>
+        </div>
+
+        <div class="load-row" style="display:flex;align-items:center;justify-content:space-between;background:${load.color}14;border:1px solid ${load.color}33;border-radius:8px;padding:8px 12px;margin-bottom:14px;">
+          <span style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;">Workload</span>
+          <span style="font-size:12.5px;font-weight:700;color:${load.color};">${load.label} · ${actionable} actionable</span>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat done"><div class="stat-val">${s.done}</div><div class="stat-lbl">Done</div></div>
+          <div class="stat progress"><div class="stat-val">${s.progress}</div><div class="stat-lbl">Active</div></div>
+          <div class="stat review"><div class="stat-val">${s.review}</div><div class="stat-lbl">Review</div></div>
+          <div class="stat open"><div class="stat-val">${s.open}</div><div class="stat-lbl">Open</div></div>
+          <div class="stat overdue"><div class="stat-val">${s.overdue}</div><div class="stat-lbl">Overdue</div></div>
+        </div>
+
+        <div class="est-row">
+          <span class="est-label">Est. Hours (${SPRINT_LABEL})</span>
+          <span>${estDetail}</span>
+        </div>
+
+        <div class="recent-label">${SPRINT_LABEL} Tasks</div>
+        ${recentHTML}
+
+        ${c.note ? `<div style="margin-top:12px;background:#1a1a0f;border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:9px 12px;font-size:11.5px;color:#94a3b8;line-height:1.5;"><strong style="color:#f59e0b;">Note:</strong> ${c.note}</div>` : ''}
+        <button class="flag-btn" onclick="flag('${c.name}')">🚩 Flag for Abdul</button>
+      </div>
+    `;
+  });
+}
+
+function flag(name) {
+  alert(`Flag raised for ${name}.\n\nCopy this to Abdul in Slack:\n"⚠️ Flag: ${name} — please review their ${SPRINT_LABEL} task progress."`);
+}
+
+async function init() {
+  try {
+    const tasks = await fetchAllTasks();
+    const stats = buildStats(tasks);
+    renderSummary(stats, tasks);
+    renderCapacityWatch(stats);
+    renderCards(stats);
+    document.getElementById('updated').textContent = 'Updated ' + new Date().toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  } catch(e) {
+    document.getElementById('summary-bar').innerHTML = `<div class="error-msg">Error loading data: ${e.message}</div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
+
