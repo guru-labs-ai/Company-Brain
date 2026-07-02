@@ -433,14 +433,18 @@ async function flag(name) {
   // Creates a real ClickUp task in the current sprint, assigned to Abdul (GHL PM), so the
   // flag is notified, visible and tracked — not a copy-paste popup.
   if (!SPRINT_LIST_ID) { alert('Still loading sprint data — try again in a few seconds.'); return; }
-  if (!confirm(`Flag ${name} for Abdul?\n\nThis creates a ClickUp task assigned to Abdul asking him to review ${name}'s ${SPRINT_LABEL} progress.`)) return;
+  // Ask who's flagging — the API key belongs to Mariam, so without this every flag would
+  // read "assigned by Mariam" even when Matt clicks it. Attribution goes in the title.
+  let who = prompt(`Flag ${name} for Abdul?\n\nThis creates a ClickUp task assigned to Abdul asking him to review ${name}'s ${SPRINT_LABEL} progress.\n\nYour name (so Abdul knows who's asking):`, 'Matt');
+  if (who === null) return; // cancelled
+  who = (who || '').trim() || 'the dashboard';
   try {
     const res = await fetch(`https://api.clickup.com/api/v2/list/${SPRINT_LIST_ID}/task`, {
       method: 'POST',
       headers: { 'Authorization': API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: `🚩 Dashboard flag: review ${name}'s ${SPRINT_LABEL} progress`,
-        description: `Raised from the GHL Team Tracker dashboard on ${new Date().toUTCString()}.\n\nSomeone (likely Matt or Mariam) flagged ${name}'s ${SPRINT_LABEL} workload/progress for review. Check their task statuses, blockers and estimates, then close this flag with a short note on what you found.`,
+        name: `🚩 Flag from ${who}: review ${name}'s ${SPRINT_LABEL} progress`,
+        description: `Raised by ${who} from the GHL Team Tracker dashboard on ${new Date().toUTCString()}.\n\nReview ${name}'s ${SPRINT_LABEL} workload/progress: task statuses, blockers and estimates. Close this flag with a short note on what you found.\n\n(Note: the task shows Mariam as creator because the dashboard uses her API key — the actual flagger is ${who}.)`,
         assignees: [88819194], // Abdul Rehman — GHL PM
         priority: 2,
         tags: ['operation']
