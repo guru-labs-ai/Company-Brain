@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guru Labs — 2-Week Sprint Report | Jun 8–21, 2026</title>
+  <title>Guru Labs — 2-Week Sprint Report | Jun 15–28, 2026</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0d14; color: #e2e8f0; padding: 28px 32px; min-height: 100vh; }
@@ -82,6 +82,14 @@
     .goal-count { flex-shrink: 0; font-size: 11px; font-weight: 800; color: #c4b5fd; background: #1a1333; border: 1px solid #4c1d95; border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
     .goal-count.gc-zero { color: #93c5fd; background: #0c1a2e; border-color: #1e3a5f; }
     .goal-count.gc-done { color: #6ee7b7; background: #0f2419; border-color: #166534; }
+    /* 🚀 To-launch layer (Matt, Jun 22 call): % to LAUNCH per version — the number Matt watches. Resets each version (V1→V2). */
+    .prod-launch { background: #0f1a10; border: 1px solid #16653444; border-radius: 8px; padding: 8px 11px; margin-bottom: 8px; }
+    .prod-launch .pl-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 5px; }
+    .prod-launch .pl-pct { font-size: 13px; font-weight: 800; color: #34d399; white-space: nowrap; }
+    .prod-launch .pl-bar { height: 6px; background: #1e2433; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+    .prod-launch .pl-fill { height: 100%; background: linear-gradient(90deg, #059669, #34d399); border-radius: 4px; }
+    .prod-launch .pl-left { font-size: 10.5px; color: #94a3b8; line-height: 1.4; }
+    .prod-launch .pl-left b { color: #cbd5e1; }
     .goal-bar { background: #0f1117; border-radius: 20px; height: 5px; overflow: hidden; margin: 0 0 12px; }
     .goal-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #6366f1, #a78bfa); transition: width .8s ease; }
     .goal-bar-fill.gb-zero { background: #1e3a5f; }
@@ -162,7 +170,7 @@
 <div class="header">
   <div class="header-left">
     <h1>Guru Labs — 2-Week Sprint Report</h1>
-    <div class="sub">Sprint 45 + Sprint 46 &nbsp;·&nbsp; Jun 8–21, 2026 &nbsp;·&nbsp; For Matt &nbsp;·&nbsp; <span class="live-dot"></span><span id="last-updated" style="color:#34d399;font-size:12px">Loading live data…</span></div>
+    <div class="sub">Sprint 46 + Sprint 47 &nbsp;·&nbsp; Jun 15–28, 2026 &nbsp;·&nbsp; For Matt &nbsp;·&nbsp; <span class="live-dot"></span><span id="last-updated" style="color:#34d399;font-size:12px">Loading live data…</span></div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
     <div class="report-badge">PORTFOLIO + SPRINT VIEW</div>
@@ -199,7 +207,7 @@
 </div>
 
 <!-- KPI BAR -->
-<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 45 (closed) + Sprint 46 (active)</span></div>
+<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 46 (closed) + Sprint 47 (active)</span></div>
 <div class="kpi-row">
   <div class="kpi-card">
     <div class="kpi-val kv-purple" id="kpi-tasks">—</div>
@@ -219,7 +227,7 @@
   <div class="kpi-card">
     <div class="kpi-val kv-pink" id="kpi-curpct">—</div>
     <div class="kpi-label">S46 Completion</div>
-    <div class="kpi-sub" id="kpi-cursub">Sprint 46 progress</div>
+    <div class="kpi-sub" id="kpi-cursub">Sprint 47 progress</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-val kv-blue" id="kpi-contributors">—</div>
@@ -251,7 +259,7 @@
 
   <div class="sprint-card s45">
     <div class="sc-top">
-      <div><div class="sc-title">Sprint 45</div><div class="sc-dates">Jun 8 – Jun 14, 2026</div></div>
+      <div><div class="sc-title">Sprint 46</div><div class="sc-dates">Jun 15 – Jun 21, 2026</div></div>
       <div class="sc-badge badge-done" id="s45-badge">CLOSED · —</div>
     </div>
     <div class="sc-stats">
@@ -263,14 +271,14 @@
     <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s45-bar" style="width:0%;background:linear-gradient(90deg,#34d399,#10b981)"></div></div>
     <div class="sc-bar-meta"><span id="s45-total">— total tasks</span><span style="color:#34d399;font-weight:700" id="s45-pct">—% complete</span></div>
     <div class="sc-focus">
-      <div class="sc-focus-item"><div class="dot6" style="background:#34d399"></div>Closed sprint — AI Sponsor landing/registration/chat live; DRM scoring + feedback shipped; webinar funnel groundwork.</div>
-      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>Smaller sprint (cleanup + handoffs) feeding the larger Sprint 46 build queue.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#34d399"></div>AI Sponsor build sprint — backend, beta-ready push, security &amp; privacy; landing overhaul + annual plan live.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>Repos → company GitHub + Namecheap domain migration; KPI scoreboard + product docs stood up.</div>
     </div>
   </div>
 
   <div class="sprint-card s46">
     <div class="sc-top">
-      <div><div class="sc-title">Sprint 46</div><div class="sc-dates">Jun 15 – Jun 21, 2026 · current</div></div>
+      <div><div class="sc-title">Sprint 47</div><div class="sc-dates">Jun 22 – Jun 28, 2026 · current</div></div>
       <div class="sc-badge badge-live" id="s46-badge">ACTIVE · —</div>
     </div>
     <div class="sc-stats">
@@ -282,10 +290,10 @@
     <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s46-bar" style="width:0%;background:linear-gradient(90deg,#6366f1,#a78bfa)"></div></div>
     <div class="sc-bar-meta"><span id="s46-total">— total tasks</span><span style="color:#a78bfa;font-weight:700" id="s46-pct">—% done</span></div>
     <div class="sc-focus">
-      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>AI Sponsor — backend deploy to live server (Mariam + Mubashir); beta-ready push; security & privacy.</div>
-      <div class="sc-focus-item"><div class="dot6" style="background:#f59e0b"></div>Audos Webinar — Imran heavy: .ics, replay emails, AEvents evergreen, SMS + redirect fixes.</div>
-      <div class="sc-focus-item"><div class="dot6" style="background:#ec4899"></div>DRM — mobile dashboard, calendar/booking branding, AI Assistant image bug (blocked).</div>
-      <div class="sc-focus-item"><div class="dot6" style="background:#10b981"></div>Repos → company GitHub + Namecheap domain migration in progress (Abdul, Raja, Asif, Mubashir).</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#60a5fa"></div>AI Sponsor — beta launch (3-month code), beta users → GHL w/ UTMs, AEO/GEO research, Stripe + WhatsApp number.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#a78bfa"></div>New Labs products for Audos Marketplace — VibeStabilizer.ai (Raja) + Hyros API product (Mariam); other agentic products → GitHub.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#f59e0b"></div>Analytics — unified AI loop: Clarity + GHL + GA + Hyros → AI insights → automated product improvements.</div>
+      <div class="sc-focus-item"><div class="dot6" style="background:#10b981"></div>Time-tracking SOP now company-wide (untracked = unpaid); tag + estimate compliance push.</div>
     </div>
   </div>
 
@@ -306,6 +314,11 @@
       <span class="prod-status-chip chip-green">🟢 Live</span>
     </div>
     <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Launch + first 10 paid customers</span><span class="goal-count">3 of 6 ✓</span></div>
+    <div class="prod-launch">
+      <div class="pl-top"><span>🚀 To V1 launch</span><span class="pl-pct">~90%</span></div>
+      <div class="pl-bar"><div class="pl-fill" style="width:90%"></div></div>
+      <div class="pl-left"><b>Left:</b> P1 link blockers · Stripe sandbox test (blocked on Audos) · analytics pixels · ad copies</div>
+    </div>
     <div class="prod-bullets">
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>V1 features live — scoring, leaderboard, post-date feedback</div>
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Stripe billing fixed to "DRM"</div>
@@ -327,6 +340,11 @@
       <span class="prod-status-chip chip-yellow">🟡 Building</span>
     </div>
     <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Beta launch (85 users) + WhatsApp live</span><span class="goal-count">2 of 6 ✓</span></div>
+    <div class="prod-launch">
+      <div class="pl-top"><span>🚀 To V1 (beta) launch</span><span class="pl-pct">~85%</span></div>
+      <div class="pl-bar"><div class="pl-fill" style="width:85%"></div></div>
+      <div class="pl-left"><b>Left:</b> WhatsApp number registration (blocked on Meta access) · import 59 beta contacts to GHL</div>
+    </div>
     <div class="prod-bullets">
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Live on getaisponsor.com — landing + 9-screen onboarding + working chat</div>
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Repo in company GitHub (guru-labs-ai)</div>
@@ -369,6 +387,11 @@
       <span class="prod-status-chip chip-yellow">🟡 Building</span>
     </div>
     <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> HT funnel selling ($25K ticket)</span><span class="goal-count">2 of 6 ✓</span></div>
+    <div class="prod-launch">
+      <div class="pl-top"><span>🚀 To V1 launch</span><span class="pl-pct">~95%</span></div>
+      <div class="pl-bar"><div class="pl-fill" style="width:95%"></div></div>
+      <div class="pl-left"><b>Left:</b> checkout + thank-you page fix · workshop email automation (needs format + date)</div>
+    </div>
     <div class="prod-bullets">
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>Funnel live — applications incoming</div>
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>AI Happy Hour CDMX + Hackathon site shipped</div>
@@ -390,6 +413,11 @@
       <span class="prod-status-chip chip-yellow">🟡 Building</span>
     </div>
     <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> Full launch + 15 paid</span><span class="goal-count">1 of 6 ✓</span></div>
+    <div class="prod-launch">
+      <div class="pl-top"><span>🚀 To V1 (MVP) launch</span><span class="pl-pct">~80%</span></div>
+      <div class="pl-bar"><div class="pl-fill" style="width:80%"></div></div>
+      <div class="pl-left"><b>Left:</b> Polsia/API platform issue (escalated, credits refunded) · Tribe config · SEO meta + icons</div>
+    </div>
     <div class="prod-bullets">
       <div class="prod-bullet"><span class="pb-icon pb-done">✓</span>PM onboarded + market/competitor research + Harmoni 32-bug audit</div>
       <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>REKIN AI build + explore (Asif)</div>
@@ -487,6 +515,11 @@
       <span class="prod-status-chip chip-yellow">🟡 Building</span>
     </div>
     <div class="prod-goal"><span class="gtxt">🎯 <b>Goal:</b> LT offer live + selling</span><span class="goal-count gc-zero">0 of 4 ✓</span></div>
+    <div class="prod-launch">
+      <div class="pl-top"><span>🚀 To V1 launch</span><span class="pl-pct" style="color:#f59e0b">~20%</span></div>
+      <div class="pl-bar"><div class="pl-fill" style="width:20%;background:linear-gradient(90deg,#b45309,#f59e0b)"></div></div>
+      <div class="pl-left"><b>Left:</b> design finalization (awaiting Matt's approval) → Annus + Hamza build funnel · domain + FB page · ads</div>
+    </div>
     <div class="prod-bullets">
       <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Offer creation + V2 (Loom feedback) (Cielo)</div>
       <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>Meta ads pipeline (Hamza)</div>
@@ -530,7 +563,7 @@
       <div class="prod-bullet"><span class="pb-icon pb-prog">⟳</span>mattcrowe.com + kampercrowe.com build (Cielo)</div>
       <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>prybar.vc</div>
       <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>Tanya branding iteration (~8 wks)</div>
-      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>YouTube + social live (Ivona)</div>
+      <div class="prod-bullet"><span class="pb-icon pb-todo">○</span>YouTube + social live <span style="color:#f59e0b">(owner TBD — Ivona departed)</span></div>
     </div>
   </div>
 
@@ -598,7 +631,7 @@
 </div>
 
 <!-- PEOPLE -->
-<div class="section-title st-green">Per-Person Velocity — Sprint 46 (Live)</div>
+<div class="section-title st-green">Per-Person Velocity — Sprint 47 (Live)</div>
 <div class="person-grid">
 
   <div class="person-card all-done">
@@ -713,17 +746,6 @@
 
   <div class="person-card">
     <div class="pc-top">
-      <div class="pc-avatar" style="background:#a855f7">IV</div>
-      <div><div class="pc-name">Ivona</div><div class="pc-role">Marketing, Brand, Events &amp; Admin</div></div>
-    </div>
-    <div class="pc-pills" id="pills-ivona">
-      <span class="pill pill-d">2 done</span><span class="pill pill-g">3 total</span>
-    </div>
-    <div class="pc-summary"><strong>S46:</strong> Matt Crowe YouTube + social strategy; merch order; reporter + researcher outreach blocked pending Matt. Marketing + brand support across products.</div>
-  </div>
-
-  <div class="person-card">
-    <div class="pc-top">
       <div class="pc-avatar" style="background:#f59e0b">AD</div>
       <div><div class="pc-name">Adaeze Udogu</div><div class="pc-role">VA — Research &amp; Admin (40 hrs/wk)</div></div>
     </div>
@@ -768,7 +790,7 @@
   <div class="blocker-item">
     <div class="bi-title">2. Outreach — Reporters + Researcher (Waiting on Matt)</div>
     <div class="bi-detail">Family-estrangement reporter outreach and the Lucy researcher outreach are both blocked pending Matt's input. Feeds Rekindle PR + credibility.</div>
-    <div class="bi-meta">Action: Matt to unblock · Owners: Matt / Ivona</div>
+    <div class="bi-meta">Action: Matt to unblock · Owner: Matt (Ivona departed — reassign)</div>
   </div>
   <div class="blocker-item">
     <div class="bi-title">3. Audos Black — Workshop Email Automation Sequence</div>
@@ -789,17 +811,17 @@
 
 <!-- DATA NOTE -->
 <div class="data-note">
-  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 45 closed + Sprint 46 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map.
+  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 46 closed + Sprint 47 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map. The <strong>🚀 "To V1 launch" bar</strong> is the launch-readiness view Matt asked for (Jun 22 call): % to the <em>current version's launch</em> — the gate where marketing starts — with the exact remaining items listed under it. Source: PM/Matt stated estimates from the Jun 22 call, updated against sprint reality (Jul 2). It <strong>resets each version</strong> (V1 hits 100% → V2 starts at 0%), and only appears on products with a confirmed estimate.
 </div>
 
 <script>
 const CONFIG = {
-  sPrev: '901327314020',  // Sprint 45 — Jun 8–14 (closed)
-  sCur:  '901327556049',  // Sprint 46 — Jun 15–21 (active)
-  sPrevStart: new Date(Date.UTC(2026, 5, 8)),
-  sPrevEnd:   new Date(Date.UTC(2026, 5, 14)),
-  sCurStart:  new Date(Date.UTC(2026, 5, 15)),
-  sCurEnd:    new Date(Date.UTC(2026, 5, 21)),
+  sPrev: '901327556049',  // Sprint 46 — Jun 15–21 (closed)
+  sCur:  '901327613334',  // Sprint 47 — Jun 22–28 (active)
+  sPrevStart: new Date(Date.UTC(2026, 5, 15)),
+  sPrevEnd:   new Date(Date.UTC(2026, 5, 21)),
+  sCurStart:  new Date(Date.UTC(2026, 5, 22)),
+  sCurEnd:    new Date(Date.UTC(2026, 5, 28)),
   key: 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH',
   refreshMs: 600000
 };
@@ -816,7 +838,6 @@ const PEOPLE = {
   'Bilal Ghaffar':       'bilal',
   'Muhammad Mubashir':   'mubashir',
   'Annus Irfan':         'annus',
-  'Ivona':               'ivona',
   'Adaeze Udogu':        'adaeze',
   'Janielyn Regaspi':    'jan'
 };
