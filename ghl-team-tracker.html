@@ -219,11 +219,14 @@ function dotClass(s) {
 // Sprint tasks: fetch the sprint LIST directly. (The old team-endpoint fetch filtered by each
 // task's HOME list name — tasks created in product lists and ADDED to the sprint never matched,
 // so people like Cielo showed 1 task instead of 30. List endpoint = ground truth.)
+let SPRINT_LIST_ID = null; // resolved at load; used by flag() to file flags into the current sprint
+
 async function fetchSprintTasks() {
   const fRes = await fetch(`https://api.clickup.com/api/v2/folder/${SPRINT_FOLDER}/list?archived=false`, { headers: { 'Authorization': API_KEY } });
   const lists = (await fRes.json()).lists || [];
   const sprintList = lists.find(l => (l.name || '').includes(SPRINT_LABEL));
   if (!sprintList) throw new Error(`Sprint list "${SPRINT_LABEL}" not found in folder`);
+  SPRINT_LIST_ID = sprintList.id;
   let tasks = [], page = 0;
   while (true) {
     const res = await fetch(`https://api.clickup.com/api/v2/list/${sprintList.id}/task?include_closed=true&subtasks=true&page=${page}`, { headers: { 'Authorization': API_KEY } });
@@ -426,8 +429,32 @@ function renderCards(stats, other = {}) {
   });
 }
 
-function flag(name) {
-  alert(`Flag raised for ${name}.\n\nCopy this to Abdul in Slack:\n"⚠️ Flag: ${name} — please review their ${SPRINT_LABEL} task progress."`);
+async function flag(name) {
+  // Creates a real ClickUp task in the current sprint, assigned to Abdul (GHL PM), so the
+  // flag is notified, visible and tracked — not a copy-paste popup.
+  if (!SPRINT_LIST_ID) { alert('Still loading sprint data — try again in a few seconds.'); return; }
+  if (!confirm(`Flag ${name} for Abdul?\n\nThis creates a ClickUp task assigned to Abdul asking him to review ${name}'s ${SPRINT_LABEL} progress.`)) return;
+  try {
+    const res = await fetch(`https://api.clickup.com/api/v2/list/${SPRINT_LIST_ID}/task`, {
+      method: 'POST',
+      headers: { 'Authorization': API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: `🚩 Dashboard flag: review ${name}'s ${SPRINT_LABEL} progress`,
+        description: `Raised from the GHL Team Tracker dashboard on ${new Date().toUTCString()}.\n\nSomeone (likely Matt or Mariam) flagged ${name}'s ${SPRINT_LABEL} workload/progress for review. Check their task statuses, blockers and estimates, then close this flag with a short note on what you found.`,
+        assignees: [88819194], // Abdul Rehman — GHL PM
+        priority: 2,
+        tags: ['operation']
+      })
+    });
+    const data = await res.json();
+    if (data.id) {
+      alert(`✅ Flag sent.\n\nA ClickUp task was created and assigned to Abdul:\n"${data.name}"\n\nHe'll see it in his notifications and in ${SPRINT_LABEL}.`);
+    } else {
+      throw new Error(data.err || 'unexpected response');
+    }
+  } catch (e) {
+    alert(`⚠️ Could not create the flag task (${e.message}).\n\nFallback — copy this to Abdul in Slack:\n"⚠️ Flag: ${name} — please review their ${SPRINT_LABEL} task progress."`);
+  }
 }
 
 async function init() {
