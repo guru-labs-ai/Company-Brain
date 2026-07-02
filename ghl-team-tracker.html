@@ -111,7 +111,8 @@
 <div class="notice">
   <div class="notice-icon">✅</div>
   <div class="notice-text">
-    <strong>Tracker reactivated June 10, 2026.</strong> Now tracking the current GHL team under Abdul Rehman (GHL PM + Sprint Planning Lead).
+    <strong>What this counts:</strong> every task in the current sprint list — including tasks created in product lists and added to the sprint (fixed July 3; these were missing before).
+    Each card also shows <strong>“+N open outside the sprint”</strong> = that person's open backlog / product-list tasks not committed to this sprint.
     Hours reflect ClickUp time estimates; tasks with no estimate are counted but show 0h.
   </div>
 </div>
@@ -182,6 +183,7 @@
 const API_KEY = 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH';
 const TEAM_ID = '90132046592';
 const SPRINT_LABEL = 'Sprint 48';
+const SPRINT_FOLDER = '901310760791'; // Sprint & Backlogs folder — used to resolve SPRINT_LABEL → list ID at runtime
 
 const CONTRACTORS = [
   { id: 88819194,  name: 'Abdul Rehman',       initials: 'AR', color: '#6366f1', contracted: 'PM',      role: 'GHL PM · Sprint Lead · Tech Ops', slack_hours: [] },
@@ -214,23 +216,50 @@ function dotClass(s) {
   return `dot-${statusClass(s)}`;
 }
 
-async function fetchAllTasks() {
+// Sprint tasks: fetch the sprint LIST directly. (The old team-endpoint fetch filtered by each
+// task's HOME list name — tasks created in product lists and ADDED to the sprint never matched,
+// so people like Cielo showed 1 task instead of 30. List endpoint = ground truth.)
+async function fetchSprintTasks() {
+  const fRes = await fetch(`https://api.clickup.com/api/v2/folder/${SPRINT_FOLDER}/list?archived=false`, { headers: { 'Authorization': API_KEY } });
+  const lists = (await fRes.json()).lists || [];
+  const sprintList = lists.find(l => (l.name || '').includes(SPRINT_LABEL));
+  if (!sprintList) throw new Error(`Sprint list "${SPRINT_LABEL}" not found in folder`);
+  let tasks = [], page = 0;
+  while (true) {
+    const res = await fetch(`https://api.clickup.com/api/v2/list/${sprintList.id}/task?include_closed=true&subtasks=true&page=${page}`, { headers: { 'Authorization': API_KEY } });
+    const batch = (await res.json()).tasks || [];
+    if (!batch.length) break;
+    tasks = tasks.concat(batch);
+    if (batch.length < 100) break;
+    page++;
+  }
+  return tasks;
+}
+
+// Open tasks OUTSIDE the sprint (backlog / product lists) — secondary indicator per person.
+async function fetchOtherOpen(sprintIds) {
   const ids = CONTRACTORS.map(c => c.id);
   let allTasks = [];
   let page = 0;
   while (true) {
     const params = ids.map(id => `assignees[]=${id}`).join('&');
-    const url = `https://api.clickup.com/api/v2/team/${TEAM_ID}/task?${params}&include_closed=true&subtasks=true&page=${page}`;
+    const url = `https://api.clickup.com/api/v2/team/${TEAM_ID}/task?${params}&subtasks=true&page=${page}`;
     const res = await fetch(url, { headers: { 'Authorization': API_KEY } });
-    const data = await res.json();
-    const tasks = data.tasks || [];
+    const tasks = (await res.json()).tasks || [];
     if (!tasks.length) break;
     allTasks = allTasks.concat(tasks);
     if (tasks.length < 100) break;
     page++;
   }
-  // Filter to current sprint only
-  return allTasks.filter(t => (t.list?.name || '').includes(SPRINT_LABEL));
+  const other = {};
+  CONTRACTORS.forEach(c => other[c.id] = 0);
+  allTasks.forEach(t => {
+    if (sprintIds.has(t.id)) return;
+    const s = (t.status?.status || '').toLowerCase();
+    if (s.includes('done') || s.includes('closed') || s.includes('complete')) return;
+    t.assignees?.forEach(a => { if (other[a.id] !== undefined) other[a.id]++; });
+  });
+  return other;
 }
 
 function buildStats(tasks) {
@@ -296,14 +325,14 @@ function renderSummary(stats, tasks) {
   `;
 }
 
-function renderCapacityWatch(stats) {
+function renderCapacityWatch(stats, other = {}) {
   // Actionable = to-do + in-progress. Flag anyone under-fed (≤2) and anyone overloaded (8+).
   const rows = CONTRACTORS
     .filter(c => c.role !== 'QA' && c.role !== 'Designer') // engineers/PM only — the capacity question
     .map(c => {
       const s = stats[c.id] || { open:0, progress:0, review:0, blocked:0 };
       const actionable = s.progress + Math.max(0, s.open - s.blocked);
-      return { name: c.name, actionable, review: s.review, blocked: s.blocked, load: loadStatus(actionable) };
+      return { name: c.name, actionable, review: s.review, blocked: s.blocked, otherOpen: other[c.id] || 0, load: loadStatus(actionable) };
     });
   const light = rows.filter(r => r.actionable <= 2).sort((a,b) => a.actionable - b.actionable);
   const heavy = rows.filter(r => r.actionable >= 8);
@@ -313,7 +342,8 @@ function renderCapacityWatch(stats) {
     inner += light.map(r => {
       const rev = r.review ? ` <span style="color:#60a5fa;">(${r.review} in review)</span>` : '';
       const blk = r.blocked ? ` <span style="color:#f87171;">(${r.blocked} blocked)</span>` : '';
-      return `<span style="display:inline-block;background:${r.load.color}18;border:1px solid ${r.load.color}44;border-radius:8px;padding:6px 12px;margin:4px 6px 4px 0;font-size:12.5px;color:#e2e8f0;"><strong>${r.name}</strong> — ${r.load.label.replace(/^[^ ]+ /,'')} · ${r.actionable} actionable${rev}${blk}</span>`;
+      const oth = r.otherOpen ? ` <span style="color:#94a3b8;">(+${r.otherOpen} in backlog)</span>` : '';
+      return `<span style="display:inline-block;background:${r.load.color}18;border:1px solid ${r.load.color}44;border-radius:8px;padding:6px 12px;margin:4px 6px 4px 0;font-size:12.5px;color:#e2e8f0;"><strong>${r.name}</strong> — ${r.load.label.replace(/^[^ ]+ /,'')} · ${r.actionable} actionable${rev}${blk}${oth}</span>`;
     }).join('');
   }
   let heavyLine = heavy.length
@@ -331,11 +361,12 @@ function renderCapacityWatch(stats) {
     </div>`;
 }
 
-function renderCards(stats) {
+function renderCards(stats, other = {}) {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
   CONTRACTORS.forEach(c => {
     const s = stats[c.id] || { open:0,progress:0,review:0,done:0,blocked:0,overdue:0,est_ms:0,with_est:0,total:0,recent:[] };
+    const otherOpen = other[c.id] || 0;
     const actionable = s.progress + Math.max(0, s.open - s.blocked);
     const load = loadStatus(actionable);
     const est_h = s.est_ms / 3600000;
@@ -386,6 +417,8 @@ function renderCards(stats) {
         <div class="recent-label">${SPRINT_LABEL} Tasks</div>
         ${recentHTML}
 
+        ${otherOpen > 0 ? `<div style="margin-top:10px;background:#0f1320;border:1px solid #2a3148;border-radius:8px;padding:7px 11px;font-size:11.5px;color:#94a3b8;">➕ <strong style="color:#cbd5e1;">${otherOpen} open task${otherOpen !== 1 ? 's' : ''} outside ${SPRINT_LABEL}</strong> (backlog / product lists — not shown in the counts above)</div>` : ''}
+
         ${c.note ? `<div style="margin-top:12px;background:#1a1a0f;border:1px solid #f59e0b33;border-left:3px solid #f59e0b;border-radius:8px;padding:9px 12px;font-size:11.5px;color:#94a3b8;line-height:1.5;"><strong style="color:#f59e0b;">Note:</strong> ${c.note}</div>` : ''}
         <button class="flag-btn" onclick="flag('${c.name}')">🚩 Flag for Abdul</button>
       </div>
@@ -399,11 +432,13 @@ function flag(name) {
 
 async function init() {
   try {
-    const tasks = await fetchAllTasks();
+    const tasks = await fetchSprintTasks();
     const stats = buildStats(tasks);
+    let other = {};
+    try { other = await fetchOtherOpen(new Set(tasks.map(t => t.id))); } catch(e) { /* secondary — never block the sprint view */ }
     renderSummary(stats, tasks);
-    renderCapacityWatch(stats);
-    renderCards(stats);
+    renderCapacityWatch(stats, other);
+    renderCards(stats, other);
     document.getElementById('updated').textContent = 'Updated ' + new Date().toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
   } catch(e) {
     document.getElementById('summary-bar').innerHTML = `<div class="error-msg">Error loading data: ${e.message}</div>`;
