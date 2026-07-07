@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GHL Team Tracker — Sprint 48</title>
+  <title>GHL Team Tracker — Sprint 49</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; min-height: 100vh; }
@@ -102,8 +102,8 @@
 
 <div class="header">
   <div>
-    <h1>GHL Team Tracker <span class="sprint-tag">Sprint 48</span></h1>
-    <div class="subtitle">GHL Team · PM: Abdul Rehman · Jun 29 – Jul 5, 2026</div>
+    <h1>GHL Team Tracker <span class="sprint-tag">Sprint 49</span></h1>
+    <div class="subtitle">GHL Team · PM: Abdul Rehman · Jul 6 – Jul 12, 2026</div>
   </div>
   <div class="updated" id="updated">Loading…</div>
 </div>
@@ -130,50 +130,71 @@
   <div class="slack-header">
     <div class="slack-icon">💬</div>
     <div>
-      <div class="slack-title">#funnels + GHL — Sprint 48 Highlights</div>
-      <div class="slack-sub">Key updates from Slack &middot; last synced July 1, 2026</div>
+      <div class="slack-title">#funnels + GHL — Sprint 49 Highlights</div>
+      <div class="slack-sub">Key updates from Slack &middot; last synced July 7, 2026</div>
     </div>
   </div>
   <div class="slack-feed">
         <!-- SLACK-FEED-START -->
-    <div class="slack-item critical">
-      <div class="slack-meta">
-        <span class="slack-who">Bilal (QA) &rarr; #funnels</span>
-        <span class="slack-dot"></span>
-        <span class="slack-date">Jun 30, 2026</span>
-        <span class="slack-pill pill-red">QA Issue</span>
-      </div>
-      <div class="slack-body"><strong>Audos Webinar: new UX issue logged &mdash; redundant &ldquo;SAVE MY SEAT&rdquo; sticky header button on the registration page should switch to a &ldquo;Back to Home&rdquo; escape route</strong>, since the user is already on the sign-up card. <a href="https://app.clickup.com/t/90132046592/86aja3rxx" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a></div>
-    </div>
 
-    <div class="slack-item warning">
+    <div class="slack-item info">
       <div class="slack-meta">
-        <span class="slack-who">Mariam &rarr; #funnels</span>
+        <span class="slack-who">Matt → #funnels</span>
         <span class="slack-dot"></span>
-        <span class="slack-date">Jun 30, 2026</span>
-        <span class="slack-pill pill-yellow">Process Reminder</span>
+        <span class="slack-date">Jul 6, 2026</span>
+        <span class="slack-pill pill-blue">Strategic Directive</span>
       </div>
-      <div class="slack-body"><strong>ClickUp standards are now mandatory (per Matt): add a time estimate, tag every task, and log actual hours + deliverable link after completion.</strong> Sprint 48 opened with only ~1 in 3 tasks estimated and half without tags. Deliverables must live in ClickUp Docs or company Google files &mdash; not personal drives.</div>
+      <div class="slack-body">Company-wide pivot: <strong>Paid customers is the new North Star — all efforts must drive revenue velocity.</strong> For GHL/AI Sponsor (Mari): registration form, Stripe, and admin panels nearly complete; a full user-workflow walkthrough with Guru is needed to validate GHL data structure before launch. PM time allocation shifting to 80% build / 20% acquisition.</div>
     </div>
 
     <div class="slack-item critical">
       <div class="slack-meta">
-        <span class="slack-who">Bilal (QA) &rarr; #funnels</span>
+        <span class="slack-who">Bilal (QA) → #funnels</span>
         <span class="slack-dot"></span>
-        <span class="slack-date">Jun 29, 2026</span>
-        <span class="slack-pill pill-red">9 Issues Logged</span>
+        <span class="slack-date">Jul 3, 2026</span>
+        <span class="slack-pill pill-red">2 Issues Logged</span>
       </div>
-      <div class="slack-body"><strong>Guru Labs Webinar initial audit complete: 9 issues across 3 severity tiers.</strong> Critical blockers: Header Logo 404, broken countdown timer on booking page, NXDOMAIN referral links on Thank You page. Compliance risk: TCPA &mdash; SMS opt-in checkboxes not enforced, allowing registration without consent. Backend integrations (email, SMS, GHL workflows) still pending dev deploy. <a href="https://app.clickup.com/t/90132046592/86aj9h71v" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a> <a href="https://app.clickup.com/t/90132046592/86aj9hvtp" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#2</a> <a href="https://app.clickup.com/t/90132046592/86aj9hx56" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#3</a></div>
+      <div class="slack-body"><strong>Audos Black Hackathon audit: 2 new issues.</strong> Critical: mobile header overflows viewport and elements are severely misaligned. Minor: em-dash should be removed from city launch popup subtitle. <a href="https://app.clickup.com/t/90132046592/86ajc55q7" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a> <a href="https://app.clickup.com/t/90132046592/86ajc5cjp" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#2</a></div>
+    </div>
+
+    <div class="slack-item success">
+      <div class="slack-meta">
+        <span class="slack-who">Bilal (QA) → #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 3, 2026</span>
+        <span class="slack-pill pill-green">Regression Clear</span>
+      </div>
+      <div class="slack-body">Full regression sweeps completed on Audos Black, Audos Black Webinar, and Guru Labs Webinar. <strong>0 new issues — all GHL email triggers verified firing correctly across the board.</strong> Core design layouts and form submissions stable.</div>
     </div>
 
     <div class="slack-item info">
       <div class="slack-meta">
-        <span class="slack-who">Mariam &rarr; #funnels</span>
+        <span class="slack-who">Abdul Rehman → #funnels</span>
         <span class="slack-dot"></span>
-        <span class="slack-date">Jun 29, 2026</span>
-        <span class="slack-pill pill-blue">Action Required</span>
+        <span class="slack-date">Jul 3, 2026</span>
+        <span class="slack-pill pill-blue">Process Update</span>
       </div>
-      <div class="slack-body"><strong>Sprint 48 Planning / Review / Retrospective doc is open &mdash; all team members need to fill it in this week.</strong> <a href="https://app.clickup.com/90132046592/v/dc/2ky4krr0-21073/2ky4krr0-22793" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">Sprint Doc</a></div>
+      <div class="slack-body"><strong>GHL Bugs tag system agreed:</strong> Bilal will tag all relevant QA tickets with "GHL Bugs" and apply it retroactively so the dev team has tasks to pick up immediately. A clearly defined, maintained backlog with upfront requirements is needed so the team can move without constant pushes.</div>
+    </div>
+
+    <div class="slack-item warning">
+      <div class="slack-meta">
+        <span class="slack-who">Matt → #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 6, 2026</span>
+        <span class="slack-pill pill-yellow">Copy Fix</span>
+      </div>
+      <div class="slack-body">Audos Black registration SMS needs a <strong>line break after the 🔥 emoji</strong> before "This is NOT another AI tools webinar." Check all other funnel messages for the same issue and add fix to the funnels SOP. Also: <strong>all team members must add profile pics and role to ClickUp profile immediately</strong> (channel-wide mandate).</div>
+    </div>
+
+    <div class="slack-item info">
+      <div class="slack-meta">
+        <span class="slack-who">Matt → #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 6, 2026</span>
+        <span class="slack-pill pill-blue">New Scope</span>
+      </div>
+      <div class="slack-body"><strong>Google indexing for guru-labs.ai is now in scope for Abdul.</strong> Add to ClickUp pipeline — both company and non-company sites need correct indexing. ClickUp time tracking audit is mandatory: logs showed only ~20h last week vs. billed hours; Mari to audit last two weeks.</div>
     </div>
     <!-- SLACK-FEED-END -->
   </div>
@@ -182,7 +203,7 @@
 <script>
 const API_KEY = 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH';
 const TEAM_ID = '90132046592';
-const SPRINT_LABEL = 'Sprint 48';
+const SPRINT_LABEL = 'Sprint 49';
 const SPRINT_FOLDER = '901310760791'; // Sprint & Backlogs folder — used to resolve SPRINT_LABEL → list ID at runtime
 
 const CONTRACTORS = [
