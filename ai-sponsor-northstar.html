@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>AI Sponsor — North Star</title>
+<style>
+:root{
+  --surface-1:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --baseline:#c3c2b7; --ring:rgba(11,11,11,0.10);
+  --series-1:#2a78d6; --warning:#fab219; --warning-ink:#7a5200; --warning-bg:#fdf6e3;
+  --brand:#0080D4;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --surface-1:#1a1a19; --plane:#0d0d0d; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --ring:rgba(255,255,255,0.10);
+    --series-1:#3987e5; --warning:#fab219; --warning-ink:#fad98c; --warning-bg:#2a2415;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--plane);
+  color:var(--ink);min-height:100vh;padding:18px 14px 40px}
+.wrap{max-width:640px;margin:0 auto}
+header{margin-bottom:14px}
+header h1{font-size:19px;font-weight:750;letter-spacing:-0.01em}
+header p{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.stamp{font-size:11.5px;color:var(--muted);margin-top:2px}
+.banner{display:none;background:var(--warning-bg);border:1px solid var(--warning);
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.55;color:var(--warning-ink)}
+.banner b{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:13.5px}
+.banner ul{margin:4px 0 0 18px}
+.hero{background:var(--surface-1);border:1px solid var(--ring);border-radius:14px;
+  padding:20px;margin-bottom:12px}
+.hero .label{font-size:12.5px;font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:0.05em}
+.hero .value{font-size:52px;font-weight:750;letter-spacing:-0.02em;line-height:1.1;margin-top:4px}
+.hero .sub{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+@media(min-width:520px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--surface-1);border:1px solid var(--ring);border-radius:12px;padding:13px 14px}
+.tile .label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
+.tile .value{font-size:22px;font-weight:700;margin-top:3px}
+.tile .value small{font-size:12px;font-weight:500;color:var(--muted)}
+.card{background:var(--surface-1);border:1px solid var(--ring);border-radius:14px;padding:16px 16px 12px;margin-bottom:12px}
+.card h2{font-size:13.5px;font-weight:650;margin-bottom:2px}
+.card .sub{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.chart{position:relative;height:150px}
+.chart svg{width:100%;height:100%;display:block;overflow:visible}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;color:var(--muted);text-align:center;padding:0 20px;line-height:1.5}
+.bar{fill:var(--series-1)}
+.gridline{stroke:var(--grid);stroke-width:1}
+.axisline{stroke:var(--baseline);stroke-width:1}
+.tick{font-size:9.5px;fill:var(--muted)}
+.tooltip{position:absolute;pointer-events:none;background:var(--surface-1);border:1px solid var(--ring);
+  border-radius:8px;padding:6px 9px;font-size:11.5px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.12);
+  display:none;white-space:nowrap;z-index:2}
+.notes{font-size:11.5px;color:var(--muted);line-height:1.6;padding:0 4px}
+.notes li{margin-left:16px}
+.state{text-align:center;padding:30px 10px;color:var(--muted);font-size:13px;line-height:1.6}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--series-1);margin-right:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>AI Sponsor — North Star</h1>
+    <p>Cumulative recovery days: every day each user stays, from sign-up until cancel, summed across everyone (Sunflower's metric).</p>
+    <div class="stamp" id="stamp">Loading live data…</div>
+  </header>
+
+  <div class="banner" id="banner">
+    <b>⚠️ Low data coverage — read the number in context</b>
+    <span id="banner-body"></span>
+  </div>
+
+  <div id="loading" class="state">Connecting to the live backend…<br>
+    <span style="font-size:11.5px">(can take ~1 min if the server is waking up)</span></div>
+
+  <div id="dash" style="display:none">
+    <div class="hero">
+      <div class="label">Cumulative recovery days</div>
+      <div class="value" id="ns-value">—</div>
+      <div class="sub" id="ns-sub"></div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="label">Users counted</div><div class="value" id="t-users">—</div></div>
+      <div class="tile"><div class="label">Avg days / user</div><div class="value" id="t-avg">—</div></div>
+      <div class="tile"><div class="label">Cancellations</div><div class="value" id="t-cancel">—</div></div>
+      <div class="tile"><div class="label">Active subs</div><div class="value" id="t-subs">—</div></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Sign-ups per day</h2>
+      <div class="sub">Last 14 days · completed registrations (web)</div>
+      <div class="chart" id="chart"><div class="tooltip" id="tip"></div></div>
+    </div>
+
+    <ul class="notes" id="notes"></ul>
+  </div>
+
+  <div id="error" class="state" style="display:none"></div>
+</div>
+
+<script>
+const API = 'https://ai-sponsor-f7de.onrender.com/api/metrics/northstar';
+
+async function load(attempt) {
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    render(await r.json());
+  } catch (e) {
+    if (attempt < 3) { setTimeout(() => load(attempt + 1), 20000); return; }
+    document.getElementById('loading').style.display = 'none';
+    const err = document.getElementById('error');
+    err.style.display = 'block';
+    err.innerHTML = 'Could not reach the metrics backend.<br>Refresh in a minute — the free server may be waking up.';
+  }
+}
+
+function render(d) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  document.getElementById('stamp').textContent =
+    'Live · updated ' + new Date(d.generatedAt).toLocaleString([], {dateStyle:'medium', timeStyle:'short'});
+
+  const ns = d.northStar;
+  document.getElementById('ns-value').textContent = ns.cumulativeRecoveryDays.toLocaleString();
+  document.getElementById('ns-sub').textContent =
+    ns.cancellations === 0
+      ? 'No cancellations yet — every counted user is still active.'
+      : ns.cancellations + ' cancellations · avg ' + ns.avgDaysToCancel + ' days before canceling';
+  document.getElementById('t-users').textContent = d.signups.total.toLocaleString();
+  document.getElementById('t-avg').textContent = ns.avgDaysPerUser;
+  document.getElementById('t-cancel').textContent = ns.cancellations;
+  document.getElementById('t-subs').textContent = d.billing.activeSubscriptions;
+
+  // Honest-metrics rule: with zero/low coverage, the warning IS the headline.
+  if (d.signups.total < 10) {
+    const b = document.getElementById('banner');
+    b.style.display = 'block';
+    document.getElementById('banner-body').innerHTML =
+      'Tracking is live and working, but only <b>' + d.signups.total + '</b> sign-ups are counted so far because:' +
+      '<ul>' + d.dataNotes.map(n => '<li>' + n + '</li>').join('') + '</ul>';
+  }
+
+  document.getElementById('notes').innerHTML =
+    d.dataNotes.map(n => '<li>' + n + '</li>').join('');
+
+  drawChart(d.signups.byDay);
+}
+
+function drawChart(byDay) {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const dt = new Date(Date.now() - i * 86400000);
+    const key = dt.toISOString().slice(0, 10);
+    days.push({ key, label: (dt.getMonth() + 1) + '/' + dt.getDate(), v: byDay[key] || 0 });
+  }
+  const max = Math.max(...days.map(x => x.v));
+  const el = document.getElementById('chart');
+
+  if (max === 0) {
+    el.insertAdjacentHTML('beforeend',
+      '<div class="empty">No sign-ups recorded in the last 14 days.<br>Bars appear here automatically as people register.</div>');
+    return;
+  }
+
+  const W = 600, H = 150, padB = 18, padL = 22, padT = 6;
+  const innerW = W - padL, innerH = H - padB - padT;
+  const yMax = Math.max(2, Math.ceil(max * 1.15));
+  const bw = Math.min(28, (innerW / days.length) - 2);
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-label="Sign-ups per day, last 14 days">';
+  [0.5, 1].forEach(f => {
+    const y = padT + innerH - innerH * f;
+    svg += '<line class="gridline" x1="' + padL + '" y1="' + y + '" x2="' + W + '" y2="' + y + '"/>' +
+           '<text class="tick" x="0" y="' + (y + 3) + '">' + Math.round(yMax * f) + '</text>';
+  });
+  days.forEach((dY, i) => {
+    const x = padL + (innerW / days.length) * i + ((innerW / days.length) - bw) / 2;
+    const h = (dY.v / yMax) * innerH;
+    const y = padT + innerH - h;
+    if (dY.v > 0) {
+      svg += '<path class="bar" data-i="' + i + '" d="M' + x + ' ' + (padT + innerH) +
+        ' V' + (y + 4) + ' Q' + x + ' ' + y + ' ' + (x + 4) + ' ' + y +
+        ' H' + (x + bw - 4) + ' Q' + (x + bw) + ' ' + y + ' ' + (x + bw) + ' ' + (y + 4) +
+        ' V' + (padT + innerH) + ' Z"/>';
+    }
+    // invisible hit target wider than the mark
+    svg += '<rect data-i="' + i + '" x="' + (padL + (innerW / days.length) * i) + '" y="' + padT +
+      '" width="' + (innerW / days.length) + '" height="' + (innerH) + '" fill="transparent"/>';
+    if (i % 2 === 1) {
+      svg += '<text class="tick" x="' + (x + bw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">' + dY.label + '</text>';
+    }
+  });
+  svg += '<line class="axisline" x1="' + padL + '" y1="' + (padT + innerH) + '" x2="' + W + '" y2="' + (padT + innerH) + '"/></svg>';
+  el.insertAdjacentHTML('beforeend', svg);
+
+  const tip = document.getElementById('tip');
+  el.querySelectorAll('[data-i]').forEach(node => {
+    node.addEventListener('mousemove', (ev) => {
+      const dY = days[+node.dataset.i];
+      tip.style.display = 'block';
+      tip.textContent = dY.label + ' — ' + dY.v + ' sign-up' + (dY.v === 1 ? '' : 's');
+      const r = el.getBoundingClientRect();
+      tip.style.left = Math.min(ev.clientX - r.left + 10, r.width - 120) + 'px';
+      tip.style.top = (ev.clientY - r.top - 30) + 'px';
+    });
+    node.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+}
+
+load(0);
+</script>
+</body>
+</html>
