@@ -1,0 +1,546 @@
+{
+ "activeWeek": 0,
+ "activeProduct": 0,
+ "weeks": [
+  {
+   "id": "mreu5n3y65p4",
+   "name": "July 2026",
+   "products": [
+    {
+     "id": "mreu8ftrutbo",
+     "name": "Company-Wide",
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "$10K/mo first revenue target",
+       "actual": "",
+       "owner": "Matt",
+       "status": "On Track"
+      },
+      {
+       "name": "New Customers",
+       "goal": "First paid customers, all products",
+       "actual": "",
+       "owner": "Product Owners",
+       "status": "On Track"
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "Outbound + Meta ads",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "Tracked per product",
+       "actual": "",
+       "owner": "Product Owners",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "3 products launched this month",
+       "actual": "",
+       "owner": "Product Owners",
+       "status": "On Track"
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "All P1 blockers cleared",
+       "actual": "",
+       "owner": "Dev Team",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "Retention / LTV",
+       "actual": "",
+       "owner": "Product Owners",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "AI SEO across all products",
+       "actual": "",
+       "owner": "Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "See per-product below",
+       "actual": "",
+       "owner": "—",
+       "status": ""
+      }
+     ]
+    },
+    {
+     "id": "mreu8ftrqo53",
+     "name": "DRM",
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "",
+       "actual": "",
+       "owner": "Raja",
+       "status": ""
+      },
+      {
+       "name": "New Customers",
+       "goal": "10 paid → then 50 paid",
+       "actual": "",
+       "owner": "Raja",
+       "status": "On Track"
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "Coach outreach + Meta ads",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "Direct paid (no trial)",
+       "actual": "",
+       "owner": "Raja",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "MVP launch (this week)",
+       "actual": "",
+       "owner": "Raja",
+       "status": "On Track"
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "3 P1 launch blockers",
+       "actual": "",
+       "owner": "Raja",
+       "status": "At Risk"
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours",
+       "actual": "",
+       "owner": "Jan",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "Retention",
+       "actual": "",
+       "owner": "Raja",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "AI SEO blogs (10 live)",
+       "actual": "",
+       "owner": "Raja",
+       "status": "On Track"
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "Press / reporter outreach",
+       "actual": "",
+       "owner": "Elena",
+       "status": ""
+      }
+     ]
+    },
+    {
+     "id": "mreu8ftr16ct",
+     "name": "Rekindle",
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "",
+       "actual": "",
+       "owner": "Asif",
+       "status": ""
+      },
+      {
+       "name": "New Customers",
+       "goal": "15 paid (within 1 month)",
+       "actual": "",
+       "owner": "Asif",
+       "status": "On Track"
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "Meta ads + therapist outreach",
+       "actual": "",
+       "owner": "Asif",
+       "status": "On Track"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "Direct paid",
+       "actual": "",
+       "owner": "Asif",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "Full launch — needs Simply Noted API",
+       "actual": "",
+       "owner": "Asif",
+       "status": "At Risk"
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "Stripe / Polsia errors",
+       "actual": "",
+       "owner": "Asif",
+       "status": "Behind"
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours",
+       "actual": "",
+       "owner": "Jan",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "Retention",
+       "actual": "",
+       "owner": "Asif",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "FB page + Meta branding",
+       "actual": "",
+       "owner": "Asif",
+       "status": "On Track"
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "GHL funnel + therapist email DB",
+       "actual": "",
+       "owner": "Asif",
+       "status": "On Track"
+      }
+     ]
+    },
+    {
+     "id": "mreu5n3yi57b",
+     "name": "AI Sponsor",
+     "updatedAt": 1783681911358,
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "",
+       "actual": "$0 — checkout can't take money yet (Stripe live-mode blocked on env-var push)",
+       "owner": "Mariam",
+       "status": "At Risk"
+      },
+      {
+       "name": "New Customers",
+       "goal": "Beta launch — 85 users",
+       "actual": "0 paid — no live payment path",
+       "owner": "Mariam",
+       "status": "At Risk"
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "78 waitlist + ads",
+       "actual": "0 in GHL — beta list never imported; no registrations captured",
+       "owner": "Mariam",
+       "status": "Behind"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "Beta 3 months free → $5/mo or $49/yr",
+       "actual": "n/a — Stripe not live",
+       "owner": "Mariam",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "WhatsApp live (blocked on Meta approval)",
+       "actual": "~20 tasks done: backend live, WhatsApp 2-way audio+text, reg→GHL pipeline, north-star dashboard v1, annual plan, Twilio number",
+       "owner": "Mariam / Mubashir",
+       "status": "On Track"
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "Bilal QA bugs",
+       "actual": "2 QA verification rounds passed (Bilal)",
+       "owner": "Mariam",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours",
+       "actual": "n/a — no paying customers yet",
+       "owner": "Mariam",
+       "status": ""
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "Retention",
+       "actual": "n/a — usage tracking shipping (persistent DB pending)",
+       "owner": "Mariam",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "AI SEO pilot (Claude)",
+       "actual": "4 published: SEO basics (sitemap/robots/GSC), meta description, competitor analysis, Meta ad text",
+       "owner": "Mariam",
+       "status": "On Track"
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "Beta + Meta ads launch",
+       "actual": "Analytics stack: Hyros + GA live, Clarity in progress; Audos SDK-connect still open",
+       "owner": "Mariam",
+       "status": "On Track"
+      }
+     ]
+    },
+    {
+     "id": "mreu8ftrykko",
+     "name": "GHL / Funnels",
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "Low-ticket → high-ticket funnels",
+       "actual": "",
+       "owner": "Abdul",
+       "status": ""
+      },
+      {
+       "name": "New Customers",
+       "goal": "First funnel sales",
+       "actual": "",
+       "owner": "Abdul",
+       "status": ""
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "Funnel opt-ins",
+       "actual": "",
+       "owner": "Abdul",
+       "status": "On Track"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "LT → HT conversion",
+       "actual": "",
+       "owner": "Abdul",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "Funnel completion → 100%",
+       "actual": "",
+       "owner": "Abdul",
+       "status": "Behind"
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "Hyros / Iris pixel fixes",
+       "actual": "",
+       "owner": "Abdul",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours (GHL inbox)",
+       "actual": "",
+       "owner": "Jan",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "Retention",
+       "actual": "",
+       "owner": "Abdul",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "AI SEO per offer",
+       "actual": "",
+       "owner": "Abdul",
+       "status": ""
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "Reclaim $20K Meta ad credit",
+       "actual": "",
+       "owner": "Abdul",
+       "status": "At Risk"
+      }
+     ]
+    },
+    {
+     "id": "mreu8ftrcs8n",
+     "name": "Marketing (Outbound)",
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": ""
+      },
+      {
+       "name": "New Customers",
+       "goal": "Conversions from outreach",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": ""
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "100+/day (LinkedIn / IG / TikTok)",
+       "actual": "",
+       "owner": "Jan",
+       "status": "On Track"
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "—",
+       "actual": "",
+       "owner": "—",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "—",
+       "actual": "",
+       "owner": "—",
+       "status": ""
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "—",
+       "actual": "",
+       "owner": "—",
+       "status": ""
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "< 24 hours",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "—",
+       "actual": "",
+       "owner": "—",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "Social content scheduled",
+       "actual": "",
+       "owner": "Elena",
+       "status": "On Track"
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "100 dating coaches + reporter outreach",
+       "actual": "",
+       "owner": "Jan / Elena",
+       "status": "On Track"
+      }
+     ]
+    },
+    {
+     "id": "qaguru1",
+     "name": "QA Guru",
+     "updatedAt": 1783682332701,
+     "kpis": [
+      {
+       "name": "Revenue",
+       "goal": "",
+       "actual": "$0 — pre-launch, built inside Audos",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "New Customers",
+       "goal": "",
+       "actual": "0 — not launched yet",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Leads Generated",
+       "goal": "",
+       "actual": "",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Trial → Paid %",
+       "goal": "4-tier pricing planned",
+       "actual": "n/a — not launched",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Features Shipped",
+       "goal": "",
+       "actual": "URL-scanner direction set; PageSpeed key (BYOK) tested",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Critical Bugs Closed",
+       "goal": "",
+       "actual": "",
+       "owner": "Bilal",
+       "status": ""
+      },
+      {
+       "name": "Customer Response Time",
+       "goal": "",
+       "actual": "n/a — no customers yet",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Customer Satisfaction",
+       "goal": "",
+       "actual": "n/a",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Content Published",
+       "goal": "",
+       "actual": "",
+       "owner": "Bilal / Mariam",
+       "status": ""
+      },
+      {
+       "name": "Strategic Projects Completed",
+       "goal": "",
+       "actual": "Open blocker: register secret (owner-only)",
+       "owner": "Mariam",
+       "status": "At Risk"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
