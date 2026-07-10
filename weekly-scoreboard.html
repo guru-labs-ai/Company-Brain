@@ -157,7 +157,7 @@
 </div>
 
 <script>
-const KEY = 'guruScoreboardV3';
+const KEY = 'guruScoreboardV4';
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 const KPIS = [
@@ -215,16 +215,17 @@ const PRODUCTS = [
     ['GHL funnel + therapist email DB','Asif','On Track'],
   ]},
   {name:'AI Sponsor', rows:[
-    ['','Mariam',''],
-    ['Beta launch — 85 users','Mariam','At Risk'],
-    ['78 waitlist + ads','Mariam','On Track'],
-    ['30-day trial → $5/mo','Mariam',''],
-    ['WhatsApp live (needs number)','Abdul','At Risk'],
-    ['Bilal QA bugs','Mariam','On Track'],
-    ['< 24 hours','Mariam','On Track'],
-    ['Retention','Mariam',''],
-    ['AI SEO pilot (Claude)','Mariam','On Track'],
-    ['Beta + Meta ads launch','Mariam','On Track'],
+    // July 2026 actuals verified from ClickUp + GHL on Jul 10
+    ['','Mariam','At Risk','$0 — checkout can\'t take money yet (Stripe live-mode blocked on env-var push)'],
+    ['Beta launch — 85 users','Mariam','At Risk','0 paid — no live payment path'],
+    ['78 waitlist + ads','Mariam','Behind','0 in GHL — beta list never imported; no registrations captured'],
+    ['Beta 3 months free → $5/mo or $49/yr','Mariam','','n/a — Stripe not live'],
+    ['WhatsApp live (blocked on Meta approval)','Mariam / Mubashir','On Track','~20 tasks done: backend live, WhatsApp 2-way audio+text, reg→GHL pipeline, north-star dashboard v1, annual plan, Twilio number'],
+    ['Bilal QA bugs','Mariam','On Track','2 QA verification rounds passed (Bilal)'],
+    ['< 24 hours','Mariam','','n/a — no paying customers yet'],
+    ['Retention','Mariam','','n/a — usage tracking shipping (persistent DB pending)'],
+    ['AI SEO pilot (Claude)','Mariam','On Track','4 published: SEO basics (sitemap/robots/GSC), meta description, competitor analysis, Meta ad text'],
+    ['Beta + Meta ads launch','Mariam','On Track','Analytics stack: Hyros + GA live, Clarity in progress; Audos SDK-connect still open'],
   ]},
   {name:'GHL / Funnels', rows:[
     ['Low-ticket → high-ticket funnels','Abdul',''],
@@ -253,7 +254,7 @@ const PRODUCTS = [
 ];
 
 function blankKpis(owner){ return KPIS.map(kp=>({name:kp.k, goal:'', actual:'', owner:owner||'', status:''})); }
-function seedKpis(p){ return KPIS.map((kp,i)=>({name:kp.k, goal:(p.rows[i]||[])[0]||'', actual:'', owner:(p.rows[i]||[])[1]||'', status:(p.rows[i]||[])[2]||''})); }
+function seedKpis(p){ return KPIS.map((kp,i)=>({name:kp.k, goal:(p.rows[i]||[])[0]||'', actual:(p.rows[i]||[])[3]||'', owner:(p.rows[i]||[])[1]||'', status:(p.rows[i]||[])[2]||''})); }
 function seed(){
   return {
     activeWeek:0, activeProduct:0,
