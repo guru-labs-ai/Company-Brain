@@ -116,13 +116,6 @@
   </div>
 </div>
 
-<!-- TEAM KEY (shown only when the shared save needs it) -->
-<div id="keyBar" class="noprint" style="display:none;margin:0 0 12px;padding:10px 14px;background:#1e293b;border:1px solid #f59e0b;border-radius:10px;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#e2e8f0;">
-  <span>🔑 To save your edits <strong>for the whole team</strong>, paste the team key (Mariam shares it in Slack):</span>
-  <input id="keyInput" type="password" placeholder="team key" style="background:#0f172a;color:#fff;border:1px solid #475569;border-radius:8px;padding:6px 10px;"/>
-  <button onclick="saveTeamKey()" style="background:#34d399;color:#052e22;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;">Save key</button>
-</div>
-
 <!-- MONTH TABS -->
 <div class="bar" id="weekBar"><span class="lead">Month</span></div>
 
@@ -160,7 +153,7 @@
 
 <div class="foot">
   Everything is editable — click any cell to type, pick a Status from the dropdown. All products are stacked on one page, grouped by section (each band shows that product's status mix). Use <strong>+ Add a product</strong> at the bottom (or the toolbar) to add anything we're missing; <strong>rename</strong>/<strong>remove</strong> on each band. Add a new <strong>Month</strong> at the start of each month (clones owners + goals, clears actuals). Goals are set for the month (next 30 days); Matt reviews weekly; full team review mid-month (the 15th).
-  Edits save to the <strong>shared board</strong> automatically (enter the team key once — Mariam shares it in Slack), so everyone sees the same numbers. <strong>Export CSV</strong> for backups.
+  Edits save to the <strong>shared board</strong> automatically — everyone sees the same numbers. <strong>Export CSV</strong> for backups.
 </div>
 
 <script>
@@ -295,9 +288,6 @@ function flashSaved(){ const p=document.getElementById('savePill'); p.textConten
 /* ---------- SHARED SAVE (backend commits the board to GitHub) ---------- */
 const SYNC_URL='https://ai-sponsor-f7de.onrender.com/api/scoreboard';
 let syncTimer=null;
-function teamKey(){ return localStorage.getItem('sbTeamKey')||''; }
-function showKeyBar(){ document.getElementById('keyBar').style.display='flex'; }
-function saveTeamKey(){ const v=document.getElementById('keyInput').value.trim(); if(!v) return; localStorage.setItem('sbTeamKey',v); document.getElementById('keyBar').style.display='none'; pushRemote(); }
 
 // Same merge the server uses: weeks by name, products by name, newer
 // updatedAt wins a product. Nothing either side added is dropped.
@@ -326,15 +316,12 @@ async function loadRemote(){
       localStorage.setItem(KEY,JSON.stringify(state)); render();
     }
     pillBase='shared board — edits save for everyone'; setPillNow(pillBase);
-    if(!teamKey()) showKeyBar();
   }catch(e){ pillBase='⚠ shared board unreachable — saving in this browser only'; setPillNow(pillBase); }
 }
 function scheduleSync(){ clearTimeout(syncTimer); syncTimer=setTimeout(pushRemote,1500); }
 async function pushRemote(){
-  if(!teamKey()){ showKeyBar(); setPillNow('⚠ enter the team key above to save for everyone'); return; }
   try{
-    const r=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json','X-Scoreboard-Key':teamKey()},body:JSON.stringify({state})});
-    if(r.status===401){ localStorage.removeItem('sbTeamKey'); showKeyBar(); setPillNow('⚠ that team key is wrong — re-enter it'); return; }
+    const r=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state})});
     if(!r.ok) throw 0;
     const merged=(await r.json()).state;
     if(merged&&merged.weeks){
