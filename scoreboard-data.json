@@ -32,7 +32,7 @@
        "status": "On Track"
       },
       {
-       "name": "Trial → Paid %",
+       "name": "Trial â†’ Paid %",
        "goal": "Tracked per product",
        "actual": "",
        "owner": "Product Owners",
@@ -77,7 +77,7 @@
        "name": "Strategic Projects Completed",
        "goal": "See per-product below",
        "actual": "",
-       "owner": "—",
+       "owner": "â€”",
        "status": ""
       }
      ]
@@ -95,7 +95,7 @@
       },
       {
        "name": "New Customers",
-       "goal": "10 paid → then 50 paid",
+       "goal": "10 paid â†’ then 50 paid",
        "actual": "",
        "owner": "Raja",
        "status": "On Track"
@@ -108,7 +108,7 @@
        "status": "On Track"
       },
       {
-       "name": "Trial → Paid %",
+       "name": "Trial â†’ Paid %",
        "goal": "Direct paid (no trial)",
        "actual": "",
        "owner": "Raja",
@@ -184,7 +184,7 @@
        "status": "On Track"
       },
       {
-       "name": "Trial → Paid %",
+       "name": "Trial â†’ Paid %",
        "goal": "Direct paid",
        "actual": "",
        "owner": "Asif",
@@ -192,7 +192,7 @@
       },
       {
        "name": "Features Shipped",
-       "goal": "Full launch — needs Simply Noted API",
+       "goal": "Full launch â€” needs Simply Noted API",
        "actual": "",
        "owner": "Asif",
        "status": "At Risk"
@@ -242,35 +242,35 @@
       {
        "name": "Revenue",
        "goal": "",
-       "actual": "$0 — checkout can't take money yet (Stripe live-mode blocked on env-var push)",
+       "actual": "$0 â€” checkout can't take money yet (Stripe live-mode blocked on env-var push)",
        "owner": "Mariam",
        "status": "At Risk"
       },
       {
        "name": "New Customers",
-       "goal": "Beta launch — 85 users",
-       "actual": "0 paid — no live payment path",
+       "goal": "Beta launch â€” 85 users",
+       "actual": "0 paid â€” no live payment path",
        "owner": "Mariam",
        "status": "At Risk"
       },
       {
        "name": "Leads Generated",
        "goal": "78 waitlist + ads",
-       "actual": "0 in GHL — beta list never imported; no registrations captured",
+       "actual": "0 in GHL â€” beta list never imported; no registrations captured",
        "owner": "Mariam",
        "status": "Behind"
       },
       {
-       "name": "Trial → Paid %",
-       "goal": "Beta 3 months free → $5/mo or $49/yr",
-       "actual": "n/a — Stripe not live",
+       "name": "Trial â†’ Paid %",
+       "goal": "Beta 3 months free â†’ $5/mo or $49/yr",
+       "actual": "n/a â€” Stripe not live",
        "owner": "Mariam",
        "status": ""
       },
       {
        "name": "Features Shipped",
        "goal": "WhatsApp live (blocked on Meta approval)",
-       "actual": "~20 tasks done: backend live, WhatsApp 2-way audio+text, reg→GHL pipeline, north-star dashboard v1, annual plan, Twilio number",
+       "actual": "~20 tasks done: backend live, WhatsApp 2-way audio+text, regâ†’GHL pipeline, north-star dashboard v1, annual plan, Twilio number",
        "owner": "Mariam / Mubashir",
        "status": "On Track"
       },
@@ -284,14 +284,14 @@
       {
        "name": "Customer Response Time",
        "goal": "< 24 hours",
-       "actual": "n/a — no paying customers yet",
+       "actual": "n/a â€” no paying customers yet",
        "owner": "Mariam",
        "status": ""
       },
       {
        "name": "Customer Satisfaction",
        "goal": "Retention",
-       "actual": "n/a — usage tracking shipping (persistent DB pending)",
+       "actual": "n/a â€” usage tracking shipping (persistent DB pending)",
        "owner": "Mariam",
        "status": ""
       },
@@ -317,7 +317,7 @@
      "kpis": [
       {
        "name": "Revenue",
-       "goal": "Low-ticket → high-ticket funnels",
+       "goal": "Low-ticket â†’ high-ticket funnels",
        "actual": "",
        "owner": "Abdul",
        "status": ""
@@ -337,15 +337,15 @@
        "status": "On Track"
       },
       {
-       "name": "Trial → Paid %",
-       "goal": "LT → HT conversion",
+       "name": "Trial â†’ Paid %",
+       "goal": "LT â†’ HT conversion",
        "actual": "",
        "owner": "Abdul",
        "status": ""
       },
       {
        "name": "Features Shipped",
-       "goal": "Funnel completion → 100%",
+       "goal": "Funnel completion â†’ 100%",
        "actual": "",
        "owner": "Abdul",
        "status": "Behind"
@@ -413,24 +413,24 @@
        "status": "On Track"
       },
       {
-       "name": "Trial → Paid %",
-       "goal": "—",
+       "name": "Trial â†’ Paid %",
+       "goal": "â€”",
        "actual": "",
-       "owner": "—",
+       "owner": "â€”",
        "status": ""
       },
       {
        "name": "Features Shipped",
-       "goal": "—",
+       "goal": "â€”",
        "actual": "",
-       "owner": "—",
+       "owner": "â€”",
        "status": ""
       },
       {
        "name": "Critical Bugs Closed",
-       "goal": "—",
+       "goal": "â€”",
        "actual": "",
-       "owner": "—",
+       "owner": "â€”",
        "status": ""
       },
       {
@@ -442,9 +442,9 @@
       },
       {
        "name": "Customer Satisfaction",
-       "goal": "—",
+       "goal": "â€”",
        "actual": "",
-       "owner": "—",
+       "owner": "â€”",
        "status": ""
       },
       {
@@ -471,14 +471,14 @@
       {
        "name": "Revenue",
        "goal": "",
-       "actual": "$0 — pre-launch, built inside Audos",
+       "actual": "$0 â€” pre-launch, built inside Audos",
        "owner": "Bilal / Mariam",
        "status": ""
       },
       {
        "name": "New Customers",
        "goal": "",
-       "actual": "0 — not launched yet",
+       "actual": "0 â€” not launched yet",
        "owner": "Bilal / Mariam",
        "status": ""
       },
@@ -490,9 +490,9 @@
        "status": ""
       },
       {
-       "name": "Trial → Paid %",
+       "name": "Trial â†’ Paid %",
        "goal": "4-tier pricing planned",
-       "actual": "n/a — not launched",
+       "actual": "n/a â€” not launched",
        "owner": "Bilal / Mariam",
        "status": ""
       },
@@ -513,7 +513,7 @@
       {
        "name": "Customer Response Time",
        "goal": "",
-       "actual": "n/a — no customers yet",
+       "actual": "n/a â€” no customers yet",
        "owner": "Bilal / Mariam",
        "status": ""
       },
