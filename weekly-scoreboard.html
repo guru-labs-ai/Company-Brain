@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Guru Labs — Team Scoreboard (Monthly KPIs)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --bg:#0a0d14; --card:#111622; --card2:#0f1117; --line:#1e2433; --line2:#1a1f2e;
+    --text:#e2e8f0; --muted:#64748b; --muted2:#475569;
+    --green:#34d399; --blue:#60a5fa; --purple:#a78bfa; --yellow:#f59e0b; --orange:#fb923c; --red:#f87171; --cyan:#22d3ee;
+  }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); padding:24px 28px; min-height:100vh; }
+  @media print { .noprint{display:none!important} body{padding:14px} }
+  @media (max-width:640px){ body{padding:14px 12px} }
+
+  /* HEADER */
+  .header{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:18px; }
+  .header h1{ font-size:23px; font-weight:800; color:#fff; letter-spacing:-.5px; }
+  .header .sub{ font-size:12.5px; color:var(--muted); margin-top:5px; }
+  .live-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-right:5px; animation:pulse 2s infinite; vertical-align:middle; }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .tools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .btn{ background:#1e2433; border:1px solid #2a3148; color:#94a3b8; font-size:12px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition:.15s; }
+  .btn:hover{ border-color:#6366f1; color:#a78bfa; }
+  .btn.primary{ background:#1a1333; border-color:#4c1d95; color:#c4b5fd; }
+  .btn.primary:hover{ border-color:#a78bfa; color:#ddd6fe; }
+  .btn.green{ background:#0f2419; border-color:#166534; color:#34d399; }
+  .btn.green:hover{ border-color:#34d399; color:#a7f3d0; }
+
+  /* WEEK + PRODUCT BARS */
+  .bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .bar .lead{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--muted2); margin-right:4px; }
+  .tab{ position:relative; background:var(--card); border:1px solid var(--line); color:#94a3b8; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:9px; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:7px; }
+  .tab:hover{ border-color:#2a3148; color:#cbd5e1; }
+  .tab.active{ background:#15192a; border-color:#4c1d95; color:#ddd6fe; }
+  .tab.prod.active{ border-color:#166534; color:#a7f3d0; background:#0f1f17; }
+  .tab .x{ font-size:12px; color:#475569; line-height:1; }
+  .tab .x:hover{ color:var(--red); }
+  .add-tab{ background:transparent; border:1px dashed #2a3148; color:#64748b; font-size:12.5px; font-weight:700; padding:8px 12px; border-radius:9px; cursor:pointer; }
+  .add-tab:hover{ border-color:#6366f1; color:#a78bfa; }
+
+  /* SUMMARY */
+  .ctx-head{ font-size:16px; font-weight:800; color:#fff; margin:10px 0 2px; display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+  .ctx-head .pd{ font-size:12.5px; font-weight:700; color:var(--muted); }
+  .ctx-head .rev{ font-size:11px; font-weight:700; color:var(--yellow); background:#241c08; border:1px solid #5c4708; padding:3px 10px; border-radius:20px; }
+  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:12px 0 18px; }
+  @media (max-width:560px){ .kpi-row{ grid-template-columns:repeat(2,1fr); } }
+  .kpi-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; }
+  .kpi-val{ font-size:25px; font-weight:800; line-height:1.05; }
+  .kpi-label{ font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-top:6px; }
+  .kv-green{color:var(--green)} .kv-yellow{color:var(--yellow)} .kv-orange{color:var(--orange)} .kv-red{color:var(--red)} .kv-muted{color:var(--muted)}
+
+  /* TABLE */
+  .table-wrap{ background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:14px; }
+  .scroll{ overflow-x:auto; }
+  table{ border-collapse:collapse; width:100%; min-width:760px; }
+  thead th{ background:#0d1119; color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; text-align:left; padding:13px 14px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  tbody td{ padding:4px 8px; border-bottom:1px solid var(--line2); font-size:13px; vertical-align:middle; }
+  tbody tr:hover{ background:#0d1119; }
+  .kpi-name{ font-weight:700; color:#f1f5f9; padding-left:14px!important; min-width:210px; }
+  .kpi-name .north{ display:inline-block; font-size:8.5px; font-weight:800; color:#0a0d14; background:var(--green); padding:1px 6px; border-radius:20px; margin-left:7px; letter-spacing:.4px; vertical-align:middle; }
+
+  input.cell, select.cell{ width:100%; background:transparent; border:1px solid transparent; border-radius:6px; color:var(--text); font-size:13px; font-family:inherit; padding:8px 9px; transition:.12s; }
+  input.cell:hover, select.cell:hover{ border-color:var(--line); background:#0d1119; }
+  input.cell:focus, select.cell:focus{ outline:none; border-color:#6366f1; background:#0c1322; }
+  input.goal{ color:#a78bfa; font-weight:600; }
+  input.actual{ color:#34d399; font-weight:700; }
+  input.owner{ color:#cbd5e1; }
+  select.cell{ cursor:pointer; -webkit-appearance:none; appearance:none; font-weight:700; }
+  select.cell option{ background:#0d1119; color:#e2e8f0; }
+  .status-cell{ min-width:150px; }
+  .st-ontrack{ color:var(--green); } .st-hit{ color:var(--green); } .st-behind{ color:var(--orange); } .st-risk{ color:var(--yellow); } .st-missed{ color:var(--red); } .st-none{ color:var(--muted); }
+  .st-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle; }
+
+  /* product group bands */
+  .prod-band td{ background:#0e1320!important; border-top:2px solid #2a3148; border-bottom:1px solid var(--line); padding:11px 14px!important; }
+  .band-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .band-left{ display:flex; align-items:center; gap:11px; flex-wrap:wrap; }
+  .pname{ font-size:14.5px; font-weight:800; color:#fff; }
+  .mini{ display:flex; gap:11px; font-size:11.5px; font-weight:800; }
+  .prod-edit{ background:transparent; border:1px solid var(--line); color:var(--muted); font-size:10px; font-weight:700; padding:3px 9px; border-radius:6px; cursor:pointer; }
+  .prod-edit:hover{ border-color:#6366f1; color:#a78bfa; }
+  .prod-del{ background:transparent; border:none; color:#475569; cursor:pointer; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; }
+  .prod-del:hover{ color:var(--red); background:#1f0707; }
+  .add-prod-row td{ padding:0!important; background:transparent!important; border:none; }
+  .add-prod-btn{ width:100%; background:transparent; border:none; border-top:1px dashed var(--line2); color:#64748b; font-size:13px; font-weight:700; padding:15px; cursor:pointer; }
+  .add-prod-btn:hover{ color:var(--green); background:#0d1119; }
+
+  /* legend / footer */
+  .legend{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin:18px 0 10px; }
+  .leg-card{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .leg-t{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+  .leg-d{ font-size:11.5px; color:#94a3b8; line-height:1.5; }
+  .foot{ font-size:11px; color:var(--muted2); margin-top:14px; line-height:1.6; }
+  .save-pill{ font-size:11px; color:var(--green); }
+  .save-pill.saved{ animation:flash 1.2s ease; }
+  @keyframes flash{0%{color:var(--green)}100%{color:var(--muted2)}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>Guru Labs — Team Scoreboard (Monthly KPIs)</h1>
+    <div class="sub"><span class="live-dot"></span>North Star = Revenue &nbsp;·&nbsp; monthly goals (next 30 days) &nbsp;·&nbsp; Matt reviews weekly · 📅 full team review on the 15th &nbsp;·&nbsp; <span id="savePill" class="save-pill">auto-saves to this browser</span></div>
+  </div>
+  <div class="tools noprint">
+    <button class="btn primary" onclick="addWeek()">+ Month</button>
+    <button class="btn green" onclick="addProduct()">+ Product</button>
+    <button class="btn" onclick="exportCSV()">Export CSV</button>
+    <button class="btn" onclick="window.print()">Print / PDF</button>
+    <button class="btn" onclick="resetAll()">Reset</button>
+  </div>
+</div>
+
+<!-- MONTH TABS -->
+<div class="bar" id="weekBar"><span class="lead">Month</span></div>
+
+<!-- CONTEXT HEADING -->
+<div class="ctx-head" id="ctxHead"></div>
+
+<!-- SUMMARY -->
+<div class="kpi-row" id="kpiRow"></div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="kpi-name">KPI</th>
+          <th>Goal</th>
+          <th>Actual</th>
+          <th>Owner</th>
+          <th class="status-cell">Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-card"><div class="leg-t kv-green">✅ On Track / Hit</div><div class="leg-d">Pace meets or beats the monthly goal. "Hit" = goal achieved.</div></div>
+  <div class="leg-card"><div class="leg-t kv-orange">🟠 Behind</div><div class="leg-d">Trailing the goal but recoverable this month with focus.</div></div>
+  <div class="leg-card"><div class="leg-t kv-yellow">⚠️ At Risk</div><div class="leg-d">Blocked or unlikely to hit without help — flag it on the Monday call.</div></div>
+  <div class="leg-card"><div class="leg-t kv-red">🔴 Missed</div><div class="leg-d">Goal not met for the month. Owner explains why + the fix.</div></div>
+</div>
+
+<div class="foot">
+  Everything is editable — click any cell to type, pick a Status from the dropdown. All products are stacked on one page, grouped by section (each band shows that product's status mix). Use <strong>+ Add a product</strong> at the bottom (or the toolbar) to add anything we're missing; <strong>rename</strong>/<strong>remove</strong> on each band. Add a new <strong>Month</strong> at the start of each month (clones owners + goals, clears actuals). Goals are set for the month (next 30 days); Matt reviews weekly; full team review mid-month (the 15th).
+  Saves automatically in this browser; use <strong>Export CSV</strong> to share or back up.
+</div>
+
+<script>
+const KEY = 'guruScoreboardV3';
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+const KPIS = [
+  {k:'Revenue', north:true},
+  {k:'New Customers'},
+  {k:'Leads Generated'},
+  {k:'Trial → Paid %'},
+  {k:'Features Shipped'},
+  {k:'Critical Bugs Closed'},
+  {k:'Customer Response Time'},
+  {k:'Customer Satisfaction'},
+  {k:'Content Published'},
+  {k:'Strategic Projects Completed'},
+];
+const STATUSES = ['', 'On Track', 'Hit', 'Behind', 'At Risk', 'Missed'];
+const STATUS_CLASS = {'':'st-none','On Track':'st-ontrack','Hit':'st-hit','Behind':'st-behind','At Risk':'st-risk','Missed':'st-missed'};
+const STATUS_COLOR = {'':'#475569','On Track':'#34d399','Hit':'#34d399','Behind':'#fb923c','At Risk':'#f59e0b','Missed':'#f87171'};
+
+// Seeded from the June 15 KPI call. rows align to KPIS order: [goal, owner, status]
+const PRODUCTS = [
+  {name:'Company-Wide', rows:[
+    ['$10K/mo first revenue target','Matt','On Track'],
+    ['First paid customers, all products','Product Owners','On Track'],
+    ['Outbound + Meta ads','Jan / Elena','On Track'],
+    ['Tracked per product','Product Owners',''],
+    ['3 products launched this month','Product Owners','On Track'],
+    ['All P1 blockers cleared','Dev Team','On Track'],
+    ['< 24 hours','Jan / Elena','On Track'],
+    ['Retention / LTV','Product Owners',''],
+    ['AI SEO across all products','Elena','On Track'],
+    ['See per-product below','—',''],
+  ]},
+  {name:'DRM', rows:[
+    ['','Raja',''],
+    ['10 paid → then 50 paid','Raja','On Track'],
+    ['Coach outreach + Meta ads','Jan / Elena','On Track'],
+    ['Direct paid (no trial)','Raja',''],
+    ['MVP launch (this week)','Raja','On Track'],
+    ['3 P1 launch blockers','Raja','At Risk'],
+    ['< 24 hours','Jan','On Track'],
+    ['Retention','Raja',''],
+    ['AI SEO blogs (10 live)','Raja','On Track'],
+    ['Press / reporter outreach','Elena',''],
+  ]},
+  {name:'Rekindle', rows:[
+    ['','Asif',''],
+    ['15 paid (within 1 month)','Asif','On Track'],
+    ['Meta ads + therapist outreach','Asif','On Track'],
+    ['Direct paid','Asif',''],
+    ['Full launch — needs Simply Noted API','Asif','At Risk'],
+    ['Stripe / Polsia errors','Asif','Behind'],
+    ['< 24 hours','Jan','On Track'],
+    ['Retention','Asif',''],
+    ['FB page + Meta branding','Asif','On Track'],
+    ['GHL funnel + therapist email DB','Asif','On Track'],
+  ]},
+  {name:'AI Sponsor', rows:[
+    ['','Mariam',''],
+    ['Beta launch — 85 users','Mariam','At Risk'],
+    ['78 waitlist + ads','Mariam','On Track'],
+    ['30-day trial → $5/mo','Mariam',''],
+    ['WhatsApp live (needs number)','Abdul','At Risk'],
+    ['Bilal QA bugs','Mariam','On Track'],
+    ['< 24 hours','Mariam','On Track'],
+    ['Retention','Mariam',''],
+    ['AI SEO pilot (Claude)','Mariam','On Track'],
+    ['Beta + Meta ads launch','Mariam','On Track'],
+  ]},
+  {name:'GHL / Funnels', rows:[
+    ['Low-ticket → high-ticket funnels','Abdul',''],
+    ['First funnel sales','Abdul',''],
+    ['Funnel opt-ins','Abdul','On Track'],
+    ['LT → HT conversion','Abdul',''],
+    ['Funnel completion → 100%','Abdul','Behind'],
+    ['Hyros / Iris pixel fixes','Abdul','On Track'],
+    ['< 24 hours (GHL inbox)','Jan','On Track'],
+    ['Retention','Abdul',''],
+    ['AI SEO per offer','Abdul',''],
+    ['Reclaim $20K Meta ad credit','Abdul','At Risk'],
+  ]},
+  {name:'Marketing (Outbound)', rows:[
+    ['','Jan / Elena',''],
+    ['Conversions from outreach','Jan / Elena',''],
+    ['100+/day (LinkedIn / IG / TikTok)','Jan','On Track'],
+    ['—','—',''],
+    ['—','—',''],
+    ['—','—',''],
+    ['< 24 hours','Jan / Elena','On Track'],
+    ['—','—',''],
+    ['Social content scheduled','Elena','On Track'],
+    ['100 dating coaches + reporter outreach','Jan / Elena','On Track'],
+  ]},
+];
+
+function blankKpis(owner){ return KPIS.map(kp=>({name:kp.k, goal:'', actual:'', owner:owner||'', status:''})); }
+function seedKpis(p){ return KPIS.map((kp,i)=>({name:kp.k, goal:(p.rows[i]||[])[0]||'', actual:'', owner:(p.rows[i]||[])[1]||'', status:(p.rows[i]||[])[2]||''})); }
+function seed(){
+  return {
+    activeWeek:0, activeProduct:0,
+    weeks:[{ id:uid(), name:monthLabel(new Date()), products: PRODUCTS.map(p=>({id:uid(), name:p.name, kpis:seedKpis(p)})) }]
+  };
+}
+
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function monthLabel(d){ return MONTHS[d.getMonth()]+' '+d.getFullYear(); }
+
+let state = load();
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.weeks&&s.weeks.length) return s; }catch(e){} return seed(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); }
+function flashSaved(){ const p=document.getElementById('savePill'); p.textContent='saved ✓'; p.classList.remove('saved'); void p.offsetWidth; p.classList.add('saved'); setTimeout(()=>{p.textContent='auto-saves to this browser';},1400); }
+
+function curWeek(){ return state.weeks[state.activeWeek]; }
+function curProduct(){ const w=curWeek(); if(state.activeProduct>=w.products.length) state.activeProduct=0; return w.products[state.activeProduct]; }
+
+/* ---------- RENDER ---------- */
+function render(){ renderWeeks(); renderCtx(); renderTable(); renderSummary(); }
+
+function renderCtx(){
+  const el=document.getElementById('ctxHead');
+  el.innerHTML=`📊 All Products <span class="pd">· ${esc(curWeek().name)}</span> <span class="rev">📅 Team review on the 15th</span>`;
+}
+
+function counts(p){ let good=0,behind=0,risk=0,missed=0; p.kpis.forEach(r=>{const s=r.status; if(s==='On Track'||s==='Hit')good++; else if(s==='Behind')behind++; else if(s==='At Risk')risk++; else if(s==='Missed')missed++;}); return {good,behind,risk,missed}; }
+
+function renderWeeks(){
+  const bar=document.getElementById('weekBar');
+  bar.querySelectorAll('.tab,.add-tab').forEach(e=>e.remove());
+  state.weeks.forEach((w,i)=>{
+    const t=document.createElement('div'); t.className='tab'+(i===state.activeWeek?' active':'');
+    const lbl=document.createElement('span'); lbl.textContent=w.name; lbl.style.cursor='pointer';
+    lbl.ondblclick=()=>renameWeek(i);
+    lbl.onclick=()=>{ state.activeWeek=i; save(); render(); };
+    t.appendChild(lbl);
+    if(state.weeks.length>1){ const x=document.createElement('span'); x.className='x noprint'; x.textContent='✕'; x.onclick=(e)=>{ e.stopPropagation(); delWeek(i); }; t.appendChild(x); }
+    bar.appendChild(t);
+  });
+  const add=document.createElement('button'); add.className='add-tab noprint'; add.textContent='+ Month'; add.onclick=addWeek; bar.appendChild(add);
+}
+
+function renderTable(){
+  const tb=document.getElementById('tbody'); tb.innerHTML='';
+  const w=curWeek();
+  w.products.forEach((p,pi)=>{
+    const c=counts(p);
+    const band=document.createElement('tr'); band.className='prod-band';
+    band.innerHTML=`<td colspan="5">
+      <div class="band-row">
+        <div class="band-left"><span class="pname">📊 ${esc(p.name)}</span><button class="prod-edit noprint" data-rename>rename</button></div>
+        <div class="band-left">
+          <div class="mini"><span class="kv-green">✅ ${c.good}</span><span class="kv-orange">🟠 ${c.behind}</span><span class="kv-yellow">⚠️ ${c.risk}</span><span class="kv-red">🔴 ${c.missed}</span></div>
+          ${w.products.length>1?'<button class="prod-del noprint" data-del>✕ remove</button>':''}
+        </div>
+      </div></td>`;
+    tb.appendChild(band);
+    band.querySelector('[data-rename]').onclick=()=>renameProduct(pi);
+    const db=band.querySelector('[data-del]'); if(db) db.onclick=()=>delProduct(pi);
+
+    p.kpis.forEach((row,idx)=>{
+      const tr=document.createElement('tr');
+      const opts=STATUSES.map(s=>`<option value="${s}" ${s===row.status?'selected':''}>${s||'— set —'}</option>`).join('');
+      tr.innerHTML=`
+        <td class="kpi-name">${row.name}${KPIS[idx]&&KPIS[idx].north?'<span class="north">NORTH STAR</span>':''}</td>
+        <td><input class="cell goal" data-f="goal" value="${esc(row.goal)}" placeholder="—"/></td>
+        <td><input class="cell actual" data-f="actual" value="${esc(row.actual)}" placeholder="—"/></td>
+        <td><input class="cell owner" data-f="owner" value="${esc(row.owner)}" placeholder="owner"/></td>
+        <td class="status-cell"><span class="st-dot" style="background:${STATUS_COLOR[row.status]}"></span><select class="cell ${STATUS_CLASS[row.status]}" data-f="status" style="width:auto;display:inline-block">${opts}</select></td>`;
+      tb.appendChild(tr);
+      tr.querySelectorAll('input[data-f]').forEach(inp=>{ inp.addEventListener('input',()=>{ row[inp.dataset.f]=inp.value; save(); }); });
+      const sel=tr.querySelector('select'); sel.addEventListener('change',()=>{ row.status=sel.value; save(); renderTable(); renderSummary(); });
+    });
+  });
+  const addtr=document.createElement('tr'); addtr.className='add-prod-row noprint';
+  addtr.innerHTML=`<td colspan="5"><button class="add-prod-btn" onclick="addProduct()">+ Add a product or KPI group we're missing</button></td>`;
+  tb.appendChild(addtr);
+}
+
+function renderSummary(){
+  const w=curWeek();
+  let good=0,behind=0,risk=0,missed=0;
+  w.products.forEach(p=>{ const c=counts(p); good+=c.good; behind+=c.behind; risk+=c.risk; missed+=c.missed; });
+  const cards=[
+    {v:good, l:'On Track / Hit · all products', c:'kv-green'},
+    {v:behind, l:'Behind · all products', c:'kv-orange'},
+    {v:risk, l:'At Risk · all products', c:'kv-yellow'},
+    {v:missed, l:'Missed · all products', c:'kv-red'},
+  ];
+  document.getElementById('kpiRow').innerHTML=cards.map(c=>`<div class="kpi-card"><div class="kpi-val ${c.c}">${c.v}</div><div class="kpi-label">${c.l}</div></div>`).join('');
+}
+
+/* ---------- ACTIONS ---------- */
+function addWeek(){
+  const base=curWeek();
+  const products=base.products.map(p=>({ id:uid(), name:p.name, kpis:p.kpis.map(r=>({name:r.name,goal:r.goal,actual:'',owner:r.owner,status:''})) }));
+  // next month after the base period if it parses, else current month
+  const m=base.name.match(/([A-Za-z]+)\s+(\d{4})/);
+  let next;
+  if(m){ let idx=MONTHS.indexOf(m[1]); let yr=+m[2]; idx++; if(idx>11){idx=0;yr++;} next=MONTHS[idx]+' '+yr; }
+  else next=monthLabel(new Date());
+  const input=prompt('New month label:', next); if(input===null) return;
+  state.weeks.push({id:uid(), name:input.trim()||next, products}); state.activeWeek=state.weeks.length-1; save(); render();
+}
+function delWeek(i){ if(state.weeks.length<=1){alert('Keep at least one month.');return;} if(!confirm('Delete '+state.weeks[i].name+'?'))return; state.weeks.splice(i,1); if(state.activeWeek>=state.weeks.length) state.activeWeek=state.weeks.length-1; save(); render(); }
+function renameWeek(i){ const n=prompt('Rename month:',state.weeks[i].name); if(n&&n.trim()){ state.weeks[i].name=n.trim(); save(); render(); } }
+
+function addProduct(){
+  const name=prompt('Add a product or KPI group we might be missing (e.g. a new funnel, a new product):',''); if(name===null||!name.trim()) return;
+  const owner=prompt('Owner for '+name.trim()+' (optional):','')||'';
+  curWeek().products.push({id:uid(), name:name.trim(), kpis:blankKpis(owner)});
+  save(); render();
+  setTimeout(()=>{ window.scrollTo(0, document.body.scrollHeight); }, 30);
+}
+function delProduct(i){ const w=curWeek(); if(w.products.length<=1){alert('Keep at least one product.');return;} if(!confirm('Remove '+w.products[i].name+' from '+w.name+'?'))return; w.products.splice(i,1); save(); render(); }
+function renameProduct(i){ const n=prompt('Rename product:',curWeek().products[i].name); if(n&&n.trim()){ curWeek().products[i].name=n.trim(); save(); render(); } }
+
+function resetAll(){ if(confirm('Reset the whole scoreboard to the starter template? This clears your saved data.')){ state=seed(); save(); render(); } }
+
+function exportCSV(){
+  const w=curWeek();
+  const lines=[w.name];
+  lines.push(['Product','KPI','Goal','Actual','Owner','Status'].join(','));
+  w.products.forEach(p=>{ p.kpis.forEach(r=>{ lines.push([q(p.name),q(r.name),q(r.goal),q(r.actual),q(r.owner),q(r.status)].join(',')); }); });
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Guru-Weekly-Scoreboard-'+w.name.replace(/[^\w]+/g,'-')+'.csv'; a.click();
+}
+function q(s){ s=(s||'').toString(); return /[,"]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+render();
+</script>
+</body>
+</html>
