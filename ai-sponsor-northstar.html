@@ -92,6 +92,17 @@ header p{font-size:12.5px;color:var(--ink-2);margin-top:3px}
       <div class="tile"><div class="label">Active subs</div><div class="value" id="t-subs">—</div></div>
     </div>
 
+    <div class="card" id="usage-card" style="display:none">
+      <h2>Real usage — did they actually chat?</h2>
+      <div class="sub">From our own database (logging started Jul 10) · counts days with ≥1 message</div>
+      <div class="tiles" style="margin-bottom:2px">
+        <div class="tile"><div class="label">Users who chatted</div><div class="value" id="u-chatted">—</div></div>
+        <div class="tile"><div class="label">Total active days</div><div class="value" id="u-days">—</div></div>
+        <div class="tile"><div class="label">Active last 7d</div><div class="value" id="u-7d">—</div></div>
+        <div class="tile"><div class="label">Messages</div><div class="value" id="u-msgs">—</div></div>
+      </div>
+    </div>
+
     <div class="card">
       <h2><span class="dot"></span>Sign-ups per day</h2>
       <div class="sub">Last 14 days · completed registrations (web)</div>
@@ -145,6 +156,14 @@ function render(d) {
     document.getElementById('banner-body').innerHTML =
       'Tracking is live and working, but only <b>' + d.signups.total + '</b> sign-ups are counted so far because:' +
       '<ul>' + d.dataNotes.map(n => '<li>' + n + '</li>').join('') + '</ul>';
+  }
+
+  if (d.usage) {
+    document.getElementById('usage-card').style.display = 'block';
+    document.getElementById('u-chatted').textContent = d.usage.usersWhoChatted.toLocaleString();
+    document.getElementById('u-days').textContent = d.usage.totalActiveDays.toLocaleString();
+    document.getElementById('u-7d').textContent = d.usage.activeLast7d.toLocaleString();
+    document.getElementById('u-msgs').textContent = d.usage.totalMessages.toLocaleString();
   }
 
   document.getElementById('notes').innerHTML =
