@@ -105,7 +105,7 @@
 <div class="header">
   <div>
     <h1>Guru Labs — Team Scoreboard (Monthly KPIs)</h1>
-    <div class="sub"><span class="live-dot"></span>North Star = Revenue &nbsp;·&nbsp; monthly goals (next 30 days) &nbsp;·&nbsp; Matt reviews weekly · 📅 full team review on the 15th &nbsp;·&nbsp; <span id="savePill" class="save-pill">auto-saves to this browser</span></div>
+    <div class="sub"><span class="live-dot"></span>North Star = Revenue &nbsp;·&nbsp; monthly goals (next 30 days) &nbsp;·&nbsp; Matt reviews weekly · 📅 full team review on the 15th &nbsp;·&nbsp; <span id="savePill" class="save-pill">connecting to shared board…</span></div>
   </div>
   <div class="tools noprint">
     <button class="btn primary" onclick="addWeek()">+ Month</button>
@@ -114,6 +114,13 @@
     <button class="btn" onclick="window.print()">Print / PDF</button>
     <button class="btn" onclick="resetAll()">Reset</button>
   </div>
+</div>
+
+<!-- TEAM KEY (shown only when the shared save needs it) -->
+<div id="keyBar" class="noprint" style="display:none;margin:0 0 12px;padding:10px 14px;background:#1e293b;border:1px solid #f59e0b;border-radius:10px;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#e2e8f0;">
+  <span>🔑 To save your edits <strong>for the whole team</strong>, paste the team key (Mariam shares it in Slack):</span>
+  <input id="keyInput" type="password" placeholder="team key" style="background:#0f172a;color:#fff;border:1px solid #475569;border-radius:8px;padding:6px 10px;"/>
+  <button onclick="saveTeamKey()" style="background:#34d399;color:#052e22;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;">Save key</button>
 </div>
 
 <!-- MONTH TABS -->
@@ -153,7 +160,7 @@
 
 <div class="foot">
   Everything is editable — click any cell to type, pick a Status from the dropdown. All products are stacked on one page, grouped by section (each band shows that product's status mix). Use <strong>+ Add a product</strong> at the bottom (or the toolbar) to add anything we're missing; <strong>rename</strong>/<strong>remove</strong> on each band. Add a new <strong>Month</strong> at the start of each month (clones owners + goals, clears actuals). Goals are set for the month (next 30 days); Matt reviews weekly; full team review mid-month (the 15th).
-  Saves automatically in this browser; use <strong>Export CSV</strong> to share or back up.
+  Edits save to the <strong>shared board</strong> automatically (enter the team key once — Mariam shares it in Slack), so everyone sees the same numbers. <strong>Export CSV</strong> for backups.
 </div>
 
 <script>
@@ -267,8 +274,68 @@ function monthLabel(d){ return MONTHS[d.getMonth()]+' '+d.getFullYear(); }
 
 let state = load();
 function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.weeks&&s.weeks.length) return s; }catch(e){} return seed(); }
-function save(){ localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); }
-function flashSaved(){ const p=document.getElementById('savePill'); p.textContent='saved ✓'; p.classList.remove('saved'); void p.offsetWidth; p.classList.add('saved'); setTimeout(()=>{p.textContent='auto-saves to this browser';},1400); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); flashSaved(); scheduleSync(); }
+let pillBase='connecting to shared board…';
+function setPillNow(t){ document.getElementById('savePill').textContent=t; }
+function flashSaved(){ const p=document.getElementById('savePill'); p.textContent='saved ✓'; p.classList.remove('saved'); void p.offsetWidth; p.classList.add('saved'); setTimeout(()=>{p.textContent=pillBase;},1400); }
+
+/* ---------- SHARED SAVE (backend commits the board to GitHub) ---------- */
+const SYNC_URL='https://ai-sponsor-f7de.onrender.com/api/scoreboard';
+let syncTimer=null;
+function teamKey(){ return localStorage.getItem('sbTeamKey')||''; }
+function showKeyBar(){ document.getElementById('keyBar').style.display='flex'; }
+function saveTeamKey(){ const v=document.getElementById('keyInput').value.trim(); if(!v) return; localStorage.setItem('sbTeamKey',v); document.getElementById('keyBar').style.display='none'; pushRemote(); }
+
+// Same merge the server uses: weeks by name, products by name, newer
+// updatedAt wins a product. Nothing either side added is dropped.
+function mergeStates(base, incoming){
+  if(!base) return incoming; if(!incoming) return base;
+  const out=JSON.parse(JSON.stringify(base));
+  (incoming.weeks||[]).forEach(iw=>{
+    const w=(out.weeks||[]).find(x=>x.name===iw.name);
+    if(!w){ out.weeks.push(iw); return; }
+    (iw.products||[]).forEach(ip=>{
+      const i=w.products.findIndex(p=>p.name===ip.name);
+      if(i===-1){ w.products.push(ip); return; }
+      if((ip.updatedAt||0)>=(w.products[i].updatedAt||0)) w.products[i]=ip;
+    });
+  });
+  return out;
+}
+async function loadRemote(){
+  try{
+    const r=await fetch(SYNC_URL); if(!r.ok) throw 0;
+    const remote=(await r.json()).state;
+    if(remote&&remote.weeks){
+      const aw=state.activeWeek||0, ap=state.activeProduct||0;
+      state=mergeStates(remote,state);
+      state.activeWeek=Math.min(aw,state.weeks.length-1); state.activeProduct=ap;
+      localStorage.setItem(KEY,JSON.stringify(state)); render();
+    }
+    pillBase='shared board — edits save for everyone'; setPillNow(pillBase);
+    if(!teamKey()) showKeyBar();
+  }catch(e){ pillBase='⚠ shared board unreachable — saving in this browser only'; setPillNow(pillBase); }
+}
+function scheduleSync(){ clearTimeout(syncTimer); syncTimer=setTimeout(pushRemote,1500); }
+async function pushRemote(){
+  if(!teamKey()){ showKeyBar(); setPillNow('⚠ enter the team key above to save for everyone'); return; }
+  try{
+    const r=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json','X-Scoreboard-Key':teamKey()},body:JSON.stringify({state})});
+    if(r.status===401){ localStorage.removeItem('sbTeamKey'); showKeyBar(); setPillNow('⚠ that team key is wrong — re-enter it'); return; }
+    if(!r.ok) throw 0;
+    const merged=(await r.json()).state;
+    if(merged&&merged.weeks){
+      const aw=state.activeWeek||0, ap=state.activeProduct||0;
+      state=merged;
+      state.activeWeek=Math.min(aw,state.weeks.length-1); state.activeProduct=ap;
+      localStorage.setItem(KEY,JSON.stringify(state));
+      const a=document.activeElement; // don't re-render mid-typing
+      if(!(a&&a.classList&&a.classList.contains('cell'))) render();
+    }
+    pillBase='shared board — edits save for everyone';
+    setPillNow('saved for everyone ✓'); setTimeout(()=>setPillNow(pillBase),1800);
+  }catch(e){ setPillNow('⚠ offline — saved here, will retry'); clearTimeout(syncTimer); syncTimer=setTimeout(pushRemote,15000); }
+}
 
 function curWeek(){ return state.weeks[state.activeWeek]; }
 function curProduct(){ const w=curWeek(); if(state.activeProduct>=w.products.length) state.activeProduct=0; return w.products[state.activeProduct]; }
@@ -326,8 +393,8 @@ function renderTable(){
         <td><input class="cell owner" data-f="owner" value="${esc(row.owner)}" placeholder="owner"/></td>
         <td class="status-cell"><span class="st-dot" style="background:${STATUS_COLOR[row.status]}"></span><select class="cell ${STATUS_CLASS[row.status]}" data-f="status" style="width:auto;display:inline-block">${opts}</select></td>`;
       tb.appendChild(tr);
-      tr.querySelectorAll('input[data-f]').forEach(inp=>{ inp.addEventListener('input',()=>{ row[inp.dataset.f]=inp.value; save(); }); });
-      const sel=tr.querySelector('select'); sel.addEventListener('change',()=>{ row.status=sel.value; save(); renderTable(); renderSummary(); });
+      tr.querySelectorAll('input[data-f]').forEach(inp=>{ inp.addEventListener('input',()=>{ row[inp.dataset.f]=inp.value; p.updatedAt=Date.now(); save(); }); });
+      const sel=tr.querySelector('select'); sel.addEventListener('change',()=>{ row.status=sel.value; p.updatedAt=Date.now(); save(); renderTable(); renderSummary(); });
     });
   });
   const addtr=document.createElement('tr'); addtr.className='add-prod-row noprint';
@@ -366,12 +433,12 @@ function renameWeek(i){ const n=prompt('Rename month:',state.weeks[i].name); if(
 function addProduct(){
   const name=prompt('Add a product or KPI group we might be missing (e.g. a new funnel, a new product):',''); if(name===null||!name.trim()) return;
   const owner=prompt('Owner for '+name.trim()+' (optional):','')||'';
-  curWeek().products.push({id:uid(), name:name.trim(), kpis:blankKpis(owner)});
+  curWeek().products.push({id:uid(), name:name.trim(), kpis:blankKpis(owner), updatedAt:Date.now()});
   save(); render();
   setTimeout(()=>{ window.scrollTo(0, document.body.scrollHeight); }, 30);
 }
 function delProduct(i){ const w=curWeek(); if(w.products.length<=1){alert('Keep at least one product.');return;} if(!confirm('Remove '+w.products[i].name+' from '+w.name+'?'))return; w.products.splice(i,1); save(); render(); }
-function renameProduct(i){ const n=prompt('Rename product:',curWeek().products[i].name); if(n&&n.trim()){ curWeek().products[i].name=n.trim(); save(); render(); } }
+function renameProduct(i){ const n=prompt('Rename product:',curWeek().products[i].name); if(n&&n.trim()){ curWeek().products[i].name=n.trim(); curWeek().products[i].updatedAt=Date.now(); save(); render(); } }
 
 function resetAll(){ if(confirm('Reset the whole scoreboard to the starter template? This clears your saved data.')){ state=seed(); save(); render(); } }
 
@@ -387,6 +454,7 @@ function q(s){ s=(s||'').toString(); return /[,"]/.test(s)?'"'+s.replace(/"/g,'"
 function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 render();
+loadRemote();
 </script>
 </body>
 </html>
