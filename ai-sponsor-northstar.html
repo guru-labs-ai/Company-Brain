@@ -54,6 +54,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .card h2{font-size:14px;font-weight:700}
 .card .sub{font-size:11.5px;color:var(--muted);margin:2px 0 12px}
 .chart{position:relative;height:160px}
+/* Height comes from the content (columns + x-axis band + peak line), so the
+   axis is never excluded and an empty state doesn't leave a dead 160px hole. */
+.chart-auto{height:auto;padding-bottom:4px}
 .chart svg{width:100%;height:100%;display:block;overflow:visible}
 .gridline{stroke:var(--line);stroke-width:1}
 .tick{font-size:9.5px;fill:var(--muted)}
@@ -68,6 +71,40 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .notes{font-size:11px;color:var(--muted);line-height:1.6;padding:2px 6px 0}
 .notes li{margin-left:15px;margin-bottom:3px}
 .state{text-align:center;padding:48px 12px;color:var(--muted);font-size:13.5px;line-height:1.7}
+
+/* ── Breakdowns ──────────────────────────────────────────────────────────────
+   Ranked horizontal bars, one hue for every bar. The category is already named
+   on its own row, so colouring bars by category would double-encode length as
+   hue and burn the only free channel on nothing. Value sits at the tip, so the
+   list reads as a table and no value is gated behind a hover. */
+.bd-row{display:grid;grid-template-columns:102px 1fr 30px;align-items:center;gap:9px;margin-bottom:7px}
+.bd-row .k{font-size:11.5px;color:var(--muted);font-weight:600;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-track{height:14px;position:relative}
+.bd-bar{height:14px;background:var(--chart);border-radius:0 4px 4px 0;min-width:2px;
+  transition:width .5s cubic-bezier(.22,1,.36,1)}
+.bd-row .v{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.bd-empty{font-size:11.5px;color:var(--muted);padding:2px 0 8px}
+.subhead{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.05em;margin:14px 0 8px}
+.subhead:first-of-type{margin-top:2px}
+
+/* ── Messages per day ────────────────────────────────────────────────────────
+   Columns in HTML rather than SVG: the sibling chart stretches its viewBox with
+   preserveAspectRatio="none", which is fine for a path but would squash a 4px
+   corner radius into an ellipse. Plain divs keep the geometry exact. */
+.msgwrap{position:relative;padding-left:26px}
+.msgcols{display:flex;gap:2px;align-items:flex-end;height:112px;position:relative}
+.msgcol{flex:1;height:100%;display:flex;align-items:flex-end;cursor:default}
+.msgfill{width:100%;background:var(--chart);border-radius:4px 4px 0 0;
+  transition:height .5s cubic-bezier(.22,1,.36,1)}
+.msgcol:hover .msgfill{background:var(--blue-dark)}
+.msgline{position:absolute;left:0;right:0;border-top:1px solid var(--line);pointer-events:none}
+.msgytick{position:absolute;left:-26px;font-size:9.5px;color:var(--muted);
+  transform:translateY(-50%);font-variant-numeric:tabular-nums}
+.msgx{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-top:7px}
+.msgpeak{font-size:10.5px;color:var(--muted);margin-top:8px}
+.msgpeak b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -98,6 +135,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <div class="tile"><div class="label">Avg days each</div><div class="value" id="t-avg">—</div></div>
       <div class="tile"><div class="label">Cancellations</div><div class="value" id="t-cancel">—</div></div>
       <div class="tile"><div class="label">Chatted (7 days)</div><div class="value" id="t-7d">—</div></div>
+    </div>
+
+    <div class="card" id="card-activity">
+      <h2>Messages per day</h2>
+      <div class="sub">How much people actually lean on their sponsor · last 14 days</div>
+      <div class="chart chart-auto" id="msgchart"><div class="tooltip" id="msgtip"></div></div>
+    </div>
+
+    <div class="card" id="card-who">
+      <h2>Who's here</h2>
+      <div class="sub">Every person who has signed up · aggregate only, never names or conversations</div>
+      <div id="who-body"></div>
     </div>
 
     <ul class="notes" id="notes"></ul>
@@ -178,6 +227,109 @@ function render(d) {
 
   document.getElementById('notes').innerHTML =
     d.dataNotes.map(n => '<li>' + n + '</li>').join('');
+
+  drawWho(d.breakdowns);
+  drawMessages(d.breakdowns);
+}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* One ranked list. Single hue by design — the row already names the category,
+   so a per-category colour would encode nothing the label doesn't. Value rides
+   the tip, so every number is readable without hovering. */
+function bdList(obj, order) {
+  const entries = Object.entries(obj || {});
+  if (!entries.length) return '<div class="bd-empty">—</div>';
+  if (order) entries.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+  else entries.sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(e => e[1]), 1);
+  return entries.map(([k, n]) => `
+    <div class="bd-row">
+      <div class="k" title="${esc(k)}">${esc(k)}</div>
+      <div class="bd-track"><div class="bd-bar" style="width:${Math.max((n / max) * 100, 1.5)}%"></div></div>
+      <div class="v">${n.toLocaleString()}</div>
+    </div>`).join('');
+}
+
+// Recovery stage is ordinal — keep the journey's own order, never rank by size.
+const STAGE_ORDER = ['Just starting out', 'Starting over', 'Under 3 months', '3-12 months',
+  '1-5 years', '5+ years', 'unknown'];
+
+function drawWho(b) {
+  const el = document.getElementById('who-body');
+  const total = b ? Object.values(b.byChannel || {}).reduce((a, c) => a + c, 0) : 0;
+  if (!b || !total) {
+    el.innerHTML = '<div class="bd-empty">Nothing here yet — this fills in on its own as people register and start talking.</div>';
+    return;
+  }
+  el.innerHTML =
+    '<div class="subhead">Program</div>' + bdList(b.byProgram) +
+    '<div class="subhead">Where they are in recovery</div>' + bdList(b.byStage, STAGE_ORDER) +
+    '<div class="subhead">How they got here</div>' + bdList(b.byChannel) +
+    '<div class="subhead">Access</div>' + bdList(b.byAccess);
+}
+
+// Axis ticks are the values no column is directly labelled with, so they have to
+// be readable numbers — 60, not 59.
+function niceMax(max) {
+  if (max <= 5) return Math.max(max, 2);
+  const pow = Math.pow(10, Math.floor(Math.log10(max)));
+  for (const step of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) {
+    const cand = step * pow;
+    if (cand >= max) return Math.round(cand);
+  }
+  return Math.round(10 * pow);
+}
+
+/* Daily message volume — the truest "are people actually using this" signal we
+   have. 14 days to match the chart above, and so each column stays a big enough
+   hover target; the API keeps 30 days if we ever want a wider window. */
+function drawMessages(b) {
+  const el = document.getElementById('msgchart');
+  const src = (b && b.messagesByDay) || {};
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const t = new Date(); t.setHours(12, 0, 0, 0); t.setDate(t.getDate() - i);
+    const key = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    days.push({ key, label: (t.getMonth() + 1) + '/' + t.getDate(), v: src[key] || 0 });
+  }
+  const total = days.reduce((a, d) => a + d.v, 0);
+  if (!total) {
+    el.innerHTML = '<div class="tooltip" id="msgtip"></div>' +
+      '<div class="bd-empty">No messages yet. This is the number that tells us the product is working — it starts the first time someone talks to their sponsor.</div>';
+    return;
+  }
+  const max = Math.max(...days.map(d => d.v));
+  const yMax = niceMax(max);
+  const peak = days.reduce((a, d) => (d.v > a.v ? d : a), days[0]);
+
+  const cols = days.map(d =>
+    `<div class="msgcol" data-k="${d.label}" data-v="${d.v}">
+       <div class="msgfill" style="height:${(d.v / yMax) * 100}%"></div>
+     </div>`).join('');
+  // Two hairline gridlines + their ticks carry the values no column is labelled with.
+  const lines = [0, 1].map(f =>
+    `<div class="msgline" style="bottom:${f * 100}%"><span class="msgytick">${Math.round(yMax * f).toLocaleString()}</span></div>`).join('');
+
+  el.innerHTML =
+    '<div class="tooltip" id="msgtip"></div>' +
+    `<div class="msgwrap">
+       <div class="msgcols">${lines}${cols}</div>
+       <div class="msgx"><span>${days[0].label}</span><span>${days[days.length - 1].label}</span></div>
+       <div class="msgpeak">Busiest day: <b>${esc(peak.label)}</b> — ${peak.v.toLocaleString()} message${peak.v === 1 ? '' : 's'} · ${total.toLocaleString()} in 14 days</div>
+     </div>`;
+
+  const tip = document.getElementById('msgtip');
+  el.querySelectorAll('.msgcol').forEach(node => {
+    node.addEventListener('mousemove', (ev) => {
+      tip.style.display = 'block';
+      tip.textContent = node.dataset.k + ' — ' + (+node.dataset.v).toLocaleString() + ' messages';
+      const r = el.getBoundingClientRect();
+      tip.style.left = Math.min(ev.clientX - r.left + 10, r.width - 140) + 'px';
+      tip.style.top = (ev.clientY - r.top - 30) + 'px';
+    });
+    node.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
 }
 
 // How many people have passed each milestone (from their sign-up dates).
