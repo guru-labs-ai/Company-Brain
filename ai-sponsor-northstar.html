@@ -84,7 +84,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .bd-bar{height:14px;background:var(--chart);border-radius:0 4px 4px 0;min-width:2px;
   transition:width .5s cubic-bezier(.22,1,.36,1)}
 .bd-row .v{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
-.bd-empty{font-size:11.5px;color:var(--muted);padding:2px 0 8px}
+.bd-empty{font-size:11.5px;color:var(--muted);padding:2px 0 8px;line-height:1.6}
+/* What this card will show once people arrive — an empty card teaches nothing,
+   and pre-launch is the only state anyone sees it in right now. */
+.bd-soon{font-size:11.5px;color:var(--muted);line-height:1.75;padding:2px 0 4px}
+.bd-soon div{padding-left:13px;position:relative}
+.bd-soon div::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--chart);opacity:0.55}
+.bd-soon b{color:var(--ink);font-weight:650}
 .subhead{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
   letter-spacing:0.05em;margin:14px 0 8px}
 .subhead:first-of-type{margin-top:2px}
@@ -259,7 +266,18 @@ function drawWho(b) {
   const el = document.getElementById('who-body');
   const total = b ? Object.values(b.byChannel || {}).reduce((a, c) => a + c, 0) : 0;
   if (!b || !total) {
-    el.innerHTML = '<div class="bd-empty">Nothing here yet — this fills in on its own as people register and start talking.</div>';
+    // Say what this card WILL show. Collapsed to one blank line it teaches the
+    // reader nothing, and today that's the only state anyone will ever see it in.
+    el.innerHTML =
+      '<div class="bd-empty">Nobody has signed up yet, so there\'s nothing to break down. ' +
+      'The moment people start arriving this fills in on its own:</div>' +
+      '<div class="bd-soon">' +
+        '<div><b>Program</b> — AA, NA, Al-Anon, OA and the rest</div>' +
+        '<div><b>Where they are in recovery</b> — just starting out through 5+ years</div>' +
+        '<div><b>Where they came from</b> — Facebook, Instagram, Google, ChatGPT, direct</div>' +
+        '<div><b>How they got here</b> — website or WhatsApp</div>' +
+        '<div><b>Access</b> — beta vs paying</div>' +
+      '</div>';
     return;
   }
   el.innerHTML =
