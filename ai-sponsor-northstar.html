@@ -205,8 +205,7 @@ function render(d) {
 
   // Pre-launch: nobody has signed up yet. Zero is the honest number, but the
   // copy below is written for a live product — "grows by 0 days every single
-  // day" under a big 0 reads as broken rather than as not-started. Matt's beta
-  // list sits staged in GHL and deliberately isn't counted: a list isn't a user.
+  // day" under a big 0 reads as broken rather than as not-started.
   const notStarted = ns.cumulativeRecoveryDays === 0 && (!d.usage || d.usage.registeredUsers === 0);
   const years = ns.cumulativeRecoveryDays / 365;
 
