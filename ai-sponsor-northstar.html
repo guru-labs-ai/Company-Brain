@@ -147,14 +147,22 @@ function render(d) {
   const ns = d.northStar;
   countUp(document.getElementById('ns-value'), ns.cumulativeRecoveryDays);
 
+  // Pre-launch: nobody has signed up yet. Zero is the honest number, but the
+  // copy below is written for a live product — "grows by 0 days every single
+  // day" under a big 0 reads as broken rather than as not-started. Matt's beta
+  // list sits staged in GHL and deliberately isn't counted: a list isn't a user.
+  const notStarted = ns.cumulativeRecoveryDays === 0 && (!d.usage || d.usage.registeredUsers === 0);
   const years = ns.cumulativeRecoveryDays / 365;
-  document.getElementById('ns-meaning').textContent =
-    years >= 1
+
+  document.getElementById('ns-meaning').textContent = notStarted
+    ? 'No one has signed up yet — this starts counting the day the first person redeems their code.'
+    : years >= 1
       ? 'That’s ' + years.toFixed(1) + ' years of recovery — nights nobody faced alone.'
       : 'Every one of these days, someone had a sponsor in their pocket.';
 
-  document.getElementById('ns-growth').textContent =
-    'grows by ' + ns.activeUsers.toLocaleString() + ' days — every single day';
+  document.getElementById('ns-growth').textContent = notStarted
+    ? 'waiting on the first sign-up'
+    : 'grows by ' + ns.activeUsers.toLocaleString() + ' days — every single day';
 
   document.getElementById('stamp').textContent =
     'Live · updated ' + new Date(d.generatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
