@@ -265,6 +265,7 @@ function drawWho(b) {
   el.innerHTML =
     '<div class="subhead">Program</div>' + bdList(b.byProgram) +
     '<div class="subhead">Where they are in recovery</div>' + bdList(b.byStage, STAGE_ORDER) +
+    '<div class="subhead">Where they came from</div>' + bdList(b.bySource) +
     '<div class="subhead">How they got here</div>' + bdList(b.byChannel) +
     '<div class="subhead">Access</div>' + bdList(b.byAccess);
 }
