@@ -237,10 +237,17 @@ Private, anonymous, free for 30 days. Every membership funds a free one for some
   <div class="card">
     <h3>Campaign 2 — "ai sponsor" (qualified phrases only)</h3>
     <p><strong>Never bid the bare term.</strong> Google's own "People also ask" on "ai sponsor" returns <em>"Who sponsors AI?"</em> and <em>"What are the 4 types of sponsorships?"</em>, and the page fills with AI conference sponsorship. On broad match we'd be paying for people hunting event sponsors and visa sponsorship.</p>
-    <div class="chips">
-      <span class="kw">"ai sponsor for alcoholics anonymous"</span><span class="kw">"ai sobriety sponsor"</span>
-      <span class="kw">"ai aa sponsor"</span><span class="kw">"ai recovery sponsor"</span>
+    <div class="callout good" style="margin:10px 0 12px;">
+      <h3>Corrected from real data — people search "online," not "AI"</h3>
+      <p>Search Console shows three real queries that found us in three months: <strong>"online aa sponsor"</strong> (2 impressions) · <strong>"ai sponsor for aa"</strong> (1) · <strong>"aa sponsor online"</strong> (1). Two of the three say <em>online</em>. The demand people are expressing is for a sponsor they can reach remotely — <strong>"AI sponsor" is the category we named, not the words they type.</strong> Lead with the online phrasing; let AI be the answer they arrive at. <em>Caveat: three queries. Directional, not proof.</em></p>
     </div>
+    <div class="chips">
+      <span class="kw">"online aa sponsor"</span><span class="kw">"aa sponsor online"</span>
+      <span class="kw">"ai sponsor for aa"</span><span class="kw">"find an aa sponsor online"</span>
+      <span class="kw">"virtual aa sponsor"</span><span class="kw">"remote aa sponsor"</span>
+      <span class="kw">"ai sobriety sponsor"</span><span class="kw">"ai recovery sponsor"</span>
+    </div>
+    <p style="margin-top:10px;font-size:12.5px;color:var(--body);line-height:1.6;">First three are <strong>confirmed real queries</strong> from our own Search Console. The rest are hypotheses until Keyword Planner is available.</p>
     <p style="margin-top:12px;"><strong>Mandatory negatives:</strong></p>
     <div class="chips">
       <span class="kw neg">conference</span><span class="kw neg">event</span><span class="kw neg">sponsorship package</span><span class="kw neg">tier</span>
@@ -323,8 +330,42 @@ Private, anonymous, free for 30 days. Every membership funds a free one for some
     <div class="row"><b>Bonus:</b> it's the same milestone list the digital token would render, so the page and the feature are one piece of work.</div>
   </div>
 
+  <!-- GEO AUDIT -->
+  <div class="section-label">4 · GEO audit of the live site — what we actually scored</div>
+
+  <div class="card">
+    <h3>How this was run</h3>
+    <p>Using the <strong>Claude SEO</strong> tooling Matt sent (verified before installing: 11,971 stars, MIT, last push Jul 20, no network calls in the installer). Its GEO criteria scored against getaisponsor.com, plus real Search Console data. <em>Partial run — the full 18-agent orchestration needs a Claude Code restart; these findings are real, a full pass would go deeper.</em></p>
+  </div>
+
+  <div class="callout good">
+    <h3>✅ What passes — and it's the expensive one</h3>
+    <p><strong>AI crawlers do not execute JavaScript</strong>, so client-rendered sites are invisible to them. Ours is static HTML and the body copy is in the served source. We pass the check that would otherwise mean a rebuild.</p>
+  </div>
+
+  <div class="callout warn">
+    <h3>What fails — all of it free to fix</h3>
+    <p><strong>No dates. No author. No byline.</strong> Zero <code>datePublished</code>, <code>dateModified</code> or author signals anywhere in the HTML. This is the costly one: content under 3 months old is <strong>~3x more likely to be cited</strong>, and pages left stale 6+ months <strong>lose citation eligibility altogether</strong>. With no dates at all we can't signal recency in either direction.</p>
+    <p><strong>One question-based heading on the entire page</strong> — "Need a hand?", which nobody searches. Our real FAQ questions sit in JSON-LD where no heading parser sees them.</p>
+    <p><strong>No AI crawler named in robots.txt.</strong> Nothing is blocked (the wildcard allows them) but GPTBot, ClaudeBot, PerplexityBot and OAI-SearchBot should be named explicitly.</p>
+    <p><strong>No multi-modal content.</strong> Pages combining text, images, video and charts see <strong>156% higher selection rates</strong>. We have a logo.</p>
+  </div>
+
+  <div class="callout bad">
+    <h3>And one thing we shipped that doesn't do what we said</h3>
+    <p><strong>`llms.txt` is not a Google lever.</strong> Google's AI optimization guide, updated 29 June 2026, says you don't need it and that it "won't harm (nor help) your visibility or rankings in Google Search, as Google Search ignores them." Mueller called the discovery use case "a dead end."</p>
+    <p>We shipped it in June as a headline AEO deliverable. Keep it — it costs nothing and is still fine for non-Google engines — but it should never again be presented as a Google citation lever. The rulebook has been corrected.</p>
+  </div>
+
+  <div class="card">
+    <h3>The numbers that should drive every page we write</h3>
+    <p><strong>134–167 words</strong> is the optimal length for a citable passage. <strong>~44% of AI citations come from the first 30% of the page</strong> — so the answer block goes at the top, not after the pitch. Direct answer inside the first 40–60 words of a section. Definitions phrased as "X is…" or "X refers to…". Specific figures beat general claims.</p>
+    <p><strong>Brand mentions correlate ~3x more strongly with AI visibility than backlinks.</strong> YouTube is the strongest single signal (~0.737), then Reddit, then Wikipedia. Backlinks score ~0.266 — weak. Chasing links is close to wasted effort here; being <em>talked about</em> is the game.</p>
+    <p><strong>Only 11% of domains are cited by both ChatGPT and Google AI Overviews for the same query</strong> — so these are two separate targets, not one.</p>
+  </div>
+
   <!-- RECONCILIATION -->
-  <div class="section-label">4 · Every tactic in the rulebook — our call on each</div>
+  <div class="section-label">5 · Every tactic in the rulebook — our call on each</div>
 
   <div class="card">
     <p>The <strong>AI Search Marketing Strategy Types</strong> doc grades every tactic Matt has collected from whitehat to blackhat. Rather than re-decide, here's what we're doing with each of them for AI Sponsor specifically.</p>
@@ -377,7 +418,7 @@ Private, anonymous, free for 30 days. Every membership funds a free one for some
   </div>
 
   <!-- TOOLING -->
-  <div class="section-label">5 · The Claude tooling Matt sent — what each is for</div>
+  <div class="section-label">6 · The Claude tooling Matt sent — what each is for</div>
 
   <div class="tblwrap">
   <table class="spec">
