@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Sponsor — Marketing Plan</title>
+<style>
+  :root{
+    --blue:#1B5E8A; --blue-dark:#0F3D5C; --blue-soft:#E8F1F7;
+    --ink:#0F2233; --body:#3D4F5C; --sub:#6B7C89;
+    --line:#DDE6EC; --bg:#EEF2F6; --card:#ffffff;
+    --green:#0E7C5A; --green-bg:#DCF5EC;
+    --amber:#9A6A00; --amber-bg:#FFF3D6;
+    --red:#B02A2A; --red-bg:#FCE6E6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;line-height:1.5;padding:20px 16px 64px;}
+  .wrap{max-width:760px;margin:0 auto;}
+
+  .header{text-align:center;margin:8px 0 28px;}
+  .header .tag{display:inline-block;background:var(--blue-dark);color:#9ED2EF;font-size:10.5px;font-weight:800;
+    padding:5px 15px;border-radius:20px;margin-bottom:14px;letter-spacing:.1em;text-transform:uppercase;}
+  .header h1{font-size:26px;font-weight:900;letter-spacing:-.4px;line-height:1.2;}
+  .header .subtitle{font-size:13.5px;color:var(--sub);margin-top:10px;line-height:1.55;}
+
+  .section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.1px;color:#90A2AE;
+    margin:36px 0 14px;display:flex;align-items:center;gap:10px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+
+  .bet{background:var(--blue-dark);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:12px;}
+  .bet .k{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#9ED2EF;margin-bottom:12px;}
+  .bet p{font-size:15px;line-height:1.7;color:#E8F1F7;}
+  .bet p + p{margin-top:12px;}
+  .bet strong{color:#fff;font-weight:800;}
+
+  .callout{border-radius:14px;padding:18px 20px;margin-bottom:12px;}
+  .callout.warn{background:var(--amber-bg);border-left:5px solid var(--amber);}
+  .callout.good{background:var(--green-bg);border-left:5px solid var(--green);}
+  .callout h3{font-size:14.5px;font-weight:800;margin-bottom:7px;color:var(--ink);}
+  .callout p{font-size:13px;color:var(--body);line-height:1.65;}
+  .callout p + p{margin-top:9px;}
+  .callout strong{color:var(--ink);}
+
+  .card{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 1px 8px rgba(15,61,92,.07);margin-bottom:12px;}
+  .card h3{font-size:15px;font-weight:800;margin-bottom:8px;color:var(--ink);}
+  .card p{font-size:13px;color:var(--body);line-height:1.65;}
+  .card p + p{margin-top:9px;}
+  .card strong{color:var(--ink);}
+
+  /* CONSTRAINT ROWS */
+  .crow{padding:12px 0;border-bottom:1px solid var(--line);}
+  .crow:last-child{border-bottom:none;padding-bottom:0;}
+  .crow .t{font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:3px;}
+  .crow .d{font-size:12.5px;color:var(--body);line-height:1.6;}
+
+  /* PHASE */
+  .phase{background:var(--card);border-radius:16px;padding:0;box-shadow:0 1px 8px rgba(15,61,92,.07);
+    margin-bottom:14px;overflow:hidden;}
+  .phase-head{padding:18px 20px 14px;border-top:5px solid var(--blue);}
+  .phase.now .phase-head{border-top-color:var(--green);}
+  .phase.later .phase-head{border-top-color:#B6C4CE;}
+  .phase .num{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);}
+  .phase.now .num{color:var(--green);}
+  .phase.later .num{color:var(--sub);}
+  .phase h3{font-size:17px;font-weight:900;letter-spacing:-.2px;margin:5px 0 8px;line-height:1.3;}
+  .phase .meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
+  .chip{font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;background:var(--blue-soft);color:var(--blue);
+    text-transform:uppercase;letter-spacing:.04em;}
+  .chip.cost{background:var(--green-bg);color:var(--green);}
+  .chip.block{background:var(--amber-bg);color:var(--amber);}
+  .phase .why{font-size:13px;color:var(--body);line-height:1.65;}
+  .phase-body{padding:0 20px 18px;}
+  .phase-body ul{list-style:none;margin-top:12px;}
+  .phase-body li{font-size:12.8px;color:var(--body);padding:7px 0 7px 20px;position:relative;line-height:1.6;
+    border-top:1px solid var(--line);}
+  .phase-body li:first-child{border-top:none;}
+  .phase-body li::before{content:'';position:absolute;left:4px;top:15px;width:6px;height:6px;border-radius:50%;
+    background:var(--blue);}
+  .phase.now .phase-body li::before{background:var(--green);}
+  .phase.later .phase-body li::before{background:#B6C4CE;}
+  .phase-body li strong{color:var(--ink);}
+  .tells{margin-top:13px;padding:12px 14px;background:var(--blue-soft);border-radius:10px;}
+  .tells .l{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:4px;}
+  .tells p{font-size:12.3px;color:var(--body);line-height:1.6;}
+
+  .mini{background:var(--card);border-radius:14px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 8px rgba(15,61,92,.07);}
+  .mini h4{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:9px;}
+  .mini ul{list-style:none;}
+  .mini li{font-size:12.5px;color:var(--body);padding:6px 0 6px 18px;position:relative;line-height:1.6;}
+  .mini li::before{content:'›';position:absolute;left:4px;color:var(--blue);font-weight:800;}
+  .mini li strong{color:var(--ink);}
+
+  .parked{background:var(--card);border-radius:14px;padding:16px 18px;margin-bottom:12px;
+    box-shadow:0 1px 8px rgba(15,61,92,.07);border-left:5px solid #B6C4CE;}
+  .parked .t{font-size:13.5px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+  .parked .when{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin-bottom:7px;}
+  .parked .d{font-size:12.5px;color:var(--body);line-height:1.6;}
+
+  .sources{margin-top:26px;font-size:11.5px;color:var(--sub);line-height:1.9;text-align:center;}
+  .sources a{color:var(--blue);text-decoration:none;}
+  .foot{text-align:center;font-size:11px;color:#9AAAB5;margin-top:26px;line-height:1.7;}
+
+  @media (min-width:640px){
+    body{padding:34px 24px 72px;}
+    .header h1{font-size:32px;}
+    .phase h3{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <span class="tag">AI Sponsor · Marketing</span>
+    <h1>Marketing Plan</h1>
+    <p class="subtitle">Digital first, cheapest first, in phases — built on what we've already verified about this market.<br>July 21, 2026 · Mariam</p>
+  </div>
+
+  <!-- THE BET -->
+  <div class="bet">
+    <div class="k">The bet</div>
+    <p><strong>AI Sponsor can't buy its way to customers, so it has to earn them.</strong> Both paid channels are fenced: Google restricts recovery advertising outright, and our sharpest Meta angle — "no app, it's right in WhatsApp" — can't run until WhatsApp is live.</p>
+    <p>That's not a reason to wait. It's a reason to lead with the channels that cost nothing and compound, use paid money only as a small measured probe, and turn the people already waiting for this product into the growth engine.</p>
+    <p><strong>Order: free and compounding → a small honest test → the audience we already have → and only then anything expensive.</strong></p>
+  </div>
+
+  <!-- WHAT SHAPES THIS -->
+  <div class="section-label">What shapes the whole plan</div>
+
+  <div class="card">
+    <div class="crow">
+      <div class="t">This product doesn't need to be a big revenue machine</div>
+      <div class="d">Matt's been clear it may never be the moneymaker, and could end up nonprofit-funded. So the plan is built for <strong>low cost per experiment</strong>, not for scale. Nothing here requires a big budget to be worth doing.</div>
+    </div>
+    <div class="crow">
+      <div class="t">Google is a restricted category</div>
+      <div class="d">Their policy names "mutual help organizations" — 12-step by name — and certification runs through a body that won't certify apps or chatbots. Certified treatment centres run hundreds of ads; not one consumer recovery app runs any. The one clean opening is the behavioural and family side, which is explicitly out of scope.</div>
+    </div>
+    <div class="crow">
+      <div class="t">Our best ad angle is switched off</div>
+      <div class="d">WhatsApp is still dark pending Meta access. Every ad we've written leads on it. Until it's live we're advertising a web chat, which is a weaker product than the one we're actually building.</div>
+    </div>
+    <div class="crow">
+      <div class="t">The site has two indexable pages</div>
+      <div class="d">Homepage and registration. That's the real reason we're invisible in search — not that our content is weak, but that there's almost nothing to read. It's also the cheapest thing on this list to fix.</div>
+    </div>
+    <div class="crow">
+      <div class="t">Measurement is already built</div>
+      <div class="d">First-touch attribution shipped and was proven end-to-end in July — including ChatGPT, Perplexity and Claude as traffic sources. Every channel below is measurable from day one without waiting on anything.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 0 -->
+  <div class="section-label">The phases</div>
+
+  <div class="phase now">
+    <div class="phase-head">
+      <div class="num">Phase 0 · This week</div>
+      <h3>Get the machinery right before a penny is spent</h3>
+      <div class="meta">
+        <span class="chip cost">$0</span>
+        <span class="chip">~1 week</span>
+        <span class="chip block">2 items blocked on Matt</span>
+      </div>
+      <p class="why">None of this is marketing. It's the stuff that, if we skip it, makes every later number untrustworthy or wastes the budget outright.</p>
+    </div>
+    <div class="phase-body">
+      <ul>
+        <li><strong>Connect Meta's official Ads MCP to Claude.</strong> Meta-built, free during beta, 29 tools, and new campaigns are created paused by default. This is the operating layer for everything on Meta — Matt runs ads from his Claude, we run them from ours. <em>Blocked: ad account access.</em></li>
+        <li><strong>Rewrite the ad copy long-form.</strong> Our five existing texts are all short; Matt's experience says long, thorough primary text wins, because Meta reads it to decide who to serve. Front-load the first 125 characters (everything after is behind "See more") and run a sensitive-category compliance pass on each — longer copy about recovery is <em>more</em> likely to be rejected.</li>
+        <li><strong>Resolve the trial-vs-annual contradiction.</strong> Every ad ends "free for 30 days," which only exists on monthly. If we're steering people to annual, the ad and the offer disagree.</li>
+        <li><strong>Competitor ad recon.</strong> Free, an afternoon. Meta Ad Library plus Google's Ads Transparency Center. Long-running ads are the ones that work — nobody keeps paying for a loser.</li>
+        <li><strong>Answer the Google Ads account question</strong> and install the Google Ads conversion tag (we have GA4 and Hyros; that tag is separate and missing). <em>Blocked: Matt.</em></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase now">
+    <div class="phase-head">
+      <div class="num">Phase 1 · Starts now, runs continuously</div>
+      <h3>Own the search we're not allowed to buy</h3>
+      <div class="meta">
+        <span class="chip cost">$0</span>
+        <span class="chip">Compounds</span>
+        <span class="chip">Blocked on nobody</span>
+      </div>
+      <p class="why">Ad policy governs paid placement. It has nothing to say about ranking or being cited. This is the only channel that keeps working after we stop paying, and it's the one nobody can switch off on us.</p>
+    </div>
+    <div class="phase-body">
+      <ul>
+        <li><strong>Build the answer pages.</strong> Five to start, aimed at questions Google is already surfacing: what an AI sponsor is · can it replace a human sponsor (answer honestly: no) · is it anonymous · support for AA vs NA vs Al-Anon · what the chips mean at each milestone. Category and culture, never clinical advice — we'd lose to NIH and shouldn't be giving it anyway.</li>
+        <li><strong>Structure them to be quoted.</strong> Open each with a self-contained answer block of roughly 150 words that fully answers the page's question. That block is what AI engines lift. There is already an AI Overview on the chips query citing a merchant's shop page — that's a citation slot with no strong owner.</li>
+        <li><strong>Run the free GEO audits.</strong> The Claude SEO plugin Matt sent scores citation-readiness and entity presence, and it costs nothing to run. Fix in the order it ranks, re-run in two weeks, compare.</li>
+        <li><strong>Honest citation building only.</strong> Reddit is where this conversation actually happens and it ranks — but manufacturing presence in recovery communities would destroy the product. Real mentions from real members, or nothing.</li>
+        <li><strong>Reuse the rulebook.</strong> The AEO/GEO strategy analysis already grades every tactic whitehat to blackhat with its real risk. We follow it rather than re-deciding.</li>
+      </ul>
+      <div class="tells">
+        <div class="l">What tells us it's working</div>
+        <p>Indexed page count, then Search Console impressions, then the AI-source rows in our own dashboard. Blog traffic shows in weeks; citations take months. This is the slow one, which is exactly why it starts first.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="num">Phase 2 · Once Phase 0 clears</div>
+      <h3>Buy one small, honest test</h3>
+      <div class="meta">
+        <span class="chip cost">~$500</span>
+        <span class="chip">2–3 weeks</span>
+        <span class="chip block">Needs the ad accounts</span>
+      </div>
+      <p class="why">Narrow, deliberately. The goal isn't customers yet — it's finding out what we're allowed to run and what a click actually costs, before anyone commits real budget.</p>
+    </div>
+    <div class="phase-body">
+      <ul>
+        <li><strong>Google: the Debtors Anonymous probe.</strong> Judge it on <em>approval</em>, not clicks — volume will be tiny. DA is cleanly behavioural, so if those ads clear, the carve-out is proven and Al-Anon, GA, SLAA and OA all open up behind it. That's worth far more than the traffic.</li>
+        <li><strong>Meta: the long-form copy, small budget.</strong> Test the strongest angle against the strongest emotion. Optimise for <strong>registration, not purchase</strong> — at a $5 price point we'd never generate enough purchases per week for the algorithm to learn, and it would just burn the budget hunting a signal that isn't there.</li>
+        <li><strong>Spend $500, not $200.</strong> The credit tiers start at $500 → $500. At $200 we get nothing; at $500 the test doubles for the same real money. <em>New advertisers only — void if an account already exists.</em></li>
+        <li><strong>Separate landing pages first.</strong> Google reviews the destination, not just the keyword. Pointing DA ads at our AA/NA-led homepage could get the whole account classified as addiction services and kill the very thing we're testing.</li>
+      </ul>
+      <div class="tells">
+        <div class="l">What this can and can't tell us</div>
+        <p>It gives us approval-or-rejection (definitive), real click costs (reliable), and which angle pulls harder (directional). It does <strong>not</strong> give a cost per customer — nowhere near the volume. Worth saying out loud now so the readout isn't misread as "ads don't work."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="phase-head">
+      <div class="num">Phase 3 · The moment the beta opens</div>
+      <h3>Turn on the people who are already waiting</h3>
+      <div class="meta">
+        <span class="chip cost">$0 acquisition cost</span>
+        <span class="chip block">Gated: Matt sends the code</span>
+      </div>
+      <p class="why">This is the highest-value idea in the whole plan and it costs nothing. Our audience physically congregates in rooms, several times a week, and a recommendation from a fellow member carries trust that no ad in this category can buy.</p>
+    </div>
+    <div class="phase-body">
+      <ul>
+        <li><strong>Nobody has used the product yet.</strong> Zero people have ever chatted with it. You cannot ask someone to recommend something they've never opened — so this starts the day the beta code goes out, and not before.</li>
+        <li><strong>Frame it as service, not affiliate marketing.</strong> "For everyone you bring, someone who can't afford it gets a free year." That turns a referral into carrying the message — which is the twelfth step — and it fits the one-for-one we already have. Cash bounties for recruiting vulnerable people would be the fastest way to lose this audience.</li>
+        <li><strong>Personal recommendation, never announcements in meetings.</strong> The traditions are wary of outside enterprises and of promotion over attraction. Someone pitching a paid app from the floor gets shut down, and it would attach to us.</li>
+        <li><strong>Make it measurable.</strong> Per-ambassador codes are a small extension of the beta-code system that already exists, so we can see which route actually brings people.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PARKED -->
+  <div class="section-label">Deliberately not now</div>
+
+  <div class="callout warn">
+    <h3>These are good ideas. They're just not first.</h3>
+    <p>Everything below either costs real money, needs a product we haven't built, or can't be judged until we have data. For a product that isn't carrying a big revenue target, spending here before the free channels have run would be the wrong order.</p>
+  </div>
+
+  <div class="parked">
+    <div class="t">Physical chips and the digital milestone token</div>
+    <div class="when">After: the token is built + a drop-shipper is lined up</div>
+    <div class="d">The keyword is right — that search page is fully commercial with real merchants. But we have no chip to sell today, so an ad there sends a buyer to an empty page. The plan already assumes drop-shipping rather than manufacturing, so this is lighter than it sounds — it just isn't ready. The blog post takes that search in the meantime.</div>
+  </div>
+
+  <div class="parked">
+    <div class="t">Recovery influencer / UGC video</div>
+    <div class="when">After: Phase 2 shows what a click costs</div>
+    <div class="d">The smart version is buying the <em>creative</em> and running it as our own video ad, not renting someone's audience. Worth one cheap experiment eventually — but Matt's previous influencer attempt on another product produced nothing, so it needs a measured comparison against something, and right now we have nothing to compare it to.</div>
+  </div>
+
+  <div class="parked">
+    <div class="t">Guerrilla — billboards near meeting locations</div>
+    <div class="when">Only if unit economics justify it</div>
+    <div class="d">Genuinely well-targeted for this audience and free of platform policy risk. It's also the most expensive thing on the list and the hardest to attribute. Wrong shape for a product this early with no proven retention.</div>
+  </div>
+
+  <div class="parked">
+    <div class="t">Price rise to $14.99 and the annual-first push</div>
+    <div class="when">After: real conversion data exists</div>
+    <div class="d">Our own research already pointed at $15–19, so the instinct is sound. But the lifetime-value case rests on retention we have zero evidence for, and raising price mid-test would invalidate the click-cost data we just paid for. Baseline first, price second. Existing subscribers grandfathered when it happens.</div>
+  </div>
+
+  <div class="parked">
+    <div class="t">Monthly progress look-back by email</div>
+    <div class="when">After: an email sender exists</div>
+    <div class="d">The best-evidenced retention idea we have — Matt's former COO saw look-backs drive re-signing in a coaching business. Half of it is already built, since the sponsor now has durable memory. The missing piece is transactional email, which we don't have at all.</div>
+  </div>
+
+  <!-- ASKS -->
+  <div class="section-label">What's needed from Matt</div>
+
+  <div class="mini">
+    <h4>Four things, in the order they block work</h4>
+    <ul>
+      <li><strong>Ad account access</strong> — the Meta connector is built and can't see any accounts. Needs the ad accounts assigned specifically, not just business portfolio membership.</li>
+      <li><strong>Does a Google Ads account already exist?</strong> It decides whether the $500 credit is valid and it's the only route to real search volume figures.</li>
+      <li><strong>Meta access for WhatsApp</strong> — still the single biggest unlock. It's the difference between advertising a web chat and advertising the product we actually built.</li>
+      <li><strong>Send the beta code.</strong> Phase 3 is worth more than Phase 2 and costs nothing, and it can't start until real people are using it.</li>
+    </ul>
+  </div>
+
+  <div class="callout good">
+    <h3>The honest summary</h3>
+    <p>Phase 1 costs nothing, is blocked by nobody, and starts this week. Phase 2 costs $500 and mostly buys information rather than customers. Phase 3 costs nothing and is probably the best of the three — it just needs the beta open.</p>
+    <p>Everything expensive is parked until something cheap proves it's worth it.</p>
+  </div>
+
+  <div class="sources">
+    Builds on work already done —
+    <a href="https://guru-labs-ai.github.io/Company-Brain/ai-sponsor-google-ads-analysis.html">Google Ads feasibility analysis</a> ·
+    AI Search Marketing Strategy Types (AEO/GEO rulebook) ·
+    Competitive Analysis &amp; Ad Copy ·
+    Monetization Strategy ·
+    Matt's Meta Ads + Claude SEO guides
+  </div>
+
+  <div class="foot">
+    AI Sponsor · Marketing Plan · Mariam · July 21, 2026<br>
+    Living document — phases move as blockers clear.
+  </div>
+
+</div>
+</body>
+</html>
