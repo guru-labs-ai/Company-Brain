@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GHL Team Tracker — Sprint 50</title>
+  <title>GHL Team Tracker — Sprint 51</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; min-height: 100vh; }
@@ -102,8 +102,8 @@
 
 <div class="header">
   <div>
-    <h1>GHL Team Tracker <span class="sprint-tag">Sprint 50</span></h1>
-    <div class="subtitle">GHL Team · PM: Abdul Rehman · Jul 13 – Jul 19, 2026</div>
+    <h1>GHL Team Tracker <span class="sprint-tag">Sprint 51</span></h1>
+    <div class="subtitle">GHL Team · PM: Abdul Rehman · Jul 20 – Jul 26, 2026</div>
   </div>
   <div class="updated" id="updated">Loading…</div>
 </div>
@@ -130,71 +130,71 @@
   <div class="slack-header">
     <div class="slack-icon">💬</div>
     <div>
-      <div class="slack-title">#funnels + GHL — Sprint 50 Highlights</div>
-      <div class="slack-sub">Key updates from Slack &middot; last synced July 19, 2026</div>
+      <div class="slack-title">#funnels + GHL — Sprint 51 Highlights</div>
+      <div class="slack-sub">Key updates from Slack &middot; last synced July 22, 2026</div>
     </div>
   </div>
   <div class="slack-feed">
         <!-- SLACK-FEED-START -->
 
+    <div class="slack-item warning">
+      <div class="slack-meta">
+        <span class="slack-who">Matt → #mariam-matt</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 20, 2026</span>
+        <span class="slack-pill pill-yellow">Directive</span>
+      </div>
+      <div class="slack-body"><strong>Upwork funnel is now the GHL priority — most other GHL work paused.</strong> Matt to Abdul: "I'm going to have them focus on this to get live, tested, and making money." All other GHL tasks deprioritised until the Upwork funnel is live.</div>
+    </div>
+
+    <div class="slack-item info">
+      <div class="slack-meta">
+        <span class="slack-who">Mariam → #funnels</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 20, 2026</span>
+        <span class="slack-pill pill-blue">Sprint Transition</span>
+      </div>
+      <div class="slack-body">Sprint 50 → Sprint 51 handoff: <strong>fill out the Sprint Planning/Review/Retrospective doc in ClickUp</strong> for today's call. Matt then cancelled the live call — everyone asked to update the doc directly instead. <a href="https://app.clickup.com/90132046592/v/dc/2ky4krr0-21953/2ky4krr0-24133" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a></div>
+    </div>
+
+    <div class="slack-item success">
+      <div class="slack-meta">
+        <span class="slack-who">Mubashir → #ai-sponsor</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 21, 2026</span>
+        <span class="slack-pill pill-green">PR Ready</span>
+      </div>
+      <div class="slack-body"><strong>AI Sponsor "forget me" deletion path fully tested — 8/8 passed.</strong> Covers GHL delete-by-contactId (with untag-if-shared), 4-table DB purge, Stripe cancellation, and memory digest re-verification. PR up for Mariam's review before merge. <a href="https://app.clickup.com/t/86ajm5qw4" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">CU#1</a></div>
+    </div>
+
+    <div class="slack-item info">
+      <div class="slack-meta">
+        <span class="slack-who">Abdul Rehman → DM (Bilal, Mariam)</span>
+        <span class="slack-dot"></span>
+        <span class="slack-date">Jul 21, 2026</span>
+        <span class="slack-pill pill-blue">Working Session</span>
+      </div>
+      <div class="slack-body">Abdul scheduled a <strong>QA Guru working session for Jul 22 at 3 PM PKT</strong> with Bilal and Mariam — to go through the new product together before locking in documentation and next steps. Bilal confirmed; invite sent.</div>
+    </div>
+
     <div class="slack-item info">
       <div class="slack-meta">
         <span class="slack-who">Matt → #qa-guru</span>
         <span class="slack-dot"></span>
-        <span class="slack-date">Jul 17, 2026</span>
+        <span class="slack-date">Jul 21, 2026</span>
         <span class="slack-pill pill-blue">Directive</span>
       </div>
-      <div class="slack-body"><strong>Mubashir added to Andres/Audos "QA'd" workspace</strong> to reverse-engineer the product and absorb findings into QA Guru. Matt: <em>"we're taking the time/learnings he spent on that and add any of the gaps to make ours better."</em> Mubashir also to connect with Qasim on external APIs and architecture. Access already granted.</div>
+      <div class="slack-body">Matt asked the team to get agent store listing + video info done for QA Guru by <strong>end of day Jul 22</strong> — free pricing for Audos users, updated landing page. Mariam confirmed she and Bilal are on it.</div>
     </div>
 
-    <div class="slack-item info">
-      <div class="slack-meta">
-        <span class="slack-who">Mubashir → #qa-guru</span>
-        <span class="slack-dot"></span>
-        <span class="slack-date">Jul 17, 2026</span>
-        <span class="slack-pill pill-blue">QA Update</span>
-      </div>
-      <div class="slack-body">QA'd reverse-engineering underway. Reviewed reporting flow, Fast/Full QA output, replay/screenshots, Draft Task creation. <strong>Key gap: QA'd never tested authenticated dashboard, scan flow, reports, exports, or AI assistant flows.</strong> Plan: manually validate QA'd findings to separate real user-facing bugs from backend/agent assumptions before incorporating into QA Guru.</div>
-    </div>
-
-    <div class="slack-item info">
-      <div class="slack-meta">
-        <span class="slack-who">Matt → #mariam-matt</span>
-        <span class="slack-dot"></span>
-        <span class="slack-date">Jul 17, 2026</span>
-        <span class="slack-pill pill-blue">Planning</span>
-      </div>
-      <div class="slack-body"><strong>OKRs coming to ClickUp next week</strong> — Matt + Mariam building 2H 2026 OKRs together on Monday (existing Irfan OKR list as base). Team structure shifting to engineering-heavy: agentic product focus with core team of Mubashir + Bilal. Weekly standup cadence replacing daily check-ins. <a href="https://app.clickup.com/90132046592/v/l/2ky4krr0-15073" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">OKR List</a></div>
-    </div>
-
-    <div class="slack-item warning">
-      <div class="slack-meta">
-        <span class="slack-who">Mariam → #funnels</span>
-        <span class="slack-dot"></span>
-        <span class="slack-date">Jul 17, 2026</span>
-        <span class="slack-pill pill-yellow">Reminder</span>
-      </div>
-      <div class="slack-body">Sprint 50 wrap-up: <strong>add time estimates to all your ClickUp tasks before EOW.</strong> This data drives the hours display and capacity watch on this tracker — missing estimates show as "No reliable data."</div>
-    </div>
-
-    <div class="slack-item warning">
-      <div class="slack-meta">
-        <span class="slack-who">Mariam → #funnels</span>
-        <span class="slack-dot"></span>
-        <span class="slack-date">Jul 17, 2026</span>
-        <span class="slack-pill pill-yellow">Reminder</span>
-      </div>
-      <div class="slack-body"><strong>Update your product documentation in ClickUp</strong> — it has been a while since the team last updated docs. PMs and engineers: please review and refresh your sections. <a href="https://app.clickup.com/90132046592/v/dc/2ky4krr0-20973/2ky4krr0-22553" target="_blank" style="color:#60a5fa;font-size:11px;margin-left:4px;">Product Docs</a></div>
-    </div>
-
-    <!-- SLACK-FEED-END -->
+        <!-- SLACK-FEED-END -->
   </div>
 </div>
 
 <script>
 const API_KEY = 'pk_78600583_FV4EZN8RNDJ7T7IO4JPCRRIZJY0DM6HH';
 const TEAM_ID = '90132046592';
-const SPRINT_LABEL = 'Sprint 50';
+const SPRINT_LABEL = 'Sprint 51';
 const SPRINT_FOLDER = '901310760791'; // Sprint & Backlogs folder — used to resolve SPRINT_LABEL → list ID at runtime
 
 const CONTRACTORS = [
