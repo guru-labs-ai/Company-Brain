@@ -197,22 +197,22 @@
   <div class="mb-text">
     <strong>Monday Aug 3 — Sprint 53 Carry-Over Priorities</strong> <span style="font-weight:400;font-size:12px;color:#94a3b8">(derived from live ClickUp, not a meeting agenda)</span>
     <ul>
-      <li><strong>DRM P1 link blockers</strong> — Contact Us, Terms, and About Us pages all route to a broken SSL sandbox; blocking ads readiness</li>
-      <li><strong>QA Guru platform bugs</strong> — auto-publish still fires while the toggle shows OFF, plus a workspace-ID data bug; both need Audos's reply before work resumes</li>
-      <li><strong>AI Sponsor</strong> — WhatsApp is live on Twilio; Google/Meta ad experiments continuing; Twilio balance needs a top-up (blocked)</li>
-      <li><strong>Upwork LT funnel push</strong> — landing page, delivery page, and handover all in progress this sprint</li>
-      <li><strong>Rekindle</strong> — Stripe/Polsia payment fix and postcard flow still open</li>
+      <li><strong>QA Guru — "Run Launch Check" UI</strong> — still fails workspace handoff for DRM, VA Guru, and fresh workspaces; this is the actual customer-facing launch blocker (Audos data-layer fix also still pending)</li>
+      <li><strong>DRM — Stripe cross-routing fix</strong> — blocked on Audos support confirming event-filtering behavior; nudged once, no response; no escalation path above Qasim's access level</li>
+      <li><strong>AI Sponsor — Mubashir 2FA access</strong> — Jan to finish Authy shared-device setup so Mubashir can reach GHL, Render, and GitHub without recurring lockouts</li>
+      <li><strong>DRM — scoring-bug ship + blueprint handoff</strong> — 3-part scoring fix ready to ship; blueprint execution ownership to split between Raja &amp; Talha per Matt's ask</li>
+      <li><strong>Rekindle — Polsia platform decision</strong> — 3 core features still broken (admin login, auth emails, Stripe 502s); Matt to decide on stay vs. migrate</li>
     </ul>
   </div>
 </div>
 
 <!-- KPI BAR -->
-<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 51 (closed) + Sprint 52 (active)</span></div>
+<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 52 (closed) + Sprint 53 (active)</span></div>
 <div class="kpi-row">
   <div class="kpi-card">
     <div class="kpi-val kv-purple" id="kpi-tasks">—</div>
     <div class="kpi-label">Tasks Tracked</div>
-    <div class="kpi-sub">Across S51 + S52</div>
+    <div class="kpi-sub">Across S52 + S53</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-val kv-green" id="kpi-completed">—</div>
@@ -222,17 +222,17 @@
   <div class="kpi-card">
     <div class="kpi-val kv-yellow" id="kpi-inprog">—</div>
     <div class="kpi-label">In Progress</div>
-    <div class="kpi-sub">Active in S52</div>
+    <div class="kpi-sub">Active in S53</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-val kv-pink" id="kpi-curpct">—</div>
-    <div class="kpi-label">S52 Completion</div>
-    <div class="kpi-sub" id="kpi-cursub">Sprint 52 progress</div>
+    <div class="kpi-label">S53 Completion</div>
+    <div class="kpi-sub" id="kpi-cursub">Sprint 53 progress</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-val kv-blue" id="kpi-contributors">—</div>
     <div class="kpi-label">Contributors</div>
-    <div class="kpi-sub">Active in S52</div>
+    <div class="kpi-sub">Active in S53</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-val kv-red" id="kpi-blockers">—</div>
@@ -657,7 +657,7 @@
 </div>
 
 <!-- PEOPLE -->
-<div class="section-title st-green">Per-Person Velocity — Sprint 52 (Live)</div>
+<div class="section-title st-green">Per-Person Velocity — Sprint 53 (Live)</div>
 <div class="person-grid">
 
   <div class="person-card all-done">
@@ -817,43 +817,43 @@
 </div>
 
 <!-- BLOCKERS -->
-<div class="section-title st-red">Active Blockers <span class="section-note">live — flagged "blocked" in ClickUp S52</span></div>
+<div class="section-title st-red">Active Blockers <span class="section-note">live — flagged "blocked" in ClickUp S53</span></div>
 <div class="blockers-list">
   <div class="blocker-item">
-    <div class="bi-title">1. QA Guru — Two Confirmed Platform Bugs (Audos)</div>
-    <div class="bi-detail">Customer-report isolation has never worked correctly (root cause confirmed, zero rows ever had the right workspace ID), and the auto-publish toggle doesn't actually stop publishing when it's OFF. All QA Guru dev work is paused until Audos confirms both are fixed.</div>
+    <div class="bi-title">1. QA Guru — "Run Launch Check" UI Button (Customer-Facing Launch Blocker)</div>
+    <div class="bi-detail">The customer-facing "Run Launch Check" button fails workspace handoff across DRM, VA Guru, and fresh workspaces — returns "no valid public product URL" even for DRM which has a confirmed working domain. This is the real remaining barrier to QA Guru launch-readiness. CTA appId fix (reports → your-reports) and workspace_id column in qa_scan_reports also outstanding.</div>
+    <div class="bi-meta">Owner: Mubashir (unassigned for workspace handoff fix) · Needs triage and owner</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">2. QA Guru — Audos Auto-Publish Toggle Not Respected</div>
+    <div class="bi-detail">Platform-level Audos setting continues to push Draft changes Live regardless of the toggle state. A harmless marker test confirmed it's a platform-level issue (not code-configurable). All QA Guru recompiles are on hold until Audos fixes it. Ticket 86cd0dad filed; follow-up pending.</div>
     <div class="bi-meta">Owner: Bilal / Mubashir · Escalated to Audos (ticket 86cd0dad)</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">2. DRM — Blog Posts Missing From Sitemap</div>
-    <div class="bi-detail">Blog posts aren't included in the DRM sitemap, which hurts SEO indexing.</div>
-    <div class="bi-meta">Owner: Raja</div>
+    <div class="bi-title">3. DRM — Stripe Cross-Routing Fix (Blocked on Audos Support)</div>
+    <div class="bi-detail">DRM Stripe Connect events bleed in from other products because the integration runs through Audos's shared Wallet/Connect using the same Stripe account as AI Sponsor. The team confirmed this was intentional (not a misconfiguration) and submitted a support request to Audos on internal event-filtering; one follow-up sent, no response. No higher-access escalation path available — Qasim and Mubashir have the same workspace access level.</div>
+    <div class="bi-meta">Owner: Mubashir / Qasim · Waiting on Audos support response</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">3. Infrastructure — Namecheap Domain Migration</div>
-    <div class="bi-detail">Domain migration and access-structure work is blocked.</div>
-    <div class="bi-meta">Owner: Abdul Rehman + Mubashir</div>
+    <div class="bi-title">4. AI Sponsor — Mubashir's Shared 2FA Access (GHL, Render, GitHub)</div>
+    <div class="bi-detail">Recurring 2FA lockouts block Mubashir from GHL, Render, and GitHub. Matt directed Jan (Jul 31) to onboard Mubashir onto the company's shared Authy setup; not yet confirmed done. Until resolved, any AI Sponsor work requiring those platforms carries risk of sudden lockout.</div>
+    <div class="bi-meta">Owner: Jan (action: complete Authy onboarding for Mubashir) · Matt approved approach</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">4. AI Sponsor — Twilio Balance + Meta Ad Credit Recovery</div>
-    <div class="bi-detail">Twilio account needs a balance top-up to keep WhatsApp messaging running. Separately, recovering $20K in Meta ad credit for the AI Soulmate portfolio is still open.</div>
-    <div class="bi-meta">Owner: Abdul Rehman</div>
+    <div class="bi-title">5. Rekindle — Polsia Platform Crisis (3 Core Features Broken)</div>
+    <div class="bi-detail">Admin login inaccessible, authentication emails not sending for 95 companies, and Stripe checkout returning 502 errors. Asif isn't billing for the broken sprint and is considering switching platforms. Matt is now emailing Polsia's founder directly. No internal fix path — entirely external.</div>
+    <div class="bi-meta">Owner: Asif / Matt · Decision needed: stay on Polsia or migrate</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">5. Outreach — Reporters + Researcher (Waiting on Matt)</div>
-    <div class="bi-detail">Family-estrangement reporter outreach (Rekindle PR) is blocked pending Matt. Researcher outreach to Lucy is blocked and unassigned.</div>
-    <div class="bi-meta">Action: Matt to unblock · Owner: Matt / unassigned</div>
-  </div>
-  <div class="blocker-item">
-    <div class="bi-title">6. Indeed.com Job Posting — AI Accelerator Acquisition Channel</div>
-    <div class="bi-detail">Indeed "job" posting as a customer-acquisition channel for the AI Accelerator is still blocked — needs decision/access to proceed. Long-standing, unassigned.</div>
-    <div class="bi-meta">Owner: unassigned · Needs owner + go-ahead</div>
+    <div class="bi-title">6. DRM — 3-Part Scoring Bug (Fix Ready, Needs Team Sign-Off)</div>
+    <div class="bi-detail">Three independent causes behind the "scores display as zero" bug are fully root-caused and a fix is drafted (null-to-zero coercion, stale profile-picker window, silent write-back failure missing a session flag — all pinned to exact file/line). Fix is sitting in Audos Tasks ready to ship; blocked on Qasim and Talha reviewing and approving before deployment.</div>
+    <div class="bi-meta">Owner: Mubashir (fix drafted) · Needs: Qasim / Talha sign-off to ship</div>
   </div>
 </div>
 
 <!-- DATA NOTE -->
 <div class="data-note">
-  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 51 closed + Sprint 52 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map. The <strong>🚀 "To V1 launch" bar</strong> is the launch-readiness view Matt asked for (Jun 22 call): % to the <em>current version's launch</em> — the gate where marketing starts — with the exact remaining items listed under it. Source: PM/Matt stated estimates from the Jun 22 call, updated against sprint reality (Jul 2). It <strong>resets each version</strong> (V1 hits 100% → V2 starts at 0%), and only appears on products with a confirmed estimate.
+  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 52 closed + Sprint 53 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map. The <strong>🚀 "To V1 launch" bar</strong> is the launch-readiness view Matt asked for (Jun 22 call): % to the <em>current version's launch</em> — the gate where marketing starts — with the exact remaining items listed under it. Source: PM/Matt stated estimates from the Jun 22 call, updated against sprint reality (Jul 2). It <strong>resets each version</strong> (V1 hits 100% → V2 starts at 0%), and only appears on products with a confirmed estimate.
 </div>
 
 <script>
@@ -1049,12 +1049,12 @@ async function refresh() {
 // within ~1-2s. Updated whenever the report is rebuilt.
 (function seed() {
   const F = {
-    'kpi-tasks': 241, 'kpi-completed': 83, 'kpi-inprog': 44, 'kpi-curpct': '26%',
-    'kpi-cursub': '54/205 tasks closed', 'kpi-contributors': 14, 'kpi-blockers': 6,
-    's45-done': 29, 's45-inprog': 0, 's45-pending': 7, 's45-blocked': 0,
-    's45-total': '36 total tasks', 's45-pct': '81% complete', 's45-badge': 'CLOSED · 81%',
-    's46-done': 54, 's46-active': 44, 's46-todo': 101, 's46-blocked': 6,
-    's46-total': '205 total tasks', 's46-pct': '26% done', 's46-badge': 'ACTIVE'
+    'kpi-tasks': 241, 'kpi-completed': 83, 'kpi-inprog': 0, 'kpi-curpct': '—',
+    'kpi-cursub': 'Sprint 53 just started', 'kpi-contributors': 14, 'kpi-blockers': 6,
+    's45-done': 54, 's45-inprog': 0, 's45-pending': 0, 's45-blocked': 0,
+    's45-total': '205 total tasks', 's45-pct': '—% complete', 's45-badge': 'CLOSED',
+    's46-done': 0, 's46-active': 0, 's46-todo': 0, 's46-blocked': 0,
+    's46-total': 'Sprint 53 — no tasks yet', 's46-pct': '—% done', 's46-badge': 'ACTIVE'
   };
   for (const k in F) { const el = document.getElementById(k); if (el) el.textContent = F[k]; }
   const b45 = document.getElementById('s45-bar'); if (b45) b45.style.width = '81%';
