@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guru Labs — 2-Week Sprint Report | Jun 22 – Jul 5, 2026</title>
+  <title>Guru Labs — 2-Week Sprint Report | Jul 20 – Aug 2, 2026</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0d14; color: #e2e8f0; padding: 28px 32px; min-height: 100vh; }
@@ -170,7 +170,7 @@
 <div class="header">
   <div class="header-left">
     <h1>Guru Labs — 2-Week Sprint Report</h1>
-    <div class="sub">Sprint 51 + Sprint 52 &nbsp;·&nbsp; Jul 20 – Aug 2, 2026 &nbsp;·&nbsp; For Matt &nbsp;·&nbsp; <span class="live-dot"></span><span id="last-updated" style="color:#34d399;font-size:12px">Loading live data…</span></div>
+    <div class="sub">Sprint 51 + Sprint 52 &nbsp;·&nbsp; Jul 20 – Aug 2, 2026 &nbsp;·&nbsp; For Matt &nbsp;·&nbsp; <span class="live-dot"></span><span id="last-updated" style="color:#34d399;font-size:12px">Data as of Aug 3, 2026</span></div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
     <div class="report-badge">PORTFOLIO + SPRINT VIEW</div>
@@ -197,45 +197,45 @@
   <div class="mb-text">
     <strong>Monday Aug 3 — Sprint 53 Carry-Over Priorities</strong> <span style="font-weight:400;font-size:12px;color:#94a3b8">(derived from live ClickUp, not a meeting agenda)</span>
     <ul>
-      <li><strong>QA Guru — "Run Launch Check" UI</strong> — still fails workspace handoff for DRM, VA Guru, and fresh workspaces; this is the actual customer-facing launch blocker (Audos data-layer fix also still pending)</li>
-      <li><strong>DRM — Stripe cross-routing fix</strong> — blocked on Audos support confirming event-filtering behavior; nudged once, no response; no escalation path above Qasim's access level</li>
-      <li><strong>AI Sponsor — Mubashir 2FA access</strong> — Jan to finish Authy shared-device setup so Mubashir can reach GHL, Render, and GitHub without recurring lockouts</li>
-      <li><strong>DRM — scoring-bug ship + blueprint handoff</strong> — 3-part scoring fix ready to ship; blueprint execution ownership to split between Raja &amp; Talha per Matt's ask</li>
-      <li><strong>Rekindle — Polsia platform decision</strong> — 3 core features still broken (admin login, auth emails, Stripe 502s); Matt to decide on stay vs. migrate</li>
+      <li><strong>DRM P1 link blockers</strong> — Contact Us, Terms, and About Us pages all route to a broken SSL sandbox; blocking ads readiness</li>
+      <li><strong>QA Guru platform bugs</strong> — auto-publish still fires while the toggle shows OFF, plus a workspace-ID data bug; both need Audos's reply before work resumes</li>
+      <li><strong>AI Sponsor</strong> — WhatsApp is live on Twilio; Google/Meta ad experiments continuing; Twilio balance needs a top-up (blocked)</li>
+      <li><strong>Upwork LT funnel push</strong> — landing page, delivery page, and handover all in progress this sprint</li>
+      <li><strong>Rekindle</strong> — Stripe/Polsia payment fix and postcard flow still open</li>
     </ul>
   </div>
 </div>
 
 <!-- KPI BAR -->
-<div class="section-title st-purple">2-Week at a Glance <span class="section-note">live from ClickUp · Sprint 52 (closed) + Sprint 53 (active)</span></div>
+<div class="section-title st-purple">2-Week at a Glance <span class="section-note">Sprint 51 (closed) + Sprint 52 (closed)</span></div>
 <div class="kpi-row">
   <div class="kpi-card">
-    <div class="kpi-val kv-purple" id="kpi-tasks">—</div>
+    <div class="kpi-val kv-purple" id="kpi-tasks">50</div>
     <div class="kpi-label">Tasks Tracked</div>
-    <div class="kpi-sub">Across S52 + S53</div>
+    <div class="kpi-sub">Across S51 + S52</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-val kv-green" id="kpi-completed">—</div>
+    <div class="kpi-val kv-green" id="kpi-completed">49</div>
     <div class="kpi-label">Completed</div>
     <div class="kpi-sub">Done or closed</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-val kv-yellow" id="kpi-inprog">—</div>
+    <div class="kpi-val kv-yellow" id="kpi-inprog">0</div>
     <div class="kpi-label">In Progress</div>
-    <div class="kpi-sub">Active in S53</div>
+    <div class="kpi-sub">Active in S52</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-val kv-pink" id="kpi-curpct">—</div>
-    <div class="kpi-label">S53 Completion</div>
-    <div class="kpi-sub" id="kpi-cursub">Sprint 53 progress</div>
+    <div class="kpi-val kv-pink" id="kpi-curpct">97%</div>
+    <div class="kpi-label">S52 Completion</div>
+    <div class="kpi-sub" id="kpi-cursub">35/36 tasks closed</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-val kv-blue" id="kpi-contributors">—</div>
+    <div class="kpi-val kv-blue" id="kpi-contributors">7</div>
     <div class="kpi-label">Contributors</div>
-    <div class="kpi-sub">Active in S53</div>
+    <div class="kpi-sub">Active in S52</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-val kv-red" id="kpi-blockers">—</div>
+    <div class="kpi-val kv-red" id="kpi-blockers">0</div>
     <div class="kpi-label">Blockers</div>
     <div class="kpi-sub">Need resolution</div>
   </div>
@@ -254,22 +254,22 @@
 </div>
 
 <!-- SPRINT COMPARISON -->
-<div class="section-title st-blue">Sprint Breakdown <span class="section-note">completion % is tracked here, at sprint level — live</span></div>
+<div class="section-title st-blue">Sprint Breakdown <span class="section-note">completion % is tracked here, at sprint level</span></div>
 <div class="sprint-compare">
 
   <div class="sprint-card s45">
     <div class="sc-top">
       <div><div class="sc-title">Sprint 51</div><div class="sc-dates">Jul 20 – Jul 26, 2026</div></div>
-      <div class="sc-badge badge-done" id="s45-badge">CLOSED · —</div>
+      <div class="sc-badge badge-done" id="s45-badge">CLOSED · 100%</div>
     </div>
     <div class="sc-stats">
-      <div class="sc-stat"><div class="sc-val sv-d" id="s45-done">—</div><div class="sc-lbl">Done</div></div>
-      <div class="sc-stat"><div class="sc-val sv-p" id="s45-inprog">—</div><div class="sc-lbl">In Prog</div></div>
-      <div class="sc-stat"><div class="sc-val sv-t" id="s45-pending">—</div><div class="sc-lbl">To Do</div></div>
-      <div class="sc-stat"><div class="sc-val sv-b" id="s45-blocked">—</div><div class="sc-lbl">Blocked</div></div>
+      <div class="sc-stat"><div class="sc-val sv-d" id="s45-done">14</div><div class="sc-lbl">Done</div></div>
+      <div class="sc-stat"><div class="sc-val sv-p" id="s45-inprog">0</div><div class="sc-lbl">In Prog</div></div>
+      <div class="sc-stat"><div class="sc-val sv-t" id="s45-pending">0</div><div class="sc-lbl">To Do</div></div>
+      <div class="sc-stat"><div class="sc-val sv-b" id="s45-blocked">0</div><div class="sc-lbl">Blocked</div></div>
     </div>
-    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s45-bar" style="width:0%;background:linear-gradient(90deg,#34d399,#10b981)"></div></div>
-    <div class="sc-bar-meta"><span id="s45-total">— total tasks</span><span style="color:#34d399;font-weight:700" id="s45-pct">—% complete</span></div>
+    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s45-bar" style="width:100%;background:linear-gradient(90deg,#34d399,#10b981)"></div></div>
+    <div class="sc-bar-meta"><span id="s45-total">14 total tasks</span><span style="color:#34d399;font-weight:700" id="s45-pct">100% complete</span></div>
     <div class="sc-focus">
       <div class="sc-focus-item"><div class="dot6" style="background:#22d3ee"></div>QA Guru — closed a full security-hardening pass (SecurityHeaders validation, PDF security polish, Excel export messaging, copy-all-fix-requests button); kicked off Phase 2 APIs (axe-core, Apify, SecurityHeaders).</div>
       <div class="sc-focus-item"><div class="dot6" style="background:#a78bfa"></div>AI Sponsor — shipped the "forget me" data deletion path end to end (Stripe, database, GHL).</div>
@@ -279,17 +279,17 @@
 
   <div class="sprint-card s46">
     <div class="sc-top">
-      <div><div class="sc-title">Sprint 52</div><div class="sc-dates">Jul 27 – Aug 2, 2026 · current</div></div>
-      <div class="sc-badge badge-live" id="s46-badge">ACTIVE · —</div>
+      <div><div class="sc-title">Sprint 52</div><div class="sc-dates">Jul 27 – Aug 2, 2026</div></div>
+      <div class="sc-badge badge-done" id="s46-badge">CLOSED · 97%</div>
     </div>
     <div class="sc-stats">
-      <div class="sc-stat"><div class="sc-val sv-d" id="s46-done">—</div><div class="sc-lbl">Done</div></div>
-      <div class="sc-stat"><div class="sc-val sv-p" id="s46-active">—</div><div class="sc-lbl">Active</div></div>
-      <div class="sc-stat"><div class="sc-val sv-t" id="s46-todo">—</div><div class="sc-lbl">To Do</div></div>
-      <div class="sc-stat"><div class="sc-val sv-b" id="s46-blocked">—</div><div class="sc-lbl">Blocked</div></div>
+      <div class="sc-stat"><div class="sc-val sv-d" id="s46-done">35</div><div class="sc-lbl">Done</div></div>
+      <div class="sc-stat"><div class="sc-val sv-p" id="s46-active">0</div><div class="sc-lbl">Active</div></div>
+      <div class="sc-stat"><div class="sc-val sv-t" id="s46-todo">1</div><div class="sc-lbl">To Do</div></div>
+      <div class="sc-stat"><div class="sc-val sv-b" id="s46-blocked">0</div><div class="sc-lbl">Blocked</div></div>
     </div>
-    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s46-bar" style="width:0%;background:linear-gradient(90deg,#6366f1,#a78bfa)"></div></div>
-    <div class="sc-bar-meta"><span id="s46-total">— total tasks</span><span style="color:#a78bfa;font-weight:700" id="s46-pct">—% done</span></div>
+    <div class="sc-bar-wrap"><div class="sc-bar-fill" id="s46-bar" style="width:97%;background:linear-gradient(90deg,#6366f1,#a78bfa)"></div></div>
+    <div class="sc-bar-meta"><span id="s46-total">36 total tasks</span><span style="color:#a78bfa;font-weight:700" id="s46-pct">97% done</span></div>
     <div class="sc-focus">
       <div class="sc-focus-item"><div class="dot6" style="background:#a78bfa"></div>AI Sponsor — WhatsApp Business registered and wired to Twilio + GHL sync; real Stripe Checkout replacing the placeholder; retention/deletion policy shipped; north-star metric + usage dashboard v1 live.</div>
       <div class="sc-focus-item"><div class="dot6" style="background:#ec4899"></div>DRM — 3 P1 link/redirect bugs (Contact, Terms, About pages routing to a broken SSL sandbox) in progress; mobile responsiveness QA underway.</div>
@@ -657,7 +657,7 @@
 </div>
 
 <!-- PEOPLE -->
-<div class="section-title st-green">Per-Person Velocity — Sprint 53 (Live)</div>
+<div class="section-title st-green">Per-Person Velocity — Sprint 52</div>
 <div class="person-grid">
 
   <div class="person-card all-done">
@@ -666,7 +666,7 @@
       <div><div class="pc-name">Mariam Gvenetadze</div><div class="pc-role">Project Manager · AI Sponsor PM · Priorities + Follow-through</div></div>
     </div>
     <div class="pc-pills" id="pills-mariam">
-      <span class="pill pill-d">21 done</span><span class="pill pill-p">7 active</span><span class="pill pill-g">35 total</span>
+      <span class="pill pill-d">17 done</span><span class="pill pill-g">18 total</span>
     </div>
     <div class="pc-summary"><strong>Leading the sprint (35 tasks).</strong> AI Sponsor backend deploy + beta-ready push + security/privacy; repo migration to company GitHub; revenue target for Monday agenda; Meta refund recovery with Matt. Coordinating Jan + Elena and all PM follow-through.</div>
   </div>
@@ -699,7 +699,7 @@
       <div><div class="pc-name">Raja Muhammad Qasim (Raj)</div><div class="pc-role">Technical PM — DRM · 1st shift (8am–2pm CT)</div></div>
     </div>
     <div class="pc-pills" id="pills-raja">
-      <span class="pill pill-p">6 active</span><span class="pill pill-b">2 blocked</span><span class="pill pill-g">27 total</span>
+      <span class="pill pill-d">3 done</span><span class="pill pill-g">3 total</span>
     </div>
     <div class="pc-summary"><strong>Big DRM build queue (27 tasks).</strong> Now paired with Talha on a shift handoff (Audos only allows one login at a time). P1 link/redirect blockers on Contact, Terms, and About pages. Matt set a hard ownership bar for both: drive fixes and ideas without being asked.</div>
   </div>
@@ -754,7 +754,7 @@
       <div><div class="pc-name">Bilal Ghaffar</div><div class="pc-role">QA Lead — All Products</div></div>
     </div>
     <div class="pc-pills" id="pills-bilal">
-      <span class="pill pill-d">1 done</span><span class="pill pill-g">6 total</span>
+      <span class="pill pill-d">6 done</span><span class="pill pill-g">6 total</span>
     </div>
     <div class="pc-summary"><strong>S46:</strong> DRM bug logging + regression; Audos Black E2E regression; AI Sponsor QA (mobile priority) queued. Auditing closed tickets that skipped the QA stage.</div>
   </div>
@@ -765,7 +765,7 @@
       <div><div class="pc-name">Muhammad Mubashir</div><div class="pc-role">Full-Stack AI/ML Engineer</div></div>
     </div>
     <div class="pc-pills" id="pills-mubashir">
-      <span class="pill pill-p">3 active</span><span class="pill pill-g">4 total</span>
+      <span class="pill pill-d">7 done</span><span class="pill pill-g">8 total</span>
     </div>
     <div class="pc-summary"><strong>S46:</strong> AI Sponsor backend deploy to live server (with Mariam); Namecheap domain migration + access structure (with Abdul); repo migration. ~10 hrs/week for AI Sponsor / Claude work.</div>
   </div>
@@ -787,7 +787,7 @@
       <div><div class="pc-name">Adaeze Udogu</div><div class="pc-role">VA — Research &amp; Admin (40 hrs/wk)</div></div>
     </div>
     <div class="pc-pills" id="pills-adaeze">
-      <span class="pill pill-p">2 active</span><span class="pill pill-g">2 total</span>
+      <span class="pill pill-d">6 done</span><span class="pill pill-g">6 total</span>
     </div>
     <div class="pc-summary"><strong>S46:</strong> 100 Instagram coaches/creators list for DRM cold outreach; Elite Sports Coaches contact database (in review).</div>
   </div>
@@ -798,7 +798,7 @@
       <div><div class="pc-name">Jan (Janielyn Regaspi)</div><div class="pc-role">Operations — Joined Jun 4</div></div>
     </div>
     <div class="pc-pills" id="pills-jan">
-      <span class="pill pill-p">1 active</span><span class="pill pill-g">1 total</span>
+      <span class="pill pill-d">3 done</span><span class="pill pill-g">3 total</span>
     </div>
     <div class="pc-summary"><strong>S46:</strong> Sharing Anthropic + Wapisimo API keys + AI Sponsor WhatsApp number (unblocks live WhatsApp). Subscriptions, tools access, social, Fathom reviews, inbox zero. Reports to Mariam.</div>
   </div>
@@ -817,249 +817,50 @@
 </div>
 
 <!-- BLOCKERS -->
-<div class="section-title st-red">Active Blockers <span class="section-note">live — flagged "blocked" in ClickUp S53</span></div>
+<div class="section-title st-red">Active Blockers <span class="section-note">live — flagged "blocked" in ClickUp S52</span></div>
 <div class="blockers-list">
   <div class="blocker-item">
-    <div class="bi-title">1. QA Guru — "Run Launch Check" UI Button (Customer-Facing Launch Blocker)</div>
-    <div class="bi-detail">The customer-facing "Run Launch Check" button fails workspace handoff across DRM, VA Guru, and fresh workspaces — returns "no valid public product URL" even for DRM which has a confirmed working domain. This is the real remaining barrier to QA Guru launch-readiness. CTA appId fix (reports → your-reports) and workspace_id column in qa_scan_reports also outstanding.</div>
-    <div class="bi-meta">Owner: Mubashir (unassigned for workspace handoff fix) · Needs triage and owner</div>
-  </div>
-  <div class="blocker-item">
-    <div class="bi-title">2. QA Guru — Audos Auto-Publish Toggle Not Respected</div>
-    <div class="bi-detail">Platform-level Audos setting continues to push Draft changes Live regardless of the toggle state. A harmless marker test confirmed it's a platform-level issue (not code-configurable). All QA Guru recompiles are on hold until Audos fixes it. Ticket 86cd0dad filed; follow-up pending.</div>
+    <div class="bi-title">1. QA Guru — Two Confirmed Platform Bugs (Audos)</div>
+    <div class="bi-detail">Customer-report isolation has never worked correctly (root cause confirmed, zero rows ever had the right workspace ID), and the auto-publish toggle doesn't actually stop publishing when it's OFF. All QA Guru dev work is paused until Audos confirms both are fixed.</div>
     <div class="bi-meta">Owner: Bilal / Mubashir · Escalated to Audos (ticket 86cd0dad)</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">3. DRM — Stripe Cross-Routing Fix (Blocked on Audos Support)</div>
-    <div class="bi-detail">DRM Stripe Connect events bleed in from other products because the integration runs through Audos's shared Wallet/Connect using the same Stripe account as AI Sponsor. The team confirmed this was intentional (not a misconfiguration) and submitted a support request to Audos on internal event-filtering; one follow-up sent, no response. No higher-access escalation path available — Qasim and Mubashir have the same workspace access level.</div>
-    <div class="bi-meta">Owner: Mubashir / Qasim · Waiting on Audos support response</div>
+    <div class="bi-title">2. DRM — Blog Posts Missing From Sitemap</div>
+    <div class="bi-detail">Blog posts aren't included in the DRM sitemap, which hurts SEO indexing.</div>
+    <div class="bi-meta">Owner: Raja</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">4. AI Sponsor — Mubashir's Shared 2FA Access (GHL, Render, GitHub)</div>
-    <div class="bi-detail">Recurring 2FA lockouts block Mubashir from GHL, Render, and GitHub. Matt directed Jan (Jul 31) to onboard Mubashir onto the company's shared Authy setup; not yet confirmed done. Until resolved, any AI Sponsor work requiring those platforms carries risk of sudden lockout.</div>
-    <div class="bi-meta">Owner: Jan (action: complete Authy onboarding for Mubashir) · Matt approved approach</div>
+    <div class="bi-title">3. Infrastructure — Namecheap Domain Migration</div>
+    <div class="bi-detail">Domain migration and access-structure work is blocked.</div>
+    <div class="bi-meta">Owner: Abdul Rehman + Mubashir</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">5. Rekindle — Polsia Platform Crisis (3 Core Features Broken)</div>
-    <div class="bi-detail">Admin login inaccessible, authentication emails not sending for 95 companies, and Stripe checkout returning 502 errors. Asif isn't billing for the broken sprint and is considering switching platforms. Matt is now emailing Polsia's founder directly. No internal fix path — entirely external.</div>
-    <div class="bi-meta">Owner: Asif / Matt · Decision needed: stay on Polsia or migrate</div>
+    <div class="bi-title">4. AI Sponsor — Twilio Balance + Meta Ad Credit Recovery</div>
+    <div class="bi-detail">Twilio account needs a balance top-up to keep WhatsApp messaging running. Separately, recovering $20K in Meta ad credit for the AI Soulmate portfolio is still open.</div>
+    <div class="bi-meta">Owner: Abdul Rehman</div>
   </div>
   <div class="blocker-item">
-    <div class="bi-title">6. DRM — 3-Part Scoring Bug (Fix Ready, Needs Team Sign-Off)</div>
-    <div class="bi-detail">Three independent causes behind the "scores display as zero" bug are fully root-caused and a fix is drafted (null-to-zero coercion, stale profile-picker window, silent write-back failure missing a session flag — all pinned to exact file/line). Fix is sitting in Audos Tasks ready to ship; blocked on Qasim and Talha reviewing and approving before deployment.</div>
-    <div class="bi-meta">Owner: Mubashir (fix drafted) · Needs: Qasim / Talha sign-off to ship</div>
+    <div class="bi-title">5. Outreach — Reporters + Researcher (Waiting on Matt)</div>
+    <div class="bi-detail">Family-estrangement reporter outreach (Rekindle PR) is blocked pending Matt. Researcher outreach to Lucy is blocked and unassigned.</div>
+    <div class="bi-meta">Action: Matt to unblock · Owner: Matt / unassigned</div>
+  </div>
+  <div class="blocker-item">
+    <div class="bi-title">6. Indeed.com Job Posting — AI Accelerator Acquisition Channel</div>
+    <div class="bi-detail">Indeed "job" posting as a customer-acquisition channel for the AI Accelerator is still blocked — needs decision/access to proceed. Long-standing, unassigned.</div>
+    <div class="bi-meta">Owner: unassigned · Needs owner + go-ahead</div>
   </div>
 </div>
 
 <!-- DATA NOTE -->
 <div class="data-note">
-  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills pull <strong>live from ClickUp</strong> every 10 minutes (Sprint 52 closed + Sprint 53 active), seeded with last-known values so nothing is ever blank. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map. The <strong>🚀 "To V1 launch" bar</strong> is the launch-readiness view Matt asked for (Jun 22 call): % to the <em>current version's launch</em> — the gate where marketing starts — with the exact remaining items listed under it. Source: PM/Matt stated estimates from the Jun 22 call, updated against sprint reality (Jul 2). It <strong>resets each version</strong> (V1 hits 100% → V2 starts at 0%), and only appears on products with a confirmed estimate.
+  <strong>How to read this report.</strong> The KPI bar, Sprint Breakdown, and per-person pills are generated server-side each time this report regenerates (the daily/weekly automation) and baked directly into this page as static values &mdash; no live ClickUp API key is ever shipped to the browser. Each product card shows its <strong>near-term goal</strong> (from the Jun 15 KPI scoreboard) and an <strong>"X of Y to goal · %"</strong> — Y = the concrete milestones to reach that goal, X = how many are shipped (✓ done · ⟳ in progress · ○ next), and the % is simply X÷Y. That's real completion against the goal, anchored to milestones you can point at — not a sprint-task %. Milestones are reviewed at the monthly 15th KPI review; lifecycle <strong>status</strong> (🟢 Live / 🟡 Building / 🔵 Planned) is from Abdul's Funnel Portfolio Map. The <strong>🚀 "To V1 launch" bar</strong> is the launch-readiness view Matt asked for (Jun 22 call): % to the <em>current version's launch</em> — the gate where marketing starts — with the exact remaining items listed under it. Source: PM/Matt stated estimates from the Jun 22 call, updated against sprint reality (Jul 2). It <strong>resets each version</strong> (V1 hits 100% → V2 starts at 0%), and only appears on products with a confirmed estimate.
 </div>
 
 <script>
-const CONFIG = {
-  sPrev: '901327901621',  // Sprint 51 — Jul 20–26 (closed)
-  sCur:  '901327993775',  // Sprint 52 — Jul 27–Aug 2 (active)
-  sPrevStart: new Date(Date.UTC(2026, 6, 20)),
-  sPrevEnd:   new Date(Date.UTC(2026, 6, 26)),
-  sCurStart:  new Date(Date.UTC(2026, 6, 27)),
-  sCurEnd:    new Date(Date.UTC(2026, 7, 2)),
-  key: '',
-  refreshMs: 600000
-};
-
-// ClickUp username -> person card slug
-const PEOPLE = {
-  'Mariam Gvenetadze':   'mariam',
-  'Muhammad Imran':      'imran',
-  'Abdul Rehman':        'abdul',
-  'Raja Muhammad Qasim': 'raja',
-  'Cielo Marie Robles':  'cielo',
-  'Asif Ali':            'asif',
-  'Muhammad Hamza':      'hamza',
-  'Bilal Ghaffar':       'bilal',
-  'Muhammad Mubashir':   'mubashir',
-  'Annus Irfan':         'annus',
-  'Adaeze Udogu':        'adaeze',
-  'Janielyn Regaspi':    'jan'
-};
-
-function cat(status) {
-  const s = (status || '').toLowerCase();
-  if (['done','closed','complete'].includes(s)) return 'done';
-  if (['in progress','in review','in build'].includes(s)) return 'active';
-  if (s === 'blocked') return 'blocked';
-  return 'todo';
-}
-
-async function fetchAll(listId) {
-  let tasks = [], page = 0;
-  while (true) {
-    try {
-      const r = await fetch(
-        `https://api.clickup.com/api/v2/list/${listId}/task?include_closed=true&subtasks=true&page=${page}`,
-        { headers: { Authorization: CONFIG.key } }
-      );
-      const d = await r.json();
-      if (!d.tasks || !d.tasks.length) break;
-      tasks = tasks.concat(d.tasks);
-      if (d.last_page) break;
-      page++;
-      if (page > 15) break;
-    } catch(e) { break; }
-  }
-  return tasks;
-}
-
-function calcStats(tasks) {
-  const s = { done: 0, active: 0, todo: 0, blocked: 0, total: tasks.length, people: {} };
-  tasks.forEach(t => {
-    const c = cat(t.status && t.status.status);
-    s[c]++;
-    (t.assignees || []).forEach(a => {
-      const n = a.username;
-      if (!s.people[n]) s.people[n] = { done: 0, active: 0, blocked: 0, todo: 0, total: 0 };
-      s.people[n][c]++;
-      s.people[n].total++;
-    });
-  });
-  s.pct = s.total ? Math.round(s.done / s.total * 100) : 0;
-  return s;
-}
-
-function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
-function setW(id, pct) { const el = document.getElementById(id); if (el) el.style.width = pct + '%'; }
-function pillsHTML(done, active, blocked, total) {
-  let h = `<span class="pill pill-d">${done} done</span>`;
-  if (active > 0) h += `<span class="pill pill-p">${active} active</span>`;
-  if (blocked > 0) h += `<span class="pill pill-b">${blocked} blocked</span>`;
-  h += `<span class="pill pill-g">${total} total</span>`;
-  return h;
-}
-
-// Live per-product task counts — blended tag + name-keyword bucketing.
-// Status badges stay static (Abdul's portfolio map); only the active/queued/blocked
-// counts are live, and they sharpen automatically as ClickUp tagging improves.
-const PROD_BUCKETS = [
-  { name: /^DRM/i,                 re: /drm|dating relationship/i },
-  { name: /AI Sponsor/i,           re: /sponsor/i },
-  { name: /Audos Webinar/i,        re: /webinar/i },
-  { name: /Audos Black/i,          re: /audos.?black|hackathon|happy hour/i },
-  { name: /Rekindle/i,             re: /rekindle|harmoni|letterstream|estrangement|reconnect/i },
-  { name: /Conscious AI Academy/i, re: /conscious ai|consciousai|academy|capi|hyros/i },
-  { name: /AI SEO/i,               re: /seo|blog/i },
-  { name: /Upwork/i,               re: /upwork/i },
-  { name: /Conscious Ninjas/i,     re: /ninja/i },
-  { name: /Matt Crowe/i,           re: /mattcrowe|kampercrowe|prybar|matt crowe|personal brand/i }
-];
-
-function fillProductCounts(tasks) {
-  const agg = {};
-  tasks.forEach(t => {
-    const hay = ((t.name || '') + ' ' + (t.tags || []).map(x => x.name).join(' ')).toLowerCase();
-    for (const b of PROD_BUCKETS) {
-      if (b.re.test(hay)) {
-        const k = b.name.source;
-        (agg[k] = agg[k] || { done: 0, active: 0, todo: 0, blocked: 0 })[cat(t.status && t.status.status)]++;
-        break;
-      }
-    }
-  });
-  document.querySelectorAll('.prod-card').forEach(card => {
-    const nameEl = card.querySelector('.prod-name');
-    const countsEl = card.querySelector('.prod-counts');
-    if (!nameEl || !countsEl) return;
-    const b = PROD_BUCKETS.find(x => x.name.test(nameEl.textContent));
-    if (!b) return;
-    const a = agg[b.name.source];
-    if (!a) return; // no matched tasks — keep static fallback
-    let h = '';
-    if (a.done)    h += `<span class="pc2 pc-d">✓ ${a.done} done</span>`;
-    if (a.active)  h += `<span class="pc2 pc-p">⟳ ${a.active} active</span>`;
-    if (a.todo)    h += `<span class="pc2 pc-t">○ ${a.todo} queued</span>`;
-    if (a.blocked) h += `<span class="pc2 pc-b">🚧 ${a.blocked} blocked</span>`;
-    h += `<span class="pc-tag">S46 live</span>`;
-    countsEl.innerHTML = h;
-  });
-}
-
-async function refresh() {
-  set('last-updated', 'Refreshing…');
-  try {
-    const [prevTasks, curTasks] = await Promise.all([fetchAll(CONFIG.sPrev), fetchAll(CONFIG.sCur)]);
-    const prev = calcStats(prevTasks);
-    const cur  = calcStats(curTasks);
-    fillProductCounts(curTasks);
-
-    // KPI bar
-    set('kpi-tasks',        prev.total + cur.total);
-    set('kpi-completed',    prev.done + cur.done);
-    set('kpi-inprog',       cur.active);
-    set('kpi-curpct',       cur.pct + '%');
-    set('kpi-cursub',       cur.done + '/' + cur.total + ' tasks closed');
-    set('kpi-contributors', Object.keys(cur.people).length);
-    set('kpi-blockers',     cur.blocked + prev.blocked);
-
-    // Sprint 45 (closed)
-    set('s45-done',    prev.done);
-    set('s45-inprog',  prev.active);
-    set('s45-pending', prev.todo);
-    set('s45-blocked', prev.blocked);
-    setW('s45-bar',    prev.pct);
-    set('s45-total',   prev.total + ' total tasks');
-    set('s45-pct',     prev.pct + '% complete');
-    set('s45-badge',   'CLOSED · ' + prev.pct + '%');
-
-    // Sprint 46 (active)
-    const now = new Date();
-    set('s46-done',    cur.done);
-    set('s46-active',  cur.active);
-    set('s46-todo',    cur.todo);
-    set('s46-blocked', cur.blocked);
-    setW('s46-bar',    cur.pct);
-    set('s46-total',   cur.total + ' total tasks');
-    set('s46-pct',     cur.pct + '% done');
-    if (now >= CONFIG.sCurStart && now <= CONFIG.sCurEnd) {
-      const dayNum = Math.min(7, Math.max(1, Math.floor((now - CONFIG.sCurStart) / 86400000) + 1));
-      set('s46-badge', 'ACTIVE · Day ' + dayNum + ' of 7');
-    } else if (now > CONFIG.sCurEnd) {
-      set('s46-badge', 'CLOSED · ' + cur.pct + '%');
-      const b = document.getElementById('s46-badge');
-      if (b) b.className = 'sc-badge badge-done';
-    }
-
-    // Per-person pills (Sprint 46 live)
-    Object.entries(PEOPLE).forEach(([name, slug]) => {
-      const el = document.getElementById('pills-' + slug);
-      if (!el) return;
-      const p = cur.people[name];
-      if (p && p.total > 0) el.innerHTML = pillsHTML(p.done, p.active, p.blocked, p.total);
-    });
-
-    const t = new Date();
-    set('last-updated', 'Live · Updated ' + t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  } catch(e) {
-    set('last-updated', 'Could not refresh — retrying in 10 min');
-    console.error(e);
-  }
-}
-
-// Seed last-known values so the page is NEVER blank if the live fetch is slow,
-// cached, or briefly unavailable. refresh() overwrites all of these with live data
-// within ~1-2s. Updated whenever the report is rebuilt.
-(function seed() {
-  const F = {
-    'kpi-tasks': 241, 'kpi-completed': 83, 'kpi-inprog': 0, 'kpi-curpct': '—',
-    'kpi-cursub': 'Sprint 53 just started', 'kpi-contributors': 14, 'kpi-blockers': 6,
-    's45-done': 54, 's45-inprog': 0, 's45-pending': 0, 's45-blocked': 0,
-    's45-total': '205 total tasks', 's45-pct': '—% complete', 's45-badge': 'CLOSED',
-    's46-done': 0, 's46-active': 0, 's46-todo': 0, 's46-blocked': 0,
-    's46-total': 'Sprint 53 — no tasks yet', 's46-pct': '—% done', 's46-badge': 'ACTIVE'
-  };
-  for (const k in F) { const el = document.getElementById(k); if (el) el.textContent = F[k]; }
-  const b45 = document.getElementById('s45-bar'); if (b45) b45.style.width = '81%';
-  const b46 = document.getElementById('s46-bar'); if (b46) b46.style.width = '26%';
-})();
+// No live ClickUp key ships to this page. KPI bar, Sprint Breakdown, and per-person
+// pills above are baked in server-side each time this report regenerates — see the
+// fix write-up for why: the old client-side fetch (with an embedded key) was the
+// root cause of the Jul 27 key-exposure incident.
 
 // Derive a % + progress bar from each card's "X of Y to goal" milestone count, so the
 // percentage is ALWAYS consistent with the count (single source of truth = the milestones).
@@ -1071,7 +872,7 @@ function applyGoalBars() {
     const m = badge.textContent.match(/(\d+)\s*of\s*(\d+)/);
     if (!m) return;
     const x = +m[1], y = +m[2], pct = y ? Math.round(x / y * 100) : 0;
-    badge.textContent = `${x} of ${y} · ${pct}%`;
+    badge.textContent = `${x} of ${y} \u00b7 ${pct}%`;
     if (!card.querySelector('.goal-bar')) {
       const wrap = document.createElement('div'); wrap.className = 'goal-bar';
       const fill = document.createElement('div'); fill.className = 'goal-bar-fill' + (pct === 0 ? ' gb-zero' : '');
@@ -1082,9 +883,6 @@ function applyGoalBars() {
   });
 }
 applyGoalBars();
-
-refresh();
-setInterval(refresh, CONFIG.refreshMs);
 </script>
 </body>
 </html>
