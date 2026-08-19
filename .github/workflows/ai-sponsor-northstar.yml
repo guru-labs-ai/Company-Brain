@@ -119,11 +119,18 @@ jobs:
           lines = [
               f"*AI Sponsor north star, week ending {week}*",
               "",
-              f"*{joined:,} days since people joined*{delta(joined, 'joined')}",
-              f"*{showed:,} days people actually showed up*{delta(showed, 'showed')}",
+              # The honest number leads. Days people showed up is the one that
+              # can fall, so it is the one that tells you something. The joined
+              # counter sits underneath as the mission number: it rises by one
+              # per person per day on its own and would keep rising for a year
+              # after the product died.
+              f"*{showed:,} days people showed up*{delta(showed, 'showed')}",
+              f"{active7} of {signups} active in the last 7 days",
               "",
-              f"{signups} signed up, {chatted} have ever written, {active7} active in the last 7 days, {messages:,} messages",
-              f"*{paying} paying*",
+              f"{joined:,} days since people joined{delta(joined, 'joined')}",
+              "",
+              f"{chatted} of {signups} have ever written, {messages:,} messages",
+              f"{paying} paying",
               "",
               f"Live dashboard: {board}",
           ]
