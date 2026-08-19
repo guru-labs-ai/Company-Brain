@@ -79,6 +79,9 @@ jobs:
 
           joined   = m["northStar"]["cumulativeRecoveryDays"]   # days since signup, summed
           showed   = m["usage"]["totalActiveDays"]              # days somebody actually turned up
+          # The last 7 days, straight from the API. This is the whole post now:
+          # a cumulative total cannot say whether this week was any good.
+          w        = m.get("thisWeek") or {}
           signups  = m["signups"]["total"]
           chatted  = m["usage"]["usersWhoChatted"]
           active7  = m["usage"]["activeLast7d"]
@@ -128,12 +131,12 @@ jobs:
               # counter sits underneath as the mission number: it rises by one
               # per person per day on its own and would keep rising for a year
               # after the product died.
-              f"*{showed:,} days people showed up*{delta(showed, 'showed')}",
-              f"{active7} of {signups} active in the last 7 days",
+              f"*This week: {w.get('daysPeopleShowedUp', '?')} days people showed up*",
+              f"{w.get('peopleWhoShowedUp', '?')} people, {w.get('messages', 0):,} messages, {w.get('newSignups', '?')} new signups",
               "",
-              f"{joined:,} days since people joined{delta(joined, 'joined')}",
-              "",
-              f"{chatted} of {signups} have ever written, {messages:,} messages",
+              f"All time: {showed:,} days people showed up{delta(showed, 'showed')}, {messages:,} messages",
+              f"{chatted} of {signups} have ever written, {active7} active in the last 7 days",
+              f"{joined:,} days since people joined",
               f"{paying} paying",
               "",
               f"Live dashboard: {board}",
