@@ -1,0 +1,113 @@
+# Posts the AI Sponsor north star numbers into Slack #ai-sponsor every Friday.
+#
+# Matt asked for this so the counter comes to him rather than him having to
+# remember to go and look, and so week on week movement is visible in the
+# channel rather than only on a dashboard.
+#
+# WHY THIS RUNS HERE AND NOT SOMEWHERE MORE OBVIOUS:
+#   - Not a Claude cloud routine. That sandbox blocks outbound network to
+#     everything except package registries, so it cannot reach our metrics
+#     endpoint, and its Slack connector refuses to post into private channels.
+#     Both were tried. Both failed.
+#   - Not the AI Sponsor backend. Render's free tier sleeps when idle, so a
+#     weekly timer there is not reliably awake on a Friday evening.
+#   GitHub Actions has network, runs on time whether or not anyone is at a
+#   laptop, and is free.
+#
+# The bot token is what makes the Slack post possible at all. The Slack MCP
+# connector refuses private channels and reports it as "externally shared",
+# which is misleading and cost an afternoon. A bot token invited to the channel
+# has no such restriction.
+
+name: AI Sponsor north star to Slack
+
+on:
+  schedule:
+    # 20:00 UTC Friday = 3pm for Matt (US Central), 10pm Europe/Berlin.
+    # His afternoon on purpose, since he is the one watching it.
+    - cron: "0 20 * * 5"
+  workflow_dispatch: {}   # so it can be run by hand without waiting for Friday
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch metrics and post to Slack
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL: C0B2BEYJBAN          # #ai-sponsor
+          METRICS: https://ai-sponsor-f7de.onrender.com/api/metrics/northstar
+          DASHBOARD: https://guru-labs-ai.github.io/Company-Brain/ai-sponsor-northstar.html
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, datetime, re
+
+          token   = os.environ["SLACK_BOT_TOKEN"]
+          channel = os.environ["CHANNEL"]
+
+          def slack(method, payload):
+              req = urllib.request.Request(
+                  f"https://slack.com/api/{method}",
+                  data=json.dumps(payload).encode(),
+                  headers={"Authorization": f"Bearer {token}",
+                           "Content-type": "application/json; charset=utf-8"},
+              )
+              return json.load(urllib.request.urlopen(req))
+
+          # 1. The numbers. If this fails we say nothing rather than guess: a
+          #    wrong number in this channel is worse than no post at all.
+          try:
+              with urllib.request.urlopen(os.environ["METRICS"], timeout=30) as r:
+                  m = json.load(r)
+          except Exception as e:
+              slack("chat.postMessage", {
+                  "channel": channel,
+                  "text": f"The weekly north star post could not run: the metrics endpoint did not answer ({e}). "
+                          f"Numbers are still live at {os.environ['DASHBOARD']}",
+              })
+              raise SystemExit(0)
+
+          days     = m["northStar"]["cumulativeRecoveryDays"]
+          signups  = m["signups"]["total"]
+          active7  = m["usage"]["activeLast7d"]
+          messages = m["usage"]["totalMessages"]
+          paying   = m["billing"]["activeSubscriptions"]
+
+          # 2. Week on week, read back off our own last post. Keeping the state
+          #    in the channel rather than in a file means there is nothing to
+          #    fall out of sync, and the history is readable by a human.
+          change = None
+          try:
+              hist = urllib.request.Request(
+                  f"https://slack.com/api/conversations.history?channel={channel}&limit=200",
+                  headers={"Authorization": f"Bearer {token}"})
+              for msg in json.load(urllib.request.urlopen(hist)).get("messages", []):
+                  hit = re.search(r"\*([\d,]+) days of recovery\*", msg.get("text", ""))
+                  if hit:
+                      change = days - int(hit.group(1).replace(",", ""))
+                      break
+          except Exception:
+              pass   # a missing delta is a cosmetic loss, never a reason to skip the post
+
+          delta = f" (+{change:,} this week)" if change is not None else " (first week of tracking)"
+          week  = datetime.date.today().strftime("%-d %B") if os.name != "nt" else datetime.date.today().strftime("%d %B")
+
+          # Revenue is reported exactly as it is. It will read $0 while everyone
+          # is on a free beta code, and it should: dressing that up is how a
+          # number stops being worth watching.
+          lines = [
+              f"*AI Sponsor north star, week ending {week}*",
+              "",
+              f"*{days:,} days of recovery*{delta}",
+              f"{signups} signed up, {active7} active in the last 7 days, {messages:,} messages",
+              f"*{paying} paying*",
+              "",
+              f"Live dashboard: {os.environ['DASHBOARD']}",
+          ]
+
+          res = slack("chat.postMessage",
+                      {"channel": channel, "text": "\n".join(lines), "unfurl_links": False})
+          print(json.dumps(res)[:300])
+          if not res.get("ok"):
+              raise SystemExit(f"Slack refused the post: {res.get('error')}")
+          PY
