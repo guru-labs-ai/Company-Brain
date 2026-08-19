@@ -121,7 +121,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
     <div class="hero">
       <div class="eyebrow">🌱 AI Sponsor · North Star</div>
       <div class="big" id="ns-value">0</div>
-      <div class="unit">days since people joined</div>
+      <div class="unit">days people showed up</div>
       <div class="meaning" id="ns-meaning"></div>
       <div class="growth"><span class="pulse"></span><span id="ns-growth"></span></div>
     </div>
@@ -207,13 +207,20 @@ function render(d) {
   document.getElementById('dash').style.display = 'block';
 
   const ns = d.northStar;
-  countUp(document.getElementById('ns-value'), ns.cumulativeRecoveryDays);
+  /* The headline is days somebody actually turned up, NOT the joined counter.
+     That one is SUM(today - signup_date), so it rises by one per person per day
+     on its own: 12 people means +12 tomorrow whether or not a soul opens
+     WhatsApp, and it would keep climbing for a year after the product died.
+     It is kept below as context, in a line, because it is the mission number.
+     Anything that cannot fall does not belong in the big type. */
+  const showed = (d.usage && d.usage.totalActiveDays) || 0;
+  const week   = d.thisWeek || {};
+  countUp(document.getElementById('ns-value'), showed);
 
   // Pre-launch: nobody has signed up yet. Zero is the honest number, but the
   // copy below is written for a live product — "grows by 0 days every single
   // day" under a big 0 reads as broken rather than as not-started.
-  const notStarted = ns.cumulativeRecoveryDays === 0 && (!d.usage || d.usage.registeredUsers === 0);
-  const years = ns.cumulativeRecoveryDays / 365;
+  const notStarted = showed === 0 && (!d.usage || d.usage.registeredUsers === 0);
 
   /* This number is SUM(today - signup_date) across people. It is elapsed time
      since registration and nothing else, so the copy must not claim recovery,
@@ -222,12 +229,14 @@ function render(d) {
      lives built out of form submissions. What it can honestly say is how many
      people it is counting and how fast it moves on its own. */
   document.getElementById('ns-meaning').textContent = notStarted
-    ? 'No one has signed up yet. This starts counting the day the first person redeems their code.'
-    : 'Elapsed time since each person signed up, added together. It is not sober days and not time spent using it.';
+    ? 'No one has shown up yet. This starts counting the first day somebody writes to their sponsor.'
+    : (week.daysPeopleShowedUp != null
+        ? week.daysPeopleShowedUp + ' of them this week. ' + (week.peopleWhoShowedUp || 0) + ' people, ' + (week.messages || 0).toLocaleString() + ' messages.'
+        : (d.usage.usersWhoChatted || 0) + ' people have written, ' + (d.usage.totalMessages || 0).toLocaleString() + ' messages.');
 
   document.getElementById('ns-growth').textContent = notStarted
-    ? 'waiting on the first sign-up'
-    : 'rises by ' + ns.activeUsers.toLocaleString() + ' a day on its own, whether or not anybody shows up';
+    ? 'waiting on the first conversation'
+    : ns.cumulativeRecoveryDays.toLocaleString() + ' days since people joined, which rises on its own';
 
   document.getElementById('stamp').textContent =
     'Live · updated ' + new Date(d.generatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
