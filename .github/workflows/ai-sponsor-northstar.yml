@@ -11,11 +11,11 @@
 # essentially never fall. On its own it is a clock, not a metric: it would go up
 # and to the right for a year after the product died.
 #
-# So it is posted here under an honest label, "days since people joined", next
-# to the two numbers that CAN go down: days people actually showed up, and
-# active in the last 7 days. At the time of writing that contrast is 192 against
-# 21, and 4 of 12 active. A bad week has to be able to look like a bad week or
-# there is no point sending it.
+# So it does NOT lead the post. Days people showed up leads, because that is the
+# number that can fall, with active-in-7 beside it. The joined counter sits
+# underneath, unbolded, as the mission number. At the time of writing that is
+# 20 showed-up days and 4 of 12 active against 119 joined days. A bad week has
+# to be able to look like a bad week or there is no point sending it.
 #
 # WHY IT RUNS HERE and not in the two more obvious homes, both tried, both dead:
 #   - A Claude cloud routine cannot. That sandbox blocks outbound network to all
@@ -95,8 +95,12 @@ jobs:
                   headers={"Authorization": f"Bearer {token}"})
               for msg in json.load(urllib.request.urlopen(hist)).get("messages", []):
                   text = msg.get("text", "")
-                  a = re.search(r"\*([\d,]+) days since people joined\*", text)
-                  b = re.search(r"\*([\d,]+) days people actually showed up\*", text)
+                  # Loose on purpose: the joined line lost its bold when it
+                  # stopped leading, and the showed-up line lost the word
+                  # "actually". A wording tweak must never silently kill the
+                  # delta, so match the numbers and the nouns, not the styling.
+                  a = re.search(r"([\d,]+) days since people joined", text)
+                  b = re.search(r"([\d,]+) days people (?:actually )?showed up", text)
                   if a or b:
                       if a: prev["joined"] = int(a.group(1).replace(",", ""))
                       if b: prev["showed"] = int(b.group(1).replace(",", ""))
