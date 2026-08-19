@@ -121,7 +121,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
     <div class="hero">
       <div class="eyebrow">🌱 AI Sponsor · North Star</div>
       <div class="big" id="ns-value">0</div>
-      <div class="unit">days of recovery, held together</div>
+      <div class="unit">days since people joined</div>
       <div class="meaning" id="ns-meaning"></div>
       <div class="growth"><span class="pulse"></span><span id="ns-growth"></span></div>
     </div>
@@ -215,15 +215,19 @@ function render(d) {
   const notStarted = ns.cumulativeRecoveryDays === 0 && (!d.usage || d.usage.registeredUsers === 0);
   const years = ns.cumulativeRecoveryDays / 365;
 
+  /* This number is SUM(today - signup_date) across people. It is elapsed time
+     since registration and nothing else, so the copy must not claim recovery,
+     sober days, or nights anybody got through. It said "every one of these days,
+     someone had a sponsor in their pocket", which is a claim about people's
+     lives built out of form submissions. What it can honestly say is how many
+     people it is counting and how fast it moves on its own. */
   document.getElementById('ns-meaning').textContent = notStarted
-    ? 'No one has signed up yet — this starts counting the day the first person redeems their code.'
-    : years >= 1
-      ? 'That’s ' + years.toFixed(1) + ' years of recovery — nights nobody faced alone.'
-      : 'Every one of these days, someone had a sponsor in their pocket.';
+    ? 'No one has signed up yet. This starts counting the day the first person redeems their code.'
+    : 'Elapsed time since each person signed up, added together. It is not sober days and not time spent using it.';
 
   document.getElementById('ns-growth').textContent = notStarted
     ? 'waiting on the first sign-up'
-    : 'grows by ' + ns.activeUsers.toLocaleString() + ' days — every single day';
+    : 'rises by ' + ns.activeUsers.toLocaleString() + ' a day on its own, whether or not anybody shows up';
 
   document.getElementById('stamp').textContent =
     'Live · updated ' + new Date(d.generatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
