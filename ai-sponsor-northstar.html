@@ -45,10 +45,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .chips{display:flex;gap:8px;margin-bottom:14px}
 .chip{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;
   text-align:center}
-.chip.won{background:linear-gradient(0deg,var(--gold-bg),var(--card));border-color:#F5D488}
-.chip .em{font-size:22px}
 .chip .n{font-size:17px;font-weight:800;margin-top:2px}
-.chip .l{font-size:10px;color:var(--muted);font-weight:600;margin-top:1px;text-transform:uppercase;letter-spacing:0.03em}
+.chip .l{font-size:10px;line-height:1.25;color:var(--muted);font-weight:600;margin-top:1px;text-transform:uppercase;letter-spacing:0.03em}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 12px;margin-bottom:14px}
 .card h2{font-size:14px;font-weight:700}
@@ -129,6 +127,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
     </div>
     <div class="stamp" id="stamp"></div>
 
+    <div class="sub">How long people have been signed up. Not time in recovery, and not time spent using it.</div>
     <div class="chips" id="chips"></div>
 
     <div class="card">
@@ -164,12 +163,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 
 <script>
 const API = 'https://ai-sponsor-f7de.onrender.com/api/metrics/northstar';
+/* These were a seedling, a sprig, then bronze, gold and a trophy, labelled
+   "30 days" and "90 days". On a 12-step product that is unmistakably a sobriety
+   chip, and these are nothing of the kind: they count how long ago somebody
+   filled in the registration form. Someone who signed up, never came back and
+   is not sober still collects the 30 day medal on the day it falls due.
+   Relabelled to say exactly what they measure. No medals, no emoji, no implied
+   achievement. If we ever want real chips, compute them from activity_days,
+   which is consecutive days somebody actually showed up. */
 const MILESTONES = [
-  { days: 1,   em: '🌱', label: '24 hrs' },
-  { days: 7,   em: '🌿', label: '1 week' },
-  { days: 30,  em: '🥉', label: '30 days' },
-  { days: 90,  em: '🥇', label: '90 days' },
-  { days: 365, em: '🏆', label: '1 year' },
+  { days: 1,   label: 'a day' },
+  { days: 7,   label: 'a week' },
+  { days: 30,  label: '30 days' },
+  { days: 90,  label: '90 days' },
+  { days: 365, label: 'a year' },
 ];
 
 async function load(attempt) {
@@ -350,7 +357,8 @@ function drawMessages(b) {
   });
 }
 
-// How many people have passed each milestone (from their sign-up dates).
+// How many people REGISTERED longer ago than each threshold. Time since signup,
+// not time in recovery and not time using it. See the note on MILESTONES.
 function drawChips(byDay) {
   const now = Date.now();
   const el = document.getElementById('chips');
@@ -360,9 +368,9 @@ function drawChips(byDay) {
       const days = Math.floor((now - new Date(day).getTime()) / 86400000) + 1;
       if (days >= m.days) n += count;
     });
-    return '<div class="chip' + (n > 0 ? ' won' : '') + '">' +
-      '<div class="em">' + m.em + '</div><div class="n">' + n + '</div>' +
-      '<div class="l">' + m.label + '</div></div>';
+    return '<div class="chip">' +
+      '<div class="n">' + n + '</div>' +
+      '<div class="l">here over<br>' + m.label + '</div></div>';
   }).join('');
 }
 
