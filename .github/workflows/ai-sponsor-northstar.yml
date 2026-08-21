@@ -1,38 +1,34 @@
-# Posts the AI Sponsor north star numbers into Slack #ai-sponsor every Friday.
+# Posts the AI Sponsor north star nudge into Slack #ai-sponsor every Friday.
 #
 # Matt asked for this so the counter comes to him rather than him having to
-# remember to go and look, and so week on week movement is visible.
+# remember to go and look.
 #
-# ⛔ THE THING TO UNDERSTAND BEFORE EDITING THIS FILE.
-# "Cumulative recovery days" is not what the name suggests. The backend computes
-# it as SUM(today - signup_date) across registered users, so it counts calendar
-# days since somebody registered and nothing else. It rises by one per user per
-# day, automatically, whether or not a single person opens WhatsApp, and it can
-# essentially never fall. On its own it is a clock, not a metric: it would go up
-# and to the right for a year after the product died.
+# ⛔ THIS IS A POINTER, NOT A REPORT. That is deliberate and it is Mariam's
+# call. It states no figures. The dashboard is live and updates itself, so the
+# numbers belong there and the post exists only to send people to it. Keep it
+# to the two lines below. It runs every week and anything extra becomes noise
+# by the third one.
 #
-# So it does NOT lead the post. Days people showed up leads, because that is the
-# number that can fall, with active-in-7 beside it. The joined counter sits
-# underneath, unbolded, as the mission number. At the time of writing that is
-# 20 showed-up days and 4 of 12 active against 119 joined days. A bad week has
-# to be able to look like a bad week or there is no point sending it.
+# A richer version that fetched and posted the actual metrics lived here
+# briefly and is in git history if it is ever wanted back. It was dropped
+# because it turned a one line nudge into a weekly report nobody asked for,
+# and because fetching numbers made the post depend on a backend that sleeps.
 #
 # WHY IT RUNS HERE and not in the two more obvious homes, both tried, both dead:
-#   - A Claude cloud routine cannot. That sandbox blocks outbound network to all
-#     but package registries, so it cannot reach our metrics endpoint, and its
-#     Slack connector refuses to post into private channels.
-#   - The backend cannot be relied on. Render's free tier sleeps when idle, so a
-#     weekly timer there may not be awake on a Friday evening.
+#   - A Claude cloud routine cannot. Its Slack connector refuses to post into
+#     this channel and misreports the reason as "externally shared".
+#   - The backend cannot be relied on. Render's free tier sleeps when idle, so
+#     a weekly timer there may not be awake on a Friday evening.
 #
-# The bot token is what makes the Slack post possible at all. The Slack MCP
-# connector refuses private channels and misreports it as "externally shared".
-# A bot token invited to the channel has no such restriction.
+# The bot token is what makes the Slack post possible at all. A bot token
+# invited to the channel has none of the connector's restrictions. It lives in
+# the repository secret SLACK_BOT_TOKEN.
 
 name: AI Sponsor north star to Slack
 
 on:
   schedule:
-    # 20:00 UTC Friday = 3pm for Matt (US Central), 10pm Europe/Berlin.
+    # 20:00 UTC Friday = 3pm for Matt (US Central), 10pm Europe.
     # His afternoon on purpose, since he is the one watching it.
     - cron: "0 20 * * 5"
   workflow_dispatch: {}   # so it can be run by hand without waiting for Friday
@@ -41,110 +37,42 @@ jobs:
   post:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch metrics and post to Slack
+      - name: Post the nudge to Slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           CHANNEL: C0B2BEYJBAN          # #ai-sponsor
-          METRICS: https://ai-sponsor-f7de.onrender.com/api/metrics/northstar
           DASHBOARD: https://guru-labs-ai.github.io/Company-Brain/ai-sponsor-northstar.html
         run: |
           python3 - <<'PY'
-          import json, os, urllib.request, datetime, re
+          import json, os, urllib.request, datetime
 
           token   = os.environ["SLACK_BOT_TOKEN"]
           channel = os.environ["CHANNEL"]
           board   = os.environ["DASHBOARD"]
 
-          def slack(method, payload):
-              req = urllib.request.Request(
-                  f"https://slack.com/api/{method}",
-                  data=json.dumps(payload).encode(),
-                  headers={"Authorization": f"Bearer {token}",
-                           "Content-type": "application/json; charset=utf-8"},
-              )
-              return json.load(urllib.request.urlopen(req))
-
-          # 1. The numbers. If this fails we say so rather than guess: a wrong
-          #    number in this channel is worse than no post at all.
-          try:
-              with urllib.request.urlopen(os.environ["METRICS"], timeout=30) as r:
-                  m = json.load(r)
-          except Exception as e:
-              slack("chat.postMessage", {
-                  "channel": channel,
-                  "text": f"The weekly north star post could not run: the metrics endpoint did not answer ({e}). "
-                          f"Numbers are still live at {board}",
-              })
-              raise SystemExit(0)
-
-          joined   = m["northStar"]["cumulativeRecoveryDays"]   # days since signup, summed
-          showed   = m["usage"]["totalActiveDays"]              # days somebody actually turned up
-          # The last 7 days, straight from the API. This is the whole post now:
-          # a cumulative total cannot say whether this week was any good.
-          w        = m.get("thisWeek") or {}
-          signups  = m["signups"]["total"]
-          chatted  = m["usage"]["usersWhoChatted"]
-          active7  = m["usage"]["activeLast7d"]
-          messages = m["usage"]["totalMessages"]
-          paying   = m["billing"]["activeSubscriptions"]
-
-          # 2. Week on week, read back off our own previous post. State lives in
-          #    the channel rather than a file, so there is nothing to fall out of
-          #    sync and the history stays readable by a human.
-          prev = {}
-          try:
-              hist = urllib.request.Request(
-                  f"https://slack.com/api/conversations.history?channel={channel}&limit=200",
-                  headers={"Authorization": f"Bearer {token}"})
-              for msg in json.load(urllib.request.urlopen(hist)).get("messages", []):
-                  text = msg.get("text", "")
-                  # Loose on purpose: the joined line lost its bold when it
-                  # stopped leading, and the showed-up line lost the word
-                  # "actually". A wording tweak must never silently kill the
-                  # delta, so match the numbers and the nouns, not the styling.
-                  a = re.search(r"([\d,]+) days since people joined", text)
-                  b = re.search(r"([\d,]+) days people (?:actually )?showed up", text)
-                  if a or b:
-                      if a: prev["joined"] = int(a.group(1).replace(",", ""))
-                      if b: prev["showed"] = int(b.group(1).replace(",", ""))
-                      break
-          except Exception:
-              pass   # a missing delta is cosmetic, never a reason to skip the post
-
-          def delta(now_val, key):
-              if key not in prev:
-                  return " (first week of tracking)"
-              d = now_val - prev[key]
-              return f" (+{d:,} this week)" if d >= 0 else f" ({d:,} this week)"
+          if not token:
+              raise SystemExit("SLACK_BOT_TOKEN is empty. Set it in Settings, "
+                               "Secrets and variables, Actions.")
 
           today = datetime.date.today()
           week  = f"{today.day} {today.strftime('%B')}"
 
-          # Revenue is reported exactly as it is. It reads zero while everyone is
-          # on a free beta code, and it should: dressing that up is how a number
-          # stops being worth watching.
-          lines = [
-              f"*AI Sponsor north star, week ending {week}*",
-              "",
-              # The honest number leads. Days people showed up is the one that
-              # can fall, so it is the one that tells you something. The joined
-              # counter sits underneath as the mission number: it rises by one
-              # per person per day on its own and would keep rising for a year
-              # after the product died.
-              f"*This week: {w.get('daysPeopleShowedUp', '?')} days people showed up*",
-              f"{w.get('peopleWhoShowedUp', '?')} people, {w.get('messages', 0):,} messages, {w.get('newSignups', '?')} new signups",
-              "",
-              f"All time: {showed:,} days people showed up{delta(showed, 'showed')}, {messages:,} messages",
-              f"{chatted} of {signups} have ever written, {active7} active in the last 7 days",
-              f"{joined:,} days since people joined",
-              f"{paying} paying",
-              "",
-              f"Live dashboard: {board}",
-          ]
+          text = (f"*AI Sponsor north star, week ending {week}*\n\n"
+                  f"Days of recovery, live and counting: {board}")
 
-          res = slack("chat.postMessage",
-                      {"channel": channel, "text": "\n".join(lines), "unfurl_links": False})
+          req = urllib.request.Request(
+              "https://slack.com/api/chat.postMessage",
+              data=json.dumps({"channel": channel,
+                               "text": text,
+                               "unfurl_links": False}).encode(),
+              headers={"Authorization": f"Bearer {token}",
+                       "Content-type": "application/json; charset=utf-8"},
+          )
+          res = json.load(urllib.request.urlopen(req))
           print(json.dumps(res)[:300])
+
+          # Fail loudly. A silent failure is the worst outcome here: this post
+          # looked like it was working for days while nothing was scheduled.
           if not res.get("ok"):
               raise SystemExit(f"Slack refused the post: {res.get('error')}")
           PY
