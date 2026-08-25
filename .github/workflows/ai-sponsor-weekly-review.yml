@@ -1,0 +1,95 @@
+# Triggers AI Sponsor's weekly review every Monday.
+#
+# WHY MONDAY AND NOT SUNDAY, which is what everyone assumes.
+#
+# weekly.js always summarises the last FULLY CLOSED Monday-to-Sunday week, and
+# Sunday is still inside the current week. So a run on Sunday 30 August would
+# summarise 17-23 August: the week before the one the person just lived. Run it
+# on Monday and they get the week they actually just finished.
+#
+#   run Sat 29 Aug  ->  summarises 17-23 Aug
+#   run Sun 30 Aug  ->  summarises 17-23 Aug   <- a week stale
+#   run Mon 31 Aug  ->  summarises 24-30 Aug   <- correct
+#
+# WHY IT RUNS HERE rather than inside the backend, which is the obvious place:
+# Render's free tier sleeps when idle, so a timer in the service is very often
+# not awake when a week rolls over. weekly.js says this out loud at the top and
+# is built so nothing is scheduled internally. Hitting this URL both wakes the
+# instance and tells it to catch up, which is the only combination that works.
+#
+# Nothing here is load-bearing. If a Monday is missed the summary is still
+# correct whenever it eventually runs, because the week it describes closed days
+# ago and cannot change. Late is not wrong here.
+#
+# The secret lives in the repository secret AI_SPONSOR_CRON_SECRET and must
+# match CRON_SECRET on the Render service. An unset CRON_SECRET disables the
+# route entirely rather than leaving it open, because it spends Opus tokens per
+# call and an open endpoint is a bill somebody else can run up.
+
+name: AI Sponsor weekly review
+
+on:
+  schedule:
+    # 15:00 UTC Monday = 8am Pacific, 10am Central, 11am Eastern, 4pm Europe.
+    # Morning for the people who use it, and safely past Sunday midnight UTC so
+    # the week being summarised has definitely closed.
+    - cron: "0 15 * * 1"
+  workflow_dispatch: {}   # so it can be run by hand without waiting for Monday
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the backend to write last week's summaries
+        env:
+          CRON_SECRET: ${{ secrets.AI_SPONSOR_CRON_SECRET }}
+          ENDPOINT: https://ai-sponsor-f7de.onrender.com/api/cron/weekly-summaries
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+
+          secret   = os.environ["CRON_SECRET"]
+          endpoint = os.environ["ENDPOINT"]
+
+          if not secret:
+              raise SystemExit(
+                  "AI_SPONSOR_CRON_SECRET is empty. Set it in Settings, "
+                  "Secrets and variables, Actions. It must match CRON_SECRET "
+                  "on the Render service."
+              )
+
+          # The instance sleeps. The first request wakes it and can take a while,
+          # so the timeout is generous rather than tight.
+          req = urllib.request.Request(
+              endpoint + "?limit=50",
+              data=b"",
+              method="POST",
+              headers={"x-cron-secret": secret,
+                       "Content-Type": "application/json"},
+          )
+
+          try:
+              res = json.load(urllib.request.urlopen(req, timeout=180))
+          except urllib.error.HTTPError as e:
+              body = e.read().decode()[:300]
+              # 404 means CRON_SECRET is unset on Render, which is a different
+              # problem from a wrong secret and worth saying plainly.
+              if e.code == 404:
+                  raise SystemExit(
+                      "The backend returned 404. CRON_SECRET is not set on the "
+                      "Render service, so the route is disabled."
+                  )
+              if e.code == 403:
+                  raise SystemExit(
+                      "The backend returned 403. This secret does not match "
+                      "CRON_SECRET on Render."
+                  )
+              raise SystemExit(f"Weekly sweep failed: HTTP {e.code} {body}")
+
+          print(json.dumps(res)[:500])
+
+          # Fail loudly. A silent failure is the worst outcome: the north star
+          # post looked like it was working for days while nothing was scheduled.
+          if res.get("error"):
+              raise SystemExit(f"Weekly sweep reported an error: {res['error']}")
+          PY
