@@ -40,7 +40,12 @@ jobs:
       - name: Post the nudge to Slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          CHANNEL: C0B2BEYJBAN          # #ai-sponsor
+          # Moved from #ai-sponsor (C0B2BEYJBAN) on 2 Sep 2026. Matt: "lets run
+          # the automation into this channel so all data/users/metrics are
+          # isolated into this channel". #ai-sponsor is also a Slack Connect
+          # channel with external people in it; this one is internal, and the
+          # bot already posts the live signup alerts here so it is invited.
+          CHANNEL: C0BQYBMJPP0          # #ai-sponsor-updates
           DASHBOARD: https://guru-labs-ai.github.io/Company-Brain/ai-sponsor-northstar.html
         run: |
           python3 - <<'PY'

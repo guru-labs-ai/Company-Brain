@@ -456,7 +456,10 @@ function drawMoney(r, f) {
     <div class="fn-bar">${seg('fn-trial', f.stillInTrial)}${seg('fn-conv', f.converted)}${seg('fn-drop', f.cancelled)}</div>
     <div class="fn-key">
       ${key('var(--blue)', 'still in their free month', f.stillInTrial)}
-      ${key('#1A7A4A', 'converted', f.converted, f.conversionPct === null ? 'no trial has finished yet' : f.conversionPct + '% of finished trials')}
+      ${key('#1A7A4A', 'converted', f.converted, f.conversionPct !== null
+          ? f.conversionPct + '% of finished trials'
+          : !f.resolved ? 'no trial has finished yet'
+          : 'too few finished to call a rate')}
       ${key('#C0392B', 'dropped off', f.cancelled)}
     </div>
     <div class="fn-empty" style="margin-top:10px">${f.cardsCaptured} card${f.cardsCaptured === 1 ? '' : 's'} captured in total. A captured card is not a sale.</div>`;
