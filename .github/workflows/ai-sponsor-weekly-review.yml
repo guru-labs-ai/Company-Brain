@@ -30,10 +30,14 @@ name: AI Sponsor weekly review
 
 on:
   schedule:
-    # 15:00 UTC Monday = 8am Pacific, 10am Central, 11am Eastern, 4pm Europe.
-    # Morning for the people who use it, and safely past Sunday midnight UTC so
-    # the week being summarised has definitely closed.
-    - cron: "0 15 * * 1"
+    # Hourly across the whole of Sunday UTC, plus Saturday evening UTC, because
+    # "9am to noon their local time" is not one moment. 9am Sunday in Sydney is
+    # Saturday 23:00 UTC; 9am Sunday in Hawaii is Sunday 19:00 UTC. Each run only
+    # messages the people whose own window is open right now, and a summary
+    # either exists for that week or it does not, so running 30 times a week
+    # cannot send anybody two.
+    - cron: "0 18-23 * * 6"
+    - cron: "0 * * * 0"
   workflow_dispatch: {}   # so it can be run by hand without waiting for Monday
 
 jobs:
