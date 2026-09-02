@@ -62,6 +62,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
   border-radius:8px;padding:6px 9px;font-size:11.5px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.16);
   display:none;white-space:nowrap;z-index:2}
 
+/* Week on week. One row per metric, readable on a phone without scrolling
+   sideways: label left, this week big, last week and the change beneath it. */
+.wowrow{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--line)}
+.wowrow:last-child{border-bottom:0}
+.wowlab{font-size:12.5px;font-weight:600}
+.wowsub{font-size:10.5px;color:var(--muted);margin-top:1px}
+.wownow{font-size:19px;font-weight:750;text-align:right;line-height:1.1}
+.wowdelta{font-size:11px;font-weight:700;margin-top:2px;text-align:right}
+.up{color:#1A7A4A}.down{color:#C0392B}.flat{color:var(--muted)}
+@media (prefers-color-scheme:dark){.up{color:#4ADE80}.down{color:#F1948A}}
+/* Money and funnel tiles. Same shape as .tiles so the page reads as one thing. */
+.money{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.money .m{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.money .m .label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
+.money .m .value{font-size:19px;font-weight:750;margin-top:3px}
+.money .m .note{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.35}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px}
 .tile .label{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
@@ -140,6 +157,24 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <div class="tile"><div class="label">Avg days each</div><div class="value" id="t-avg">—</div></div>
       <div class="tile"><div class="label">Cancellations</div><div class="value" id="t-cancel">—</div></div>
       <div class="tile"><div class="label">Chatted (7 days)</div><div class="value" id="t-7d">—</div></div>
+    </div>
+
+    <div class="card" id="card-wow">
+      <h2>This week vs last week</h2>
+      <div class="sub">Rolling 7 days against the 7 before · the raw numbers sit beside every percentage on purpose</div>
+      <div id="wow-body"></div>
+    </div>
+
+    <div class="card" id="card-money">
+      <h2>Money</h2>
+      <div class="sub" id="money-sub"></div>
+      <div class="money" id="money-body"></div>
+    </div>
+
+    <div class="card" id="card-funnel">
+      <h2>Paid trial</h2>
+      <div class="sub">Where everyone who handed over a card has got to</div>
+      <div class="money" id="funnel-body"></div>
     </div>
 
     <div class="card" id="card-activity">
@@ -255,6 +290,8 @@ function render(d) {
 
   drawWho(d.breakdowns);
   drawMessages(d.breakdowns);
+  drawWow(d.weekOverWeek);
+  drawMoney(d.revenue, d.paidFunnel);
 }
 
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -262,6 +299,86 @@ const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 /* One ranked list. Single hue by design — the row already names the category,
    so a per-category colour would encode nothing the label doesn't. Value rides
    the tip, so every number is readable without hovering. */
+/* ── This week vs last week ──────────────────────────────────────────────────
+   Matt asked for a week on week percentage across everything. The raw pair is
+   printed beside every percentage deliberately: on numbers this small a
+   percentage on its own misleads, since 1 to 3 is +200% and means almost
+   nothing. Where last week was zero there is no honest percentage at all, so
+   the change is shown as a plain "+15 from nothing" rather than a fake ∞. */
+function drawWow(w) {
+  const card = document.getElementById('card-wow');
+  if (!w) { card.style.display = 'none'; return; }
+
+  const rows = [
+    ['New signups', 'people who joined', w.newSignups],
+    ['People active', 'wrote to their sponsor', w.peopleActive],
+    ['Days showed up', 'the north-star input', w.daysShowedUp],
+    ['Messages', 'total sent and received', w.messages],
+    ['Cards captured', 'started a paid trial', w.cardsCaptured],
+    ['Paid people', 'holding a subscription', w.paidPeople],
+  ].filter(r => r[2]);
+
+  document.getElementById('wow-body').innerHTML = rows.map(([lab, sub, m]) => {
+    const cls = m.change > 0 ? 'up' : m.change < 0 ? 'down' : 'flat';
+    const arrow = m.change > 0 ? '▲' : m.change < 0 ? '▼' : '–';
+    const pct = m.changePct === null
+      ? (m.change > 0 ? 'from nothing' : 'no change')
+      : (m.changePct > 0 ? '+' : '') + m.changePct + '%';
+    return `<div class="wowrow">
+        <div><div class="wowlab">${esc(lab)}</div><div class="wowsub">${esc(sub)} · last week ${m.prev.toLocaleString()}</div></div>
+        <div><div class="wownow">${m.now.toLocaleString()}</div>
+          <div class="wowdelta ${cls}">${arrow} ${m.change > 0 ? '+' : ''}${m.change.toLocaleString()} · ${pct}</div></div>
+      </div>`;
+  }).join('');
+}
+
+/* ── Money, and the paid trial ───────────────────────────────────────────────
+   Three different things that are never added together or given one name:
+   money that arrived, what is billing now, and what captured cards will be
+   worth once their free month ends. The DRM alert printed a $0 trial as a sale
+   and it was read as revenue; keeping them apart is what stops that here.
+
+   When nothing has been collected yet the date of the first possible charge is
+   shown beside the zero, so it reads as a product on schedule rather than a
+   broken metric. */
+function drawMoney(r, f) {
+  const moneyCard = document.getElementById('card-money');
+  const funnelCard = document.getElementById('card-funnel');
+
+  if (!r) { moneyCard.style.display = 'none'; }
+  else {
+    const usd = (n) => '$' + Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const due = r.firstChargeDue
+      ? new Date(r.firstChargeDue + 'T00:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
+      : null;
+
+    document.getElementById('money-sub').textContent = r.collectedAllTime > 0
+      ? 'Collected is money that has actually arrived. The other two are what is committed.'
+      : 'Both plans open with a 30-day free trial, so nothing can be charged before day 31.';
+
+    document.getElementById('money-body').innerHTML = `
+      <div class="m"><div class="label">Collected all time</div><div class="value">${usd(r.collectedAllTime)}</div>
+        <div class="note">${r.payments} payment${r.payments === 1 ? '' : 's'}${due ? ' · first one due ' + esc(due) : ''}</div></div>
+      <div class="m"><div class="label">Collected this week</div><div class="value">${usd(r.collectedLast7d)}</div>
+        <div class="note">last 7 days</div></div>
+      <div class="m"><div class="label">MRR billing now</div><div class="value">${usd(r.mrr)}</div>
+        <div class="note">trials excluded, they are not revenue yet</div></div>
+      <div class="m"><div class="label">Committed</div><div class="value">${usd(r.mrrIfAllTrialsConvert)}</div>
+        <div class="note">per month if every current trial converts</div></div>`;
+  }
+
+  if (!f) { funnelCard.style.display = 'none'; return; }
+  document.getElementById('funnel-body').innerHTML = `
+    <div class="m"><div class="label">Cards captured</div><div class="value">${f.cardsCaptured.toLocaleString()}</div>
+      <div class="note">handed over a card, not a sale</div></div>
+    <div class="m"><div class="label">Still in trial</div><div class="value">${f.stillInTrial.toLocaleString()}</div>
+      <div class="note">free month not finished</div></div>
+    <div class="m"><div class="label">Converted</div><div class="value">${f.converted.toLocaleString()}</div>
+      <div class="note">trial ended, still paying</div></div>
+    <div class="m"><div class="label">Dropped off</div><div class="value">${f.cancelled.toLocaleString()}</div>
+      <div class="note">${f.conversionPct === null ? 'no trial has finished yet' : f.conversionPct + '% of finished trials convert'}</div></div>`;
+}
+
 function bdList(obj, order) {
   const entries = Object.entries(obj || {});
   if (!entries.length) return '<div class="bd-empty">—</div>';
