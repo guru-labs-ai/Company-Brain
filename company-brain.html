@@ -84,6 +84,23 @@
     font-size: 12px; color: #334155; text-align: center;
     padding-top: 24px; border-top: 1px solid #1e2330;
   }
+
+  .alert {
+    max-width: 1100px; margin: 0 auto 40px;
+    background: #2a1a12; border: 1px solid #7c3f16;
+    border-left: 3px solid #f59e0b;
+    border-radius: 10px; padding: 16px 18px;
+  }
+  .alert-title { font-size: 13px; font-weight: 600; color: #fbbf24; margin-bottom: 8px; line-height: 1.4; }
+  .alert-body { font-size: 12.5px; color: #cbd5e1; line-height: 1.65; }
+  .alert-body b { color: #f1f5f9; font-weight: 600; }
+  .badge-warn { border-color: #7c3f16; background: #2a1a12; color: #fbbf24; }
+  .dot-warn { background: #f59e0b; }
+  .card-down { opacity: .62; cursor: default; }
+  .card-down:hover { border-color: #1e2330; transform: none; }
+  .status-down { background: #2a1212; color: #f87171; border: 1px solid #7f1d1d; }
+  .status-degraded { background: #2a1a12; color: #fbbf24; border: 1px solid #7c3f16; }
+  .card-desc b { color: #cbd5e1; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -93,28 +110,38 @@
     <h1>Guru Labs — Company Brain</h1>
     <p>Every AI agent, dashboard, funnel, and doc. Where it lives. What it does.</p>
     <div class="badges">
-      <div class="badge"><span class="dot"></span> 4 agents running</div>
-      <div class="badge">9 live dashboards</div>
+      <div class="badge badge-warn"><span class="dot dot-warn"></span> 4 agents firing, 0 delivering</div>
+      <div class="badge">7 live dashboards</div>
+      <div class="badge">3 offline</div>
       <div class="badge">Revenue + KPI boards</div>
-      <div class="badge">4 visual boards</div>
-      <div class="badge">4 AI Sponsor pages</div>
+      <div class="badge">3 visual boards</div>
       <div class="badge">Docs, SOPs & playbooks</div>
     </div>
   </div>
 </div>
 
 <!-- AI AGENTS -->
+<div class="alert">
+  <div class="alert-title">⚠️ The automation behind this page is down. Trust the date on each card, not today.</div>
+  <div class="alert-body">
+    All four scheduled agents still fire on time, and none of them can finish. Two blockers, both in the cloud environment rather than in the code:
+    <b>ClickUp is refused by the organisation egress proxy</b> (403 on every outbound call), and <b>the agents no longer have push access to either GitHub repo</b>.
+    Confirmed from the Sep 7 run logs. The GHL tracker even rebuilt itself correctly for Sprint 58 this morning, then could not push the result and threw it away.
+    Nothing has reached GitHub since Aug 15. The fix is to move these jobs to GitHub Actions, where both problems go away.
+  </div>
+</div>
+
 <div class="section">
-  <div class="section-label">🤖 AI Agents — Running Automatically in the Cloud</div>
+  <div class="section-label">🤖 AI Agents (all four are firing on schedule and none can deliver)</div>
   <div class="cards">
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/fathom-audit.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-agent">⚡</div>
-        <span class="card-status status-auto">Auto · Daily</span>
+        <span class="card-status status-degraded">Degraded · Data from Aug 15</span>
       </div>
       <div class="card-name">Fathom × ClickUp Audit Agent</div>
-      <div class="card-desc">Reads every call transcript from #meetings-fathom, extracts action items, checks if each one exists in ClickUp, and flags the gaps. Posts results to the audit dashboard daily.</div>
+      <div class="card-desc">Reads every call transcript from #meetings-fathom, extracts action items, checks if each one exists in ClickUp, and flags the gaps. Still fires daily, but its own data file reports <b>run_status: degraded</b> and has not changed since Aug 15, because the ClickUp half of the comparison cannot run.</div>
       <div class="card-meta">
         <span class="meta-tag">Daily · 6am UTC · 1am Mexico City</span>
         <span class="meta-tag">Fathom + ClickUp + Slack</span>
@@ -124,10 +151,10 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/two-week-report.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-agent">📈</div>
-        <span class="card-status status-auto">Auto · Every Monday</span>
+        <span class="card-status status-down">Failing since Aug 10</span>
       </div>
       <div class="card-name">Two-Week Sprint Report Agent</div>
-      <div class="card-desc">Every Monday, auto-detects the two latest sprints from ClickUp, fetches all tasks, writes focus bullets by product, updates the dashboard config + titles + KPIs, and pushes to GitHub. No manual work needed.</div>
+      <div class="card-desc">Meant to roll Matt's dashboard onto the current two sprints every Monday. It fired again today and gave up after 71 seconds on the ClickUp block. Five Mondays in a row have now failed, which is why the report below still reads Sprint 51 and 52.</div>
       <div class="card-meta">
         <span class="meta-tag">Mondays · 8am UTC · 3am Mexico City</span>
         <span class="meta-tag">ClickUp + GitHub</span>
@@ -137,10 +164,10 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/ghl-team-tracker.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-agent">👥</div>
-        <span class="card-status status-auto">Auto · Daily</span>
+        <span class="card-status status-down">Cannot push since Aug 8</span>
       </div>
       <div class="card-name">GHL Tracker Agent</div>
-      <div class="card-desc">Every day: detects the current sprint from ClickUp, reads #funnels + #ghl-daily-task-updates, curates the Slack highlights feed, and pushes the refreshed tracker to GitHub. Created Jun 10.</div>
+      <div class="card-desc">Refreshes Abdul's team tracker daily. It still does the work: this morning it worked out Sprint 58 correctly, rewrote the page and committed it locally, then hit a 403 pushing to both repos. It has been redoing and losing that same work every morning for a month.</div>
       <div class="card-meta">
         <span class="meta-tag">Daily · 7am UTC · 11am Tbilisi</span>
         <span class="meta-tag">ClickUp + Slack + GitHub</span>
@@ -150,13 +177,13 @@
     <div class="card">
       <div class="card-top">
         <div class="card-icon icon-agent">📋</div>
-        <span class="card-status status-auto">Auto · Weekly</span>
+        <span class="card-status status-degraded">Manual · Mariam sends it</span>
       </div>
       <div class="card-name">Friday Team Digest Agent</div>
-      <div class="card-desc">Every Friday, pulls sprint data from ClickUp + Slack + Fathom and posts a full week summary to #conscious-ai — wins, velocity by product, blockers, in-progress count.</div>
+      <div class="card-desc">Pulls sprint data from ClickUp + Slack and drafts a full week summary — wins, velocity by product, blockers, in-progress count. Currently paused: #conscious-ai became a Slack Connect channel, which blocks automated posts, so Mariam sends the digest manually each week instead.</div>
       <div class="card-meta">
-        <span class="meta-tag">Fridays · 6pm UTC · 1pm Mexico City</span>
-        <span class="meta-tag">Posts to #conscious-ai</span>
+        <span class="meta-tag">Manual send · #conscious-ai</span>
+        <span class="meta-tag">Automation on hold</span>
       </div>
     </div>
 
@@ -171,16 +198,16 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/two-week-report.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">📈</div>
-        <span class="card-status status-live">Live · Rolling 2 sprints</span>
+        <span class="card-status status-degraded">Stale · Sprint 51+52, both closed</span>
       </div>
       <div class="card-name">Two-Week Sprint Report</div>
-      <div class="card-desc">Matt's main dashboard. KPI bar, sprint comparison, 12 product initiative cards with status + goal progress, per-person velocity, and blockers. Pinned in Slack.</div>
+      <div class="card-desc">Matt's main dashboard, pinned in Slack. KPI bar, sprint comparison, product initiative cards, per-person velocity and blockers. <b>Currently showing Sprint 51 and 52 (Jul 20 to Aug 2), five weeks behind the real Sprint 58</b>, because its Monday agent cannot reach ClickUp.</div>
     </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/fathom-audit.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">🔍</div>
-        <span class="card-status status-live">Live · Auto-updated daily</span>
+        <span class="card-status status-degraded">Data from Aug 15</span>
       </div>
       <div class="card-name">Fathom Audit Dashboard</div>
       <div class="card-desc">Every action item from every Fathom call — shows which are ✓ in ClickUp and which are ✕ missing. Tracks from May 25, 2026 onwards across 14 Slack channels.</div>
@@ -189,29 +216,29 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/ghl-team-tracker.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">👥</div>
-        <span class="card-status status-live">Live</span>
+        <span class="card-status status-degraded">Stale · Sprint 53</span>
       </div>
       <div class="card-name">GHL Team Tracker</div>
-      <div class="card-desc">Live team dashboard under Abdul Rehman (GHL PM) — current-sprint tasks, hours, and status for Hamza, Annus, Cielo, and Bilal (QA). Auto-refreshed daily.</div>
+      <div class="card-desc">Team dashboard under Abdul Rehman (GHL PM), showing tasks, hours and status for Hamza, Annus, Cielo and Bilal (QA). <b>Frozen on Sprint 53 (Aug 3 to 9)</b> since its agent lost push access.</div>
     </a>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ghl-projects.html" target="_blank">
+    <div class="card card-down">
       <div class="card-top">
         <div class="card-icon icon-dash">🔧</div>
-        <span class="card-status status-live">Live</span>
+        <span class="card-status status-down">Offline since Jul 25</span>
       </div>
       <div class="card-name">GHL Projects</div>
-      <div class="card-desc">GoHighLevel funnels, sites, integrations &amp; team — project cards (incl. the Hyros integration), a live ClickUp task table, and per-person task counts for Abdul's team. Project-focused companion to the GHL Team Tracker.</div>
-    </a>
+      <div class="card-desc">GoHighLevel funnels, sites, integrations &amp; team — project cards (incl. the Hyros integration), a live ClickUp task table, and per-person task counts for Abdul's team. Project-focused companion to the GHL Team Tracker. <b>Taken off GitHub on Jul 25 in the security cleanup, because the page fetched ClickUp in the visitor's browser with an embedded key. The file still sits in the GURU folder and still has that fetch, so it cannot go back up until it is rebuilt static, the way the two-week report was on Aug 3.</b></div>
+    </div>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/sprint-38-dashboard.html" target="_blank">
+    <div class="card card-down">
       <div class="card-top">
         <div class="card-icon icon-dash">🎯</div>
-        <span class="card-status status-live">Live · ClickUp embed</span>
+        <span class="card-status status-down">Offline since Jul 25</span>
       </div>
       <div class="card-name">Sprint Live Dashboard (ClickUp Embed)</div>
-      <div class="card-desc">The permanent sprint dashboard embedded in ClickUp Reports &amp; Insights — progress bar, focus areas, blockers, wins, per-person breakdown. URL never changes; content is overwritten each sprint.</div>
-    </a>
+      <div class="card-desc">The permanent sprint dashboard embedded in ClickUp Reports &amp; Insights — progress bar, focus areas, blockers, wins, per-person breakdown. URL never changes; content is overwritten each sprint. <b>This is the embed the whole team opens inside ClickUp, and it has been showing them a 404 for six weeks.</b> <b>Taken off GitHub on Jul 25 in the security cleanup, because the page fetched ClickUp in the visitor's browser with an embedded key. The file still sits in the GURU folder and still has that fetch, so it cannot go back up until it is rebuilt static, the way the two-week report was on Aug 3.</b></div>
+    </div>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/miro-master-board.html" target="_blank">
       <div class="card-top">
@@ -222,13 +249,22 @@
       <div class="card-desc">Matt's full-company visual: all 8 growth engines with timeline chips — what was done (with dates), what's happening NOW, and what's next. Agentic products + GHL funnels + infrastructure.</div>
     </a>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/audos-billing-report.html" target="_blank">
+    <div class="card card-down">
       <div class="card-top">
         <div class="card-icon icon-dash">💰</div>
-        <span class="card-status status-live">Live · Auto-pulls monthly</span>
+        <span class="card-status status-down">Offline since Jul 25</span>
       </div>
       <div class="card-name">Audos vs Guru Billing Split</div>
-      <div class="card-desc">Per-person monthly task split between Audos Black (billable to Audos) and Guru projects, with a gap banner for unlabeled work. Auto-detects sprints for any month — month nav built in. Built Jun 12.</div>
+      <div class="card-desc">Per-person monthly task split between Audos Black (billable to Audos) and Guru projects, with a gap banner for unlabeled work. Auto-detects sprints for any month — month nav built in. Built Jun 12. <b>Taken off GitHub on Jul 25 in the security cleanup, because the page fetched ClickUp in the visitor's browser with an embedded key. The file still sits in the GURU folder and still has that fetch, so it cannot go back up until it is rebuilt static, the way the two-week report was on Aug 3.</b></div>
+    </div>
+
+    <a class="card" href="https://guru-labs-ai.github.io/Company-Brain/ai-sponsor-northstar.html" target="_blank">
+      <div class="card-top">
+        <div class="card-icon icon-dash">🌻</div>
+        <span class="card-status status-live">Live · Refreshed Sep 4</span>
+      </div>
+      <div class="card-name">AI Sponsor North Star</div>
+      <div class="card-desc">Matt's north-star metric: total days of recovery across every AI Sponsor user, counting up live. Milestone chips, cumulative signup curve, usage tiles. <b>The only board here still updating itself</b>, because it runs as a GitHub Action rather than a cloud agent.</div>
     </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/weekly-scoreboard.html" target="_blank">
@@ -252,56 +288,12 @@
   </div>
 </div>
 
-<!-- AI SPONSOR PRODUCT -->
-<div class="section">
-  <div class="section-label">🧩 AI Sponsor — Live Product Files</div>
-  <div class="cards">
-
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ai-sponsor-chat.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-page">💬</div>
-        <span class="card-status status-live">LIVE · Jun 10</span>
-      </div>
-      <div class="card-name">AI Sponsor Chat</div>
-      <div class="card-desc">The working product — Claude-powered sponsor chat with voice input. Live since June 10. WhatsApp pipeline (Wapisimo) is the next step.</div>
-    </a>
-
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ai-sponsor-landing.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-page">🏠</div>
-        <span class="card-status status-live">Live</span>
-      </div>
-      <div class="card-name">Landing Page</div>
-      <div class="card-desc">Marketing site — hero, 12 programs, 1-for-1 model, Amends TV section, CTA into registration.</div>
-    </a>
-
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ai-sponsor-registration.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-page">📝</div>
-        <span class="card-status status-live">Live · In QA</span>
-      </div>
-      <div class="card-name">Registration / Onboarding Flow</div>
-      <div class="card-desc">Full 9+1 screen onboarding — program, stage, goals, delivery method, safety check, AI first message, payment/beta code.</div>
-    </a>
-
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ai-sponsor-brief.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-page">📄</div>
-        <span class="card-status status-ref">Reference</span>
-      </div>
-      <div class="card-name">Product Brief + Lean Canvas + Funnel</div>
-      <div class="card-desc">Strategy pack: product brief (this link), plus ai-sponsor-lean-canvas.html and ai-sponsor-funnel.html on the same domain.</div>
-    </a>
-
-  </div>
-</div>
-
 <!-- VISUAL ROADMAPS -->
 <div class="section">
   <div class="section-label">🗺️ Visual Roadmaps</div>
   <div class="cards">
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ai-sponsor-roadmap.html" target="_blank">
+    <a class="card" href="https://getaisponsor.com/ai-sponsor-roadmap.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-funnel">💜</div>
         <span class="card-status status-ref">Reference</span>
@@ -335,6 +327,15 @@
 <div class="section">
   <div class="section-label">⚙️ Operations, Docs & Strategy</div>
   <div class="cards">
+
+    <a class="card" href="https://app.clickup.com/90132046592/v/dc/2ky4krr0-20973/2ky4krr0-24273" target="_blank">
+      <div class="card-top">
+        <div class="card-icon icon-ops">🔍</div>
+        <span class="card-status status-team">ClickUp Doc</span>
+      </div>
+      <div class="card-name">QA Guru — Product Documentation</div>
+      <div class="card-desc">Mariam's Audos-funded website-QA product (with Bilal + Mubashir). Scan engine works cross-workspace; all dev work is currently paused pending Audos's fix confirmation on two platform bugs (report isolation, auto-publish).</div>
+    </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/product-docs.html" target="_blank">
       <div class="card-top">
@@ -385,7 +386,7 @@
 </div>
 
 <footer>
-  Guru Labs · Owner: Mariam Gvenetadze · All agents run in Anthropic cloud · Last updated June 21, 2026
+  Guru Labs · Owner: Mariam Gvenetadze · Last checked link by link on September 7, 2026 · Sprint 58 (Sep 7 to 13)
 </footer>
 
 </body>
