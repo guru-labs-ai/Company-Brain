@@ -1,0 +1,88 @@
+# Asks AI Sponsor whether anything is broken, and lets Slack know if it is.
+#
+# WHY THIS EXISTS. On 1 September the OpenAI credit balance hit $0 and every
+# inbound voice note failed for two days. Text kept working, outbound voice kept
+# working, and the generic "I'm having a moment" fallback wrapped the whole
+# handler, so nothing anywhere looked wrong. It cost us Sylvia, who sent two
+# voice notes, watched both fail, and asked to be deleted sixteen seconds after
+# the second one. Nothing was watching, so nothing said anything.
+#
+# WHY IT RUNS HERE rather than inside the backend. Render's free tier sleeps
+# when idle, so a timer in the service is very often not awake to fire. Hitting
+# the URL both wakes the instance and tells it to run the checks, which is the
+# only combination that works. Same reasoning as the weekly review beside it.
+#
+# WHY EVERY SIX HOURS and not daily. A daily check means up to 24 hours of a
+# silent outage, and the failure this is built around already ran for two days.
+# Six hours is a reasonable worst case. It is not noisy: the backend posts to
+# Slack ONLY when something is wrong (Mariam, 9 Sep), and an ongoing problem is
+# repeated at most once every twelve hours rather than every single run.
+#
+# The secret is the same repository secret the weekly review uses,
+# AI_SPONSOR_CRON_SECRET, and must match CRON_SECRET on the Render service. An
+# unset CRON_SECRET disables the route rather than leaving it open.
+
+name: AI Sponsor status check
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}   # so it can be run by hand the moment something feels off
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the backend whether anything is broken
+        env:
+          CRON_SECRET: ${{ secrets.AI_SPONSOR_CRON_SECRET }}
+          ENDPOINT: https://ai-sponsor-f7de.onrender.com/status/check
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+
+          secret   = os.environ["CRON_SECRET"]
+          endpoint = os.environ["ENDPOINT"]
+
+          if not secret:
+              raise SystemExit(
+                  "AI_SPONSOR_CRON_SECRET is empty. Set it in Settings, "
+                  "Secrets and variables, Actions. It must match CRON_SECRET "
+                  "on the Render service."
+              )
+
+          # The instance sleeps, and the checks themselves make real calls to
+          # Anthropic, OpenAI, Stripe, GHL and Meta, so this is not quick.
+          req = urllib.request.Request(
+              endpoint,
+              data=b"",
+              method="POST",
+              headers={"x-cron-secret": secret,
+                       "Content-Type": "application/json"},
+          )
+
+          try:
+              res = json.load(urllib.request.urlopen(req, timeout=180))
+          except urllib.error.HTTPError as e:
+              body = e.read().decode()[:300]
+              if e.code == 404:
+                  raise SystemExit(
+                      "The backend returned 404. CRON_SECRET is not set on the "
+                      "Render service, so the route is disabled."
+                  )
+              if e.code == 403:
+                  raise SystemExit(
+                      "The backend returned 403. This secret does not match "
+                      "CRON_SECRET on Render."
+                  )
+              raise SystemExit(f"Status check failed: HTTP {e.code} {body}")
+
+          print(json.dumps(res)[:500])
+
+          # A failing CHECK is not a failing JOB. "AI Sponsor is broken" is
+          # reported to Slack and shown on the page; this step only fails when
+          # the check itself could not be run, because a red X here every six
+          # hours for a known problem trains everyone to ignore the X.
+          if res.get("error"):
+              raise SystemExit(f"The status check could not run: {res['error']}")
+          PY
