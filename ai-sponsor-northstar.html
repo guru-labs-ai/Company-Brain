@@ -184,6 +184,31 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 
    Row shaped rather than icon-tiled: the label has to say what he is about to
    open, and on a phone a full-width row is the easiest thing to hit. */
+/* ── The layout ──────────────────────────────────────────────────────────────
+   Wide enough and the shortcuts sit in a rail on the left, beside the metrics
+   rather than on top of them, and the rail sticks so it is reachable from
+   anywhere down the page.
+
+   ⚠️ THE COLUMN IS NOT ALLOWED TO MOVE FOR IT. The whole page is built at
+   520px because Matt reads it on a phone, and pushing that column off-centre
+   to make room for navigation would trade the main thing for the side thing.
+   The rail only appears when there is genuinely spare room either side, which
+   is why the breakpoint is 940px and not the usual 768px. Below that it goes
+   back to full-width rows above the hero, exactly as before. */
+.page{max-width:520px;margin:0 auto}
+@media(min-width:940px){
+  .page{max-width:none;display:flex;gap:26px;align-items:flex-start;
+    justify-content:center}
+  /* margin:0 auto on .wrap is what centres it everywhere else, but an auto
+     margin on a flex item eats the free space and pins the rail to the far
+     left. Dropped here so justify-content can centre the pair together. */
+  .page > .wrap{flex:0 0 520px;margin:0}
+  .shortcuts{position:sticky;top:20px;flex:0 0 208px;margin-bottom:0}
+  .shortcuts .sc{padding:11px 12px;min-height:0}
+  .shortcuts .sc-a{display:none}
+  .shortcuts .sc-t b{font-size:12.5px}
+  .shortcuts .sc-t i{font-size:10.5px}
+}
 .shortcuts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .sc{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
   border-radius:14px;padding:13px 14px;text-decoration:none;color:var(--ink);min-height:56px;
@@ -199,7 +224,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
   <nav class="shortcuts" aria-label="Shortcuts">
     <a class="sc" target="_blank" rel="noopener"
        href="https://app.gohighlevel.com/v2/location/Mgfec8mT0vXxyhp9SizK/contacts/smart_list/t7poBlXEcc3YQUyqWTnh">
@@ -223,8 +248,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       </span>
       <span class="sc-a" aria-hidden="true">&rarr;</span>
     </a>
+    <!-- The cost brief. Private until it is shared from the artifact's own
+         share menu, so it opens for the people Mariam has shared it with and
+         nobody else. -->
+    <a class="sc" target="_blank" rel="noopener"
+       href="https://claude.ai/code/artifact/36131d07-e090-488a-8c2e-78f3feedc3a0">
+      <span class="sc-i" aria-hidden="true">&#129534;</span>
+      <span class="sc-t">
+        <b>What it costs</b>
+        <i>8.8&cent; a reply, and whether $5 a month holds</i>
+      </span>
+      <span class="sc-a" aria-hidden="true">&rarr;</span>
+    </a>
   </nav>
 
+  <div class="wrap">
   <div id="loading" class="state">Connecting to live data…<br>
     <span style="font-size:11.5px">(up to ~1 min if the server is waking up)</span></div>
 
@@ -287,6 +325,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
   </div>
 
   <div id="error" class="state" style="display:none"></div>
+  </div>
 </div>
 
 <script>
