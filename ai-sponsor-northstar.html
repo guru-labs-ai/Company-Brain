@@ -102,6 +102,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .mn-k{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
 .mn-v{font-size:23px;font-weight:600;margin-top:5px;line-height:1}
 .mn-n{font-size:10.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+/* The arithmetic behind the committed figure. Quieter than the note above it:
+   it is there for the one time somebody asks where the odd cents came from,
+   not to be read every visit. */
+.mn-work{display:inline-block;margin-top:3px;font-size:10px;opacity:.75}
 .mn-zero{opacity:.45}
 
 /* ── The trial funnel: one population, one bar ───────────────────────────────
@@ -471,6 +475,27 @@ function drawMoney(r, f) {
     // A zero that is simply true is dimmed rather than shouted, so the eye goes
     // to the number that is actually doing something.
     const z = (n) => (Number(n) === 0 ? ' mn-zero' : '');
+
+    /* Show the working on the committed figure.
+
+       Matt, 5 Sep: "why does this show $14.08 when our plans are an even $?"
+       It is right, and from the two prices he knows there was no way to get to
+       it: an annual plan is counted as a twelfth so it can sit beside the
+       monthly ones, and 2 x $5 plus $49/12 is $14.08. A number nobody can
+       arrive at themselves gets queried every time it is looked at, which is a
+       slow way of saying it is not trusted.
+
+       Silent when the backend has not been redeployed with the counts yet, and
+       silent when there is nothing to explain, because "2 monthly at $5" under
+       a figure of $10 is noise. */
+    const committedWorking = (rev) => {
+      const c = rev.committedFrom;
+      if (!c || !c.annual) return '';
+      const bits = [];
+      if (c.monthly) bits.push(`${c.monthly} monthly at $5`);
+      bits.push(`${c.annual} annual at $49 counted as ${usd(c.annualAsMonthly)} a month`);
+      return `<br><span class="mn-work">${bits.join(', ')}</span>`;
+    };
     document.getElementById('money-body').innerHTML = `
       <div class="mn"><div class="mn-k">Collected all time</div>
         <div class="mn-v fig${z(r.collectedAllTime)}">${usd(r.collectedAllTime)}</div>
@@ -483,7 +508,7 @@ function drawMoney(r, f) {
         <div class="mn-n">a month · trials excluded, they are not revenue yet</div></div>
       <div class="mn"><div class="mn-k">Committed</div>
         <div class="mn-v fig${z(r.mrrIfAllTrialsConvert)}">${usd(r.mrrIfAllTrialsConvert)}</div>
-        <div class="mn-n">a month if every trial converts</div></div>`;
+        <div class="mn-n">a month if every trial converts${committedWorking(r)}</div></div>`;
   }
 
   if (!f) { funnelCard.style.display = 'none'; return; }
