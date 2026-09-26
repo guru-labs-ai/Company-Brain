@@ -38,7 +38,24 @@ on:
     # cannot send anybody two.
     - cron: "0 18-23 * * 6"
     - cron: "0 * * * 0"
+    # ADDED 26 Sep 2026. GitHub does not guarantee scheduled runs and drops many
+    # of them, most of all at minute 0 when everybody's cron fires at once. Last
+    # weekend only 9 of about 31 slots above actually ran (Sat 19:42, 21:52,
+    # 23:43; Sun 04:38, 09:42, 14:04, 18:09, 21:24; Mon 00:04 UTC). A person's
+    # window is three hours long, so any zone that fell between those runs got
+    # nothing that Sunday (Mountain time, Sydney, the Gulf). These are extra
+    # slots at quiet minutes across Sunday UTC. Extra runs are harmless: the
+    # database allows one summary per person per week, so a busy Sunday cannot
+    # send anybody two.
+    - cron: "12,32,52 * * * 0"
   workflow_dispatch: {}   # so it can be run by hand without waiting for Monday
+
+# One sweep at a time. With more slots two runs can now overlap, and although
+# the database already stops a double send, there is no reason to make two
+# sweeps compete for the same people on a free instance.
+concurrency:
+  group: ai-sponsor-weekly-review
+  cancel-in-progress: false
 
 jobs:
   sweep:
