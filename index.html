@@ -121,16 +121,6 @@
 </div>
 
 <!-- AI AGENTS -->
-<div class="alert">
-  <div class="alert-title">⚠️ The automation behind this page is down. Trust the date on each card, not today.</div>
-  <div class="alert-body">
-    All four scheduled agents still fire on time, and none of them can finish. Two blockers, both in the cloud environment rather than in the code:
-    <b>ClickUp is refused by the organisation egress proxy</b> (403 on every outbound call), and <b>the agents no longer have push access to either GitHub repo</b>.
-    Confirmed from the Sep 7 run logs. The GHL tracker even rebuilt itself correctly for Sprint 58 this morning, then could not push the result and threw it away.
-    Nothing has reached GitHub since Aug 15. The fix is to move these jobs to GitHub Actions, where both problems go away.
-  </div>
-</div>
-
 <div class="section">
   <div class="section-label">🤖 AI Agents</div>
   <div class="cards">
