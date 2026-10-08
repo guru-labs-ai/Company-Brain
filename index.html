@@ -151,13 +151,13 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/two-week-report.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-agent">📈</div>
-        <span class="card-status status-down">Failing since Aug 10</span>
+        <span class="card-status status-live">Live again · Oct 8</span>
       </div>
-      <div class="card-name">Two-Week Sprint Report Agent</div>
-      <div class="card-desc">Meant to roll Matt's dashboard onto the current two sprints every Monday. It fired again today and gave up after 71 seconds on the ClickUp block. Five Mondays in a row have now failed, which is why the report below still reads Sprint 51 and 52.</div>
+      <div class="card-name">Sprint Reports Agent (2-week + monthly)</div>
+      <div class="card-desc">Rebuilds the 2-week sprint report and the monthly overview from live ClickUp three times a day. Moved off the old cloud routine, which could not reach ClickUp and stopped publishing in August, onto a GitHub Action. A watchdog checks both pages twice a day and posts to #guru-claude-agent-updates if either is more than 30 hours old.</div>
       <div class="card-meta">
-        <span class="meta-tag">Mondays · 8am UTC · 3am Mexico City</span>
-        <span class="meta-tag">ClickUp + GitHub</span>
+        <span class="meta-tag">Daily · 05:17, 11:47, 18:23 UTC</span>
+        <span class="meta-tag">ClickUp + GitHub Actions</span>
       </div>
     </a>
 
@@ -198,10 +198,19 @@
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/two-week-report.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">📈</div>
-        <span class="card-status status-degraded">Stale · Sprint 51+52, both closed</span>
+        <span class="card-status status-live">Live · updates daily</span>
       </div>
       <div class="card-name">Two-Week Sprint Report</div>
-      <div class="card-desc">Matt's main dashboard, pinned in Slack. KPI bar, sprint comparison, product initiative cards, per-person velocity and blockers. <b>Currently showing Sprint 51 and 52 (Jul 20 to Aug 2), five weeks behind the real Sprint 58</b>, because its Monday agent cannot reach ClickUp.</div>
+      <div class="card-desc">Matt's main dashboard, pinned in Slack. The current and previous sprint from live ClickUp: totals, sprint by sprint progress, a breakdown by product and by person, what was finished and what is blocked. The update time is printed at the top.</div>
+    </a>
+
+    <a class="card" href="https://mariamgvv.github.io/Clickup-live/monthly-overview.html" target="_blank">
+      <div class="card-top">
+        <div class="card-icon icon-dash">🗓️</div>
+        <span class="card-status status-live">Live · updates daily</span>
+      </div>
+      <div class="card-name">Monthly Overview</div>
+      <div class="card-desc">The last four sprints from live ClickUp, for the monthly KPI review on the 15th: sprint by sprint trend, work by product and by person, and everything finished in the month. Replaces the hand-made May 2026 version.</div>
     </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/fathom-audit.html" target="_blank">
@@ -386,7 +395,7 @@
 </div>
 
 <footer>
-  Guru Labs · Owner: Mariam Gvenetadze · Last checked link by link on September 7, 2026 · Sprint 58 (Sep 7 to 13)
+  Guru Labs · Owner: Mariam Gvenetadze · Last checked link by link on September 7, 2026 · Sprint reports updated October 8, 2026
 </footer>
 
 </body>
