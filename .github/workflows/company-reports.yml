@@ -1,0 +1,74 @@
+# Rebuilds two-week-report.html and monthly-overview.html from live ClickUp.
+#
+# WHY HERE. These reports used to come from a Claude cloud routine. That sandbox
+# cannot reach api.clickup.com and lost its GitHub login, so from mid August it ran
+# every Monday and published nothing, and nobody was told. An Action has normal
+# network access and its own push token, the same reason ai-sponsor-northstar.yml
+# kept working when the routines did not.
+#
+# The same file runs in BOTH repos (guru-labs-ai/Company-Brain and
+# Mariamgvv/Clickup-live). Each copy only writes to its own repo, so no token for
+# the other repo is needed anywhere.
+#
+# Secret needed: CLICKUP_API_KEY. Optional: SLACK_BOT_TOKEN, used to DM Mariam
+# when a run fails. reports-watchdog.yml (Company-Brain only) separately checks
+# that both live pages are fresh, which catches the case where GitHub silently
+# skips scheduled runs, something it does often at busy minutes.
+
+name: Company reports
+
+on:
+  schedule:
+    # Three slots a day at quiet minutes. GitHub drops scheduled runs, so one
+    # slot a day is not enough. Extra runs are harmless: each just rebuilds.
+    - cron: "17 5 * * *"
+    - cron: "47 11 * * *"
+    - cron: "23 18 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-reports
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build reports from ClickUp
+        env:
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+        run: python scripts/reports/build_reports.py .
+
+      - name: Publish
+        run: |
+          git config user.name "Guru-Bot"
+          git config user.email "guru-bot@users.noreply.github.com"
+          git add two-week-report.html monthly-overview.html reports-status.json
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git commit -m "Reports: rebuilt from live ClickUp ($(date -u +'%d %b %H:%M') UTC)"
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push && exit 0
+            sleep 10
+          done
+          exit 1
+
+      - name: Tell Mariam it failed
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_BOT_TOKEN" ]; then echo "No Slack token, GitHub email only"; exit 0; fi
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" -H "Content-Type: application/json; charset=utf-8" \
+            -d "{\"channel\":\"U0B8NJSJYQH\",\"text\":\"*Company reports did not update* in ${GITHUB_REPOSITORY}. The 2-week and monthly pages still show the last good run. Log: ${RUN_URL}\"}"

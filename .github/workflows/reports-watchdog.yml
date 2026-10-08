@@ -1,0 +1,64 @@
+# Checks that the live 2-week and monthly reports are fresh, on both sites.
+#
+# company-reports.yml alerts when a run FAILS. That misses the quiet failure that
+# killed the old setup: runs that never happen at all (GitHub skipping schedules,
+# a workflow disabled after 60 days without activity, a secret deleted). This job
+# reads the published reports-status.json and DMs Mariam if either copy is older
+# than 30 hours, whatever the reason.
+#
+# Run it by hand with "test" ticked to confirm the Slack DM actually arrives.
+
+name: Reports watchdog
+
+on:
+  schedule:
+    - cron: "41 8 * * *"
+    - cron: "9 20 * * *"
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Send a test DM even if everything is fresh"
+        type: boolean
+        default: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check freshness
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          TEST: ${{ inputs.test }}
+        run: |
+          python3 - <<'PY'
+          import json, os, time, urllib.request, datetime as dt
+          sites = {
+              "Company-Brain": "https://guru-labs-ai.github.io/Company-Brain/reports-status.json",
+              "Clickup-live": "https://mariamgvv.github.io/Clickup-live/reports-status.json",
+          }
+          problems = []
+          for name, url in sites.items():
+              try:
+                  with urllib.request.urlopen(url + "?t=" + str(int(time.time())), timeout=30) as r:
+                      gen = dt.datetime.fromisoformat(json.load(r)["generated_at"])
+                  age = (dt.datetime.now(dt.timezone.utc) - gen).total_seconds() / 3600
+                  print(f"{name}: {age:.1f}h old")
+                  if age > 30:
+                      problems.append(f"{name} last updated {age:.0f} hours ago")
+              except Exception as e:
+                  problems.append(f"{name} status could not be read ({e.__class__.__name__})")
+          test = os.environ.get("TEST") == "true"
+          if not problems and not test:
+              raise SystemExit(0)
+          text = ("*Test from the reports watchdog.* Alerts reach you. " + ("All fresh." if not problems else "")) if test and not problems \
+              else "*2-week and monthly reports are stale.* " + "; ".join(problems) + ". Check the Company reports workflow."
+          tok = os.environ.get("SLACK_BOT_TOKEN")
+          if tok:
+              req = urllib.request.Request("https://slack.com/api/chat.postMessage",
+                  data=json.dumps({"channel": "U0B8NJSJYQH", "text": text}).encode(),
+                  headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json; charset=utf-8"})
+              print(urllib.request.urlopen(req, timeout=30).read().decode()[:200])
+          if problems:
+              raise SystemExit("; ".join(problems))
+          PY
