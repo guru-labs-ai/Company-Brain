@@ -132,47 +132,23 @@
 </div>
 
 <div class="section">
-  <div class="section-label">🤖 AI Agents (all four are firing on schedule and none can deliver)</div>
+  <div class="section-label">🤖 AI Agents</div>
   <div class="cards">
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/fathom-audit.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-agent">⚡</div>
-        <span class="card-status status-degraded">Degraded · Data from Aug 15</span>
-      </div>
-      <div class="card-name">Fathom × ClickUp Audit Agent</div>
-      <div class="card-desc">Reads every call transcript from #meetings-fathom, extracts action items, checks if each one exists in ClickUp, and flags the gaps. Still fires daily, but its own data file reports <b>run_status: degraded</b> and has not changed since Aug 15, because the ClickUp half of the comparison cannot run.</div>
-      <div class="card-meta">
-        <span class="meta-tag">Daily · 6am UTC · 1am Mexico City</span>
-        <span class="meta-tag">Fathom + ClickUp + Slack</span>
-      </div>
-    </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/two-week-report.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-agent">📈</div>
         <span class="card-status status-live">Live again · Oct 8</span>
       </div>
-      <div class="card-name">Sprint Reports Agent (2-week + monthly)</div>
-      <div class="card-desc">Rebuilds the 2-week sprint report and the monthly overview from live ClickUp three times a day. Moved off the old cloud routine, which could not reach ClickUp and stopped publishing in August, onto a GitHub Action. A watchdog checks both pages twice a day and posts to #guru-claude-agent-updates if either is more than 30 hours old.</div>
+      <div class="card-name">Sprint Reports Agent</div>
+      <div class="card-desc">Rebuilds the 2-week sprint report, the monthly overview, the sprint live dashboard and the Guru master board from live ClickUp three times a day. Moved off the old cloud routine, which could not reach ClickUp and stopped publishing in August, onto a GitHub Action. A watchdog checks both pages twice a day and posts to #guru-claude-agent-updates if the reports are more than 30 hours old.</div>
       <div class="card-meta">
         <span class="meta-tag">Daily · 05:17, 11:47, 18:23 UTC</span>
         <span class="meta-tag">ClickUp + GitHub Actions</span>
       </div>
     </a>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ghl-team-tracker.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-agent">👥</div>
-        <span class="card-status status-down">Cannot push since Aug 8</span>
-      </div>
-      <div class="card-name">GHL Tracker Agent</div>
-      <div class="card-desc">Refreshes Abdul's team tracker daily. It still does the work: this morning it worked out Sprint 58 correctly, rewrote the page and committed it locally, then hit a 403 pushing to both repos. It has been redoing and losing that same work every morning for a month.</div>
-      <div class="card-meta">
-        <span class="meta-tag">Daily · 7am UTC · 11am Tbilisi</span>
-        <span class="meta-tag">ClickUp + Slack + GitHub</span>
-      </div>
-    </a>
 
     <div class="card">
       <div class="card-top">
@@ -213,23 +189,7 @@
       <div class="card-desc">The last four sprints from live ClickUp, for the monthly KPI review on the 15th: sprint by sprint trend, work by product and by person, and everything finished in the month. Replaces the hand-made May 2026 version.</div>
     </a>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/fathom-audit.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-dash">🔍</div>
-        <span class="card-status status-degraded">Data from Aug 15</span>
-      </div>
-      <div class="card-name">Fathom Audit Dashboard</div>
-      <div class="card-desc">Every action item from every Fathom call — shows which are ✓ in ClickUp and which are ✕ missing. Tracks from May 25, 2026 onwards across 14 Slack channels.</div>
-    </a>
 
-    <a class="card" href="https://mariamgvv.github.io/Clickup-live/ghl-team-tracker.html" target="_blank">
-      <div class="card-top">
-        <div class="card-icon icon-dash">👥</div>
-        <span class="card-status status-degraded">Stale · Sprint 53</span>
-      </div>
-      <div class="card-name">GHL Team Tracker</div>
-      <div class="card-desc">Team dashboard under Abdul Rehman (GHL PM), showing tasks, hours and status for Hamza, Annus, Cielo and Bilal (QA). <b>Frozen on Sprint 53 (Aug 3 to 9)</b> since its agent lost push access.</div>
-    </a>
 
     <div class="card card-down">
       <div class="card-top">
@@ -240,22 +200,22 @@
       <div class="card-desc">GoHighLevel funnels, sites, integrations &amp; team — project cards (incl. the Hyros integration), a live ClickUp task table, and per-person task counts for Abdul's team. Project-focused companion to the GHL Team Tracker. <b>Taken off GitHub on Jul 25 in the security cleanup, because the page fetched ClickUp in the visitor's browser with an embedded key. The file still sits in the GURU folder and still has that fetch, so it cannot go back up until it is rebuilt static, the way the two-week report was on Aug 3.</b></div>
     </div>
 
-    <div class="card card-down">
+    <a class="card" href="https://mariamgvv.github.io/Clickup-live/sprint-38-dashboard.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">🎯</div>
-        <span class="card-status status-down">Offline since Jul 25</span>
+        <span class="card-status status-live">Live · updates daily</span>
       </div>
       <div class="card-name">Sprint Live Dashboard (ClickUp Embed)</div>
-      <div class="card-desc">The permanent sprint dashboard embedded in ClickUp Reports &amp; Insights — progress bar, focus areas, blockers, wins, per-person breakdown. URL never changes; content is overwritten each sprint. <b>This is the embed the whole team opens inside ClickUp, and it has been showing them a 404 for six weeks.</b> <b>Taken off GitHub on Jul 25 in the security cleanup, because the page fetched ClickUp in the visitor's browser with an embedded key. The file still sits in the GURU folder and still has that fetch, so it cannot go back up until it is rebuilt static, the way the two-week report was on Aug 3.</b></div>
-    </div>
+      <div class="card-desc">The permanent sprint dashboard embedded in ClickUp. Shows only the sprint the team is in right now: progress, work by product, what is being worked on, what is blocked, what finished, and who has what. Same URL as before, so the embed works again. Rebuilt static on Oct 8, with no ClickUp key in the page.</div>
+    </a>
 
     <a class="card" href="https://mariamgvv.github.io/Clickup-live/miro-master-board.html" target="_blank">
       <div class="card-top">
         <div class="card-icon icon-dash">🚂</div>
-        <span class="card-status status-live">Live · Updated Jun 10</span>
+        <span class="card-status status-live">Live · updates daily</span>
       </div>
-      <div class="card-name">Guru Master Board — 8 Engines</div>
-      <div class="card-desc">Matt's full-company visual: all 8 growth engines with timeline chips — what was done (with dates), what's happening NOW, and what's next. Agentic products + GHL funnels + infrastructure.</div>
+      <div class="card-name">Guru Master Board</div>
+      <div class="card-desc">Matt's whole-company view, one card per product: what finished recently (with dates), what is happening now, what is blocked and what is next. Built from the last four sprints in ClickUp, so it stays current on its own. Replaces the hand-made June version.</div>
     </a>
 
     <div class="card card-down">

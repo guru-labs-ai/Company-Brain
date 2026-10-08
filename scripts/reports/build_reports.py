@@ -1,4 +1,6 @@
-"""Builds the 2-week sprint report and the monthly overview from live ClickUp.
+"""Builds the 2-week sprint report, the monthly overview, the sprint live dashboard
+(the permanent ClickUp embed, sprint-38-dashboard.html) and the Guru master board
+(miro-master-board.html) from live ClickUp.
 
 WHY THIS EXISTS. Both reports used to be written by a cloud routine (two-week) or
 by hand (monthly). The routine ran in a sandbox that cannot reach ClickUp and lost
@@ -278,6 +280,49 @@ def item_list(title, tasks, limit_per_product=12):
     return "".join(out)
 
 
+PRIORITY_RANK = {"urgent": 0, "high": 1, "normal": 2, "low": 3}
+
+
+def done_at(task):
+    return int(task.get("date_done") or task.get("date_closed") or 0)
+
+
+def master_board(month_tasks, sprint_tasks):
+    """One column per product: what finished recently (dated), what is in motion, what is next."""
+    by_prod = {}
+    for t in month_tasks:
+        by_prod.setdefault(product(t), []).append(t)
+    cards = []
+    order = sorted((p for p in by_prod if p not in HIDE_GROUPS), key=lambda p: -len(by_prod[p]))
+    for p in order:
+        ts = [t for t in by_prod[p] if not is_private(t)]
+        done = sorted((t for t in ts if bucket(t) == "done"), key=done_at, reverse=True)[:5]
+        now_ = [t for t in ts if bucket(t) == "active"][:5]
+        nxt = sorted((t for t in ts if bucket(t) == "todo"),
+                     key=lambda t: PRIORITY_RANK.get(((t.get("priority") or {}).get("priority") or "normal"), 2))[:4]
+        stuck = [t for t in ts if bucket(t) in ("blocked", "hold")][:3]
+
+        def rows(items, label, cls, dated=False):
+            if not items:
+                return ""
+            li = "".join(
+                f"<li>{esc(t['name'])}" + (f" <span class='who'>· {fmt_day(done_at(t))}</span>" if dated and done_at(t) else "")
+                + "</li>" for t in items)
+            return f'<div class="prod {cls}">{label}</div><ul class="items">{li}</ul>'
+
+        body = (rows(done, "✓ Finished recently", "g", dated=True) + rows(now_, "● Happening now", "y")
+                + rows(stuck, "■ Blocked or on hold", "r") + rows(nxt, "→ Next up", "b"))
+        if not body:
+            body = '<p class="note">Nothing open or finished this month.</p>'
+        counts = {k: sum(1 for t in by_prod[p] if bucket(t) == k) for k in ("done", "active", "todo")}
+        cards.append(f'<div class="panel"><h2>{esc(p)}</h2><div class="chips"><span class="chip g">{counts["done"]} done</span>'
+                     f'<span class="chip y">{counts["active"]} active</span><span class="chip">{counts["todo"]} to do</span></div>{body}</div>')
+    hidden = sum(len(by_prod[p]) for p in by_prod if p in HIDE_GROUPS)
+    note = (f'<p class="note">{hidden} admin or untagged tasks are not shown here. Tag tasks with their product in ClickUp '
+            f'and they appear on the right card.</p>') if hidden else ""
+    return '<div class="sprints">' + "".join(cards) + "</div>" + note
+
+
 def dedupe(tasks):
     seen, out = set(), []
     for t in tasks:
@@ -349,6 +394,24 @@ def build():
         people_table(tasksm),
     ])
     write("monthly-overview.html", page("Guru Labs, Monthly Overview", esc(spanm) + " · For the KPI review on the 15th", bodym, now))
+
+    # ---------- sprint live dashboard (the permanent ClickUp embed, current sprint only)
+    taskss = dedupe(cur["tasks"])
+    active_s = [t for t in taskss if bucket(t) == "active"]
+    bodys = "".join([
+        sprint_card(cur, now_ms),
+        product_table(taskss),
+        item_list("Being worked on now", active_s),
+        item_list("Blocked or on hold", [t for t in taskss if bucket(t) in ("blocked", "hold")]),
+        item_list("Finished this sprint", [t for t in taskss if bucket(t) == "done"]),
+        people_table(taskss),
+    ])
+    write("sprint-38-dashboard.html", page(f"Sprint {cur['num']} Live Dashboard",
+          esc(f"{fmt_day(cur['start'])} to {fmt_day(cur['end'])}") + " · The sprint the team is in right now", bodys, now))
+
+    # ---------- Guru master board: per product, done recently / now / next
+    write("miro-master-board.html", page("Guru Master Board",
+          esc(spanm) + " · Every product: finished recently, happening now, next up", master_board(tasksm, taskss), now))
 
     status = {
         "generated_at": now.isoformat(),
