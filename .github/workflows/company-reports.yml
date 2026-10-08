@@ -10,7 +10,7 @@
 # Mariamgvv/Clickup-live). Each copy only writes to its own repo, so no token for
 # the other repo is needed anywhere.
 #
-# Secret needed: CLICKUP_API_KEY. Optional: SLACK_BOT_TOKEN, used to DM Mariam
+# Secret needed: CLICKUP_API_KEY. Optional: SLACK_BOT_TOKEN, used to post to #guru-claude-agent-updates
 # when a run fails. reports-watchdog.yml (Company-Brain only) separately checks
 # that both live pages are fresh, which catches the case where GitHub silently
 # skips scheduled runs, something it does often at busy minutes.
@@ -62,7 +62,7 @@ jobs:
           done
           exit 1
 
-      - name: Tell Mariam it failed
+      - name: Post the failure to #guru-claude-agent-updates
         if: failure()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -71,4 +71,4 @@ jobs:
           if [ -z "$SLACK_BOT_TOKEN" ]; then echo "No Slack token, GitHub email only"; exit 0; fi
           curl -s -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer $SLACK_BOT_TOKEN" -H "Content-Type: application/json; charset=utf-8" \
-            -d "{\"channel\":\"U0B8NJSJYQH\",\"text\":\"*Company reports did not update* in ${GITHUB_REPOSITORY}. The 2-week and monthly pages still show the last good run. Log: ${RUN_URL}\"}"
+            -d "{\"channel\":\"C0C7TNH1J2G\",\"text\":\"*Guru agent update:* company reports did not update in ${GITHUB_REPOSITORY}. The 2-week and monthly pages still show the last good run. Log: ${RUN_URL}\"}"

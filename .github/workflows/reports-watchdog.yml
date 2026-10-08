@@ -3,10 +3,12 @@
 # company-reports.yml alerts when a run FAILS. That misses the quiet failure that
 # killed the old setup: runs that never happen at all (GitHub skipping schedules,
 # a workflow disabled after 60 days without activity, a secret deleted). This job
-# reads the published reports-status.json and DMs Mariam if either copy is older
+# reads the published reports-status.json and posts to #guru-claude-agent-updates if either copy is older
 # than 30 hours, whatever the reason.
 #
-# Run it by hand with "test" ticked to confirm the Slack DM actually arrives.
+# Run it by hand with "test" ticked to confirm the alert actually arrives.
+# Posts as the AI Sponsor Metrics bot (the only Slack token on this repo), so every
+# message starts with "Guru agent update:" to make clear it is not about AI Sponsor.
 
 name: Reports watchdog
 
@@ -51,14 +53,17 @@ jobs:
           test = os.environ.get("TEST") == "true"
           if not problems and not test:
               raise SystemExit(0)
-          text = ("*Test from the reports watchdog.* Alerts reach you. " + ("All fresh." if not problems else "")) if test and not problems \
-              else "*2-week and monthly reports are stale.* " + "; ".join(problems) + ". Check the Company reports workflow."
+          text = ("*Guru agent update:* test from the reports watchdog. Alerts reach this channel. " + ("All fresh." if not problems else "")) if test and not problems \
+              else "*Guru agent update:* the 2-week and monthly reports are stale. " + "; ".join(problems) + ". Check the Company reports workflow."
           tok = os.environ.get("SLACK_BOT_TOKEN")
           if tok:
               req = urllib.request.Request("https://slack.com/api/chat.postMessage",
-                  data=json.dumps({"channel": "U0B8NJSJYQH", "text": text}).encode(),
+                  data=json.dumps({"channel": "C0C7TNH1J2G", "text": text}).encode(),
                   headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json; charset=utf-8"})
-              print(urllib.request.urlopen(req, timeout=30).read().decode()[:200])
+              resp = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())
+              print("slack ok:", resp.get("ok"), resp.get("error", ""))
+              if not resp.get("ok"):
+                  raise SystemExit("Slack refused the alert: " + str(resp.get("error")) + " (is the bot invited to #guru-claude-agent-updates?)")
           if problems:
               raise SystemExit("; ".join(problems))
           PY
