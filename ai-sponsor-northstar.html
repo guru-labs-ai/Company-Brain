@@ -245,6 +245,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .rv-h3{font-size:12px;font-weight:700;margin:16px 0 4px}
 .rv-warn{font-size:11px;line-height:1.45;color:var(--gold);background:var(--gold-bg);border-radius:9px;padding:8px 10px;margin-top:10px}
 .rv-note{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:8px}
+.rv-tbl td.rv-span{text-align:center}
+.rv-tbl td .fig{font-weight:600}
+.rv-bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin:12px 0 2px}
+.rv-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.rv-bar{background:var(--chart-fill);border:1px solid var(--chart);border-bottom:0;border-radius:5px 5px 0 0}
+.rv-col.now .rv-bar{background:var(--chart)}
+.rv-add{font-size:9.5px;color:#1A7A4A;text-align:center;height:13px;font-weight:600}
+.rv-wk{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.rv-cap{font-size:10.5px;color:var(--muted);margin:20px 0 14px}
+.rv-note b{color:var(--ink);font-weight:600}
 </style>
 </head>
 <body>
@@ -305,10 +315,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
     <div class="card" id="card-rev">
       <h2>Revenue &amp; forecast</h2>
       <div class="sub">Who is free, on trial and paying, what that brings in, and where it is heading</div>
-      <div class="rv-toggle" role="group" aria-label="Price">
-        <button type="button" data-p="5" class="on">At $5 a month</button>
-        <button type="button" data-p="15">At $15 a month</button>
-      </div>
       <div id="rev-body"></div>
     </div>
 
@@ -467,15 +473,19 @@ function render(d) {
    ARR, what everyone would be worth at $5 and at $15, the trial pipeline, and
    30/60/90 day projections. Built only from numbers this page already gets.
 
-   Four kinds of money, kept apart and never added together:
-   - Actual: what paying subscribers are billed now (Stripe). It does not move
-     with the toggle, because it is not a scenario.
-   - Trial pipeline: people in a paid trial, at the chosen price.
-   - Potential: every user paying the chosen price. A ceiling, not a forecast.
+   $5 and $15 sit side by side, as in his example, so they can be compared
+   without clicking. Four kinds of money, kept apart and never added together:
+   - Actual: what paying subscribers are billed now (Stripe). One figure, not a
+     scenario, so it spans both columns.
+   - Trial pipeline: people in a paid trial, at each price.
+   - Potential: every user paying. A ceiling, not a forecast.
    - Forecast: new people at the recent signup pace, converting the way past
-     trials actually have (drop-offs included, which is the retention part).
+     trials actually have. Read from the DB on 13 Oct: 3 people ever paid and
+     the only one who then cancelled was Mary J, charged by mistake on 5 Oct
+     and refunded. So there is no real churn to measure, and that is said
+     rather than replaced with an invented rate. The note switches to a
+     warning once cancellations pass the 3 it was written for.
    ARR is MRR x 12 everywhere and is labelled a run rate, not money collected. */
-let FC = null, FC_PRICE = 5;
 function drawForecast(d) {
   const card = document.getElementById('card-rev');
   const r = d.revenue, f = d.paidFunnel, sg = d.signups;
@@ -486,82 +496,95 @@ function drawForecast(d) {
   const paying = Math.max(((d.billing && d.billing.activeSubscriptions) || 0) - trial, 0);
   const free = Math.max(total - trial - paying, 0);
 
-  // Signup pace over the last 28 days, by signup date.
   const DAY = 864e5, now = new Date(d.generatedAt).getTime();
-  const since = new Date(now - 28 * DAY).toISOString().slice(0, 10);
-  const recent = Object.entries(sg.byDay || {}).filter(([k]) => k > since).reduce((a, [, n]) => a + n, 0);
+  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const byDay = Object.entries(sg.byDay || {});
+
+  // Signup pace over the last 28 days, by signup date.
+  const since = day(now - 28 * DAY);
+  const recent = byDay.filter(([k]) => k > since).reduce((a, [, n]) => a + n, 0);
+  const perDay = recent / 28;
 
   // Of everyone who signed up, the share who started a paid trial; of the
   // trials that finished, the share who kept paying.
   const trialShare = total ? (f.cardsCaptured || 0) / total : 0;
   const keepRate = f.resolved ? (f.converted || 0) / f.resolved : 0;
+  const payShare = trialShare * keepRate;
 
-  FC = { total, trial, paying, free, recent, perDay: recent / 28, trialShare, keepRate,
-         payShare: trialShare * keepRate, mrr: r.mrr || 0, resolved: f.resolved || 0,
-         wow: d.weekOverWeek };
-
-  const btns = card.querySelectorAll('.rv-toggle button');
-  btns.forEach((b) => {
-    b.onclick = () => {
-      FC_PRICE = +b.dataset.p;
-      btns.forEach((x) => x.classList.toggle('on', x === b));
-      paintForecast();
-    };
-  });
-  paintForecast();
-}
-
-function paintForecast() {
-  const c = FC, P = FC_PRICE;
   const usd = (n) => '$' + Math.round(n).toLocaleString();
   const usd2 = (n) => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const pct = (x) => Math.round(x * 100) + '%';
-  const money = (lab, sub, mrr, fmt) =>
-    `<tr><td>${lab}<span class="rv-s">${sub}</span></td><td class="fig">${fmt(mrr)}</td><td class="fig">${fmt(mrr * 12)}</td></tr>`;
+  const pair = (mrr, fmt = usd) =>
+    `<span class="fig">${fmt(mrr)}</span><span class="rv-s fig">${fmt(mrr * 12)}/yr</span>`;
+  const both = (mrr) => `<td>${pair(mrr * 5)}</td><td>${pair(mrr * 15)}</td>`;
 
   // Week on week users. Same rolling 7 days as the card further down.
-  const added = c.wow && c.wow.newSignups ? c.wow.newSignups.now : null;
-  const before = added === null ? 0 : c.total - added;
-  const head = `<b class="fig">${c.total}</b> people` + (added === null ? '' :
+  const added = d.weekOverWeek && d.weekOverWeek.newSignups ? d.weekOverWeek.newSignups.now : null;
+  const before = added === null ? 0 : total - added;
+  const head = `<b class="fig">${total}</b> people` + (added === null ? '' :
     ` · <span class="up">+${added}</span> this week` + (before ? ` (+${(added / before * 100).toFixed(1)}%)` : ''));
+
+  /* People here now, counted by the week they joined: 10 weeks ending today.
+     Only the total, because Stripe status history is not stored per week, and
+     a free/trial/paying split drawn backwards from today would be made up. */
+  const WEEKS = 10, weeks = [];
+  for (let i = WEEKS - 1; i >= 0; i--) {
+    const end = day(now - i * 7 * DAY);
+    weeks.push({ end, n: byDay.filter(([k]) => k <= end).reduce((a, [, n]) => a + n, 0) });
+  }
+  weeks.forEach((w, i) => { w.add = i ? w.n - weeks[i - 1].n : null; });
+  const top = Math.max(...weeks.map((w) => w.n), 1);
+  const fmtWk = (s) => new Date(s + 'T00:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const chart = `<div class="rv-bars">${weeks.map((w, i) => `
+      <div class="rv-col${i === WEEKS - 1 ? ' now' : ''}" title="Week to ${fmtWk(w.end)}: ${w.n} people${w.add !== null ? ', +' + w.add : ''}">
+        <div class="rv-add fig">${w.add ? '+' + w.add : ''}</div>
+        <div class="rv-bar" style="height:${Math.max((w.n / top) * 100, 2)}%"></div>
+        <div class="rv-wk">${i === 0 || i === WEEKS - 1 || i === Math.floor(WEEKS / 2) ? fmtWk(w.end) : ''}</div>
+      </div>`).join('')}</div>`;
 
   const seg = (cls, n) => n ? `<div class="${cls}" style="flex:${n} 1 0">${n}</div>` : '';
   const dot = (col) => `<span class="rv-dot" style="background:${col}"></span>`;
 
-  // Everyone paying today is assumed to stay; today's trial converts at the
-  // past rate; new people arrive at the recent pace and pay at the past share.
+  // Everyone paying today stays (no real post-payment churn yet); today's
+  // trial converts at the past rate; new people arrive at the recent pace and
+  // end up paying at the past share.
   const proj = [30, 60, 90].map((days) => {
-    const newPeople = c.perDay * days;
-    const payers = c.paying + c.trial * c.keepRate + newPeople * c.payShare;
-    return { days, users: c.total + newPeople, payers, mrr: payers * P };
+    const newPeople = perDay * days;
+    return { days, users: total + newPeople, payers: paying + trial * keepRate + newPeople * payShare };
   });
 
   document.getElementById('rev-body').innerHTML = `
     <div class="rv-head">${head}</div>
-    <div class="rv-mix">${seg('rv-free', c.free)}${seg('rv-trial', c.trial)}${seg('rv-pay', c.paying)}</div>
+    ${chart}
+    <div class="rv-cap">People here now, by the week they joined · last 10 weeks</div>
+    <div class="rv-mix">${seg('rv-free', free)}${seg('rv-trial', trial)}${seg('rv-pay', paying)}</div>
     <div class="rv-key">
-      <span>${dot('#94A3B8')}<b>${c.free}</b> free</span>
-      <span>${dot('var(--blue)')}<b>${c.trial}</b> in trial</span>
-      <span>${dot('#1A7A4A')}<b>${c.paying}</b> paying</span>
+      <span>${dot('#94A3B8')}<b>${free}</b> free</span>
+      <span>${dot('var(--blue)')}<b>${trial}</b> in trial</span>
+      <span>${dot('#1A7A4A')}<b>${paying}</b> paying</span>
     </div>
 
     <table class="rv-tbl">
-      <tr><th></th><th>MRR</th><th>ARR</th></tr>
-      ${money('Actual', 'billing now, at today\'s plans', c.mrr, usd2)}
-      ${money('Trial pipeline', `${c.trial} in trial, if all pay $${P}`, c.trial * P, usd)}
-      ${money('Potential', `all ${c.total} people at $${P}`, c.total * P, usd)}
+      <tr><th>A month · a year</th><th>At $5</th><th>At $15</th></tr>
+      <tr><td>Actual<span class="rv-s">billing now, today's plans</span></td>
+        <td colspan="2" class="rv-span">${pair(r.mrr || 0, usd2)}</td></tr>
+      <tr><td>Trial pipeline<span class="rv-s">${trial} in trial, if all pay</span></td>${both(trial)}</tr>
+      <tr><td>Potential<span class="rv-s">all ${total} people paying</span></td>${both(total)}</tr>
     </table>
 
-    <div class="rv-h3">Forecast at $${P} a month</div>
+    <div class="rv-h3">Forecast</div>
     <table class="rv-tbl">
-      <tr><th></th><th>People</th><th>Paying</th><th>MRR</th><th>ARR</th></tr>
-      ${proj.map((p) => `<tr><td>${p.days} days</td><td class="fig">${Math.round(p.users)}</td><td class="fig">${Math.round(p.payers)}</td><td class="fig">${usd(p.mrr)}</td><td class="fig">${usd(p.mrr * 12)}</td></tr>`).join('')}
+      <tr><th></th><th>People</th><th>Paying</th><th>At $5</th><th>At $15</th></tr>
+      ${proj.map((p) => `<tr><td>${p.days} days</td><td class="fig">${Math.round(p.users)}</td><td class="fig">${Math.round(p.payers)}</td>${both(p.payers)}</tr>`).join('')}
     </table>
-    <div class="rv-note">How: ${c.recent} people joined in the last 28 days (about ${(c.perDay * 7).toFixed(1)} a week) and that pace continues.
-      ${pct(c.trialShare)} of everyone so far started a paid trial and ${pct(c.keepRate)} of finished trials kept paying,
-      so about ${(c.payShare * 100).toFixed(1)}% of new people end up paying. Everyone paying today is assumed to stay.
-      ARR is MRR &times; 12: a run rate if everyone keeps paying, not money collected.</div>
-    ${c.resolved < 10 ? `<div class="rv-warn">Rough. The paying rate rests on ${c.resolved} finished trial${c.resolved === 1 ? '' : 's'}, and most people so far joined free on a beta code. Expect this to move a lot once the 60-day trial with a card starts.</div>` : ''}`;
+    <div class="rv-note">
+      <b>Growth:</b> ${recent} people joined in the last 28 days (about ${(perDay * 7).toFixed(1)} a week), and that pace continues.<br>
+      <b>Conversion:</b> ${pct(trialShare)} of everyone so far started a paid trial and ${pct(keepRate)} of the ${f.resolved || 0} finished trials kept paying, so about ${(payShare * 100).toFixed(1)}% of new people end up paying.<br>
+      <b>Retention:</b> ${(f.cancelled || 0) <= 3
+        ? `no real paying customer has cancelled yet. Of the ${f.cancelled || 0} cancellations, the rest came inside the free trial and one was a refund after a billing mistake (5 Oct), and all are already in the conversion rate. With ${paying} paying there is no monthly churn to measure, so none is taken off.`
+        : `more people have cancelled since 13 Oct than this note covers. Churn after paying is not taken off yet, so read the forecast as a ceiling.`}<br>
+      Same conversion is assumed at $15, which is unlikely; a higher price usually converts fewer. ARR is MRR &times; 12: a run rate if everyone keeps paying, not money collected.</div>
+    <div class="rv-warn">Based on the old mix, where most people joined free on a beta code. With the 60-day trial and a card required, every new person starts a trial, so these numbers should rise once that is live. Rough until at least 10 trials have finished (${f.resolved || 0} so far).</div>`;
 }
 
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
