@@ -221,6 +221,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .sc-t b{font-size:13.5px;font-weight:700;letter-spacing:-0.01em}
 .sc-t i{font-style:normal;font-size:11px;color:var(--muted);line-height:1.35}
 .sc-a{flex:none;color:var(--muted);font-size:15px;font-weight:700}
+
+/* ── Revenue & forecast (Matt, 8 Oct) ──────────────────────────────────────── */
+.rv-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:14px}
+.rv-toggle button{flex:1;border:0;background:transparent;color:var(--muted);font:600 12.5px 'Inter',sans-serif;
+  padding:8px 0;border-radius:8px;cursor:pointer}
+.rv-toggle button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+.rv-mix{display:flex;height:26px;border-radius:9px;overflow:hidden;background:var(--line);margin:8px 0}
+.rv-mix div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;min-width:22px}
+.rv-free{background:#94A3B8}.rv-trial{background:var(--blue)}.rv-pay{background:#1A7A4A}
+.rv-key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--muted);margin-bottom:14px;align-items:center}
+.rv-key b{color:var(--ink)}
+.rv-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.rv-head{font-size:13px;color:var(--muted)}
+.rv-head b{color:var(--ink);font-size:15px}
+.rv-head .up{color:#1A7A4A;font-weight:700}
+.rv-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px}
+.rv-tbl th{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;text-align:right;padding:6px 0 6px 6px}
+.rv-tbl th:first-child,.rv-tbl td:first-child{text-align:left;padding-left:0}
+.rv-tbl td{padding:8px 0 8px 6px;border-top:1px solid var(--line);text-align:right;vertical-align:top}
+.rv-tbl td:first-child{font-weight:600;padding-right:6px}
+.rv-tbl .rv-s{display:block;font-size:10px;color:var(--muted);font-weight:500;margin-top:2px}
+.rv-h3{font-size:12px;font-weight:700;margin:16px 0 4px}
+.rv-warn{font-size:11px;line-height:1.45;color:var(--gold);background:var(--gold-bg);border-radius:9px;padding:8px 10px;margin-top:10px}
+.rv-note{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:8px}
 </style>
 </head>
 <body>
@@ -277,6 +301,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
     <div class="stamp" id="stamp"></div>
 
     <div class="chips" id="chips"></div>
+
+    <div class="card" id="card-rev">
+      <h2>Revenue &amp; forecast</h2>
+      <div class="sub">Who is free, on trial and paying, what that brings in, and where it is heading</div>
+      <div class="rv-toggle" role="group" aria-label="Price">
+        <button type="button" data-p="5" class="on">At $5 a month</button>
+        <button type="button" data-p="15">At $15 a month</button>
+      </div>
+      <div id="rev-body"></div>
+    </div>
 
     <div class="card">
       <h2>The mountain grows</h2>
@@ -425,6 +459,109 @@ function render(d) {
   drawMessages(d.breakdowns);
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
+  drawForecast(d);
+}
+
+/* ── Revenue & forecast ──────────────────────────────────────────────────────
+   Matt, 8 Oct: free / trial / paying with week on week growth, actual MRR and
+   ARR, what everyone would be worth at $5 and at $15, the trial pipeline, and
+   30/60/90 day projections. Built only from numbers this page already gets.
+
+   Four kinds of money, kept apart and never added together:
+   - Actual: what paying subscribers are billed now (Stripe). It does not move
+     with the toggle, because it is not a scenario.
+   - Trial pipeline: people in a paid trial, at the chosen price.
+   - Potential: every user paying the chosen price. A ceiling, not a forecast.
+   - Forecast: new people at the recent signup pace, converting the way past
+     trials actually have (drop-offs included, which is the retention part).
+   ARR is MRR x 12 everywhere and is labelled a run rate, not money collected. */
+let FC = null, FC_PRICE = 5;
+function drawForecast(d) {
+  const card = document.getElementById('card-rev');
+  const r = d.revenue, f = d.paidFunnel, sg = d.signups;
+  if (!r || !f || !sg) { card.style.display = 'none'; return; }
+
+  const total = sg.total || 0;
+  const trial = f.stillInTrial || 0;
+  const paying = Math.max(((d.billing && d.billing.activeSubscriptions) || 0) - trial, 0);
+  const free = Math.max(total - trial - paying, 0);
+
+  // Signup pace over the last 28 days, by signup date.
+  const DAY = 864e5, now = new Date(d.generatedAt).getTime();
+  const since = new Date(now - 28 * DAY).toISOString().slice(0, 10);
+  const recent = Object.entries(sg.byDay || {}).filter(([k]) => k > since).reduce((a, [, n]) => a + n, 0);
+
+  // Of everyone who signed up, the share who started a paid trial; of the
+  // trials that finished, the share who kept paying.
+  const trialShare = total ? (f.cardsCaptured || 0) / total : 0;
+  const keepRate = f.resolved ? (f.converted || 0) / f.resolved : 0;
+
+  FC = { total, trial, paying, free, recent, perDay: recent / 28, trialShare, keepRate,
+         payShare: trialShare * keepRate, mrr: r.mrr || 0, resolved: f.resolved || 0,
+         wow: d.weekOverWeek };
+
+  const btns = card.querySelectorAll('.rv-toggle button');
+  btns.forEach((b) => {
+    b.onclick = () => {
+      FC_PRICE = +b.dataset.p;
+      btns.forEach((x) => x.classList.toggle('on', x === b));
+      paintForecast();
+    };
+  });
+  paintForecast();
+}
+
+function paintForecast() {
+  const c = FC, P = FC_PRICE;
+  const usd = (n) => '$' + Math.round(n).toLocaleString();
+  const usd2 = (n) => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const pct = (x) => Math.round(x * 100) + '%';
+  const money = (lab, sub, mrr, fmt) =>
+    `<tr><td>${lab}<span class="rv-s">${sub}</span></td><td class="fig">${fmt(mrr)}</td><td class="fig">${fmt(mrr * 12)}</td></tr>`;
+
+  // Week on week users. Same rolling 7 days as the card further down.
+  const added = c.wow && c.wow.newSignups ? c.wow.newSignups.now : null;
+  const before = added === null ? 0 : c.total - added;
+  const head = `<b class="fig">${c.total}</b> people` + (added === null ? '' :
+    ` · <span class="up">+${added}</span> this week` + (before ? ` (+${(added / before * 100).toFixed(1)}%)` : ''));
+
+  const seg = (cls, n) => n ? `<div class="${cls}" style="flex:${n} 1 0">${n}</div>` : '';
+  const dot = (col) => `<span class="rv-dot" style="background:${col}"></span>`;
+
+  // Everyone paying today is assumed to stay; today's trial converts at the
+  // past rate; new people arrive at the recent pace and pay at the past share.
+  const proj = [30, 60, 90].map((days) => {
+    const newPeople = c.perDay * days;
+    const payers = c.paying + c.trial * c.keepRate + newPeople * c.payShare;
+    return { days, users: c.total + newPeople, payers, mrr: payers * P };
+  });
+
+  document.getElementById('rev-body').innerHTML = `
+    <div class="rv-head">${head}</div>
+    <div class="rv-mix">${seg('rv-free', c.free)}${seg('rv-trial', c.trial)}${seg('rv-pay', c.paying)}</div>
+    <div class="rv-key">
+      <span>${dot('#94A3B8')}<b>${c.free}</b> free</span>
+      <span>${dot('var(--blue)')}<b>${c.trial}</b> in trial</span>
+      <span>${dot('#1A7A4A')}<b>${c.paying}</b> paying</span>
+    </div>
+
+    <table class="rv-tbl">
+      <tr><th></th><th>MRR</th><th>ARR</th></tr>
+      ${money('Actual', 'billing now, at today\'s plans', c.mrr, usd2)}
+      ${money('Trial pipeline', `${c.trial} in trial, if all pay $${P}`, c.trial * P, usd)}
+      ${money('Potential', `all ${c.total} people at $${P}`, c.total * P, usd)}
+    </table>
+
+    <div class="rv-h3">Forecast at $${P} a month</div>
+    <table class="rv-tbl">
+      <tr><th></th><th>People</th><th>Paying</th><th>MRR</th><th>ARR</th></tr>
+      ${proj.map((p) => `<tr><td>${p.days} days</td><td class="fig">${Math.round(p.users)}</td><td class="fig">${Math.round(p.payers)}</td><td class="fig">${usd(p.mrr)}</td><td class="fig">${usd(p.mrr * 12)}</td></tr>`).join('')}
+    </table>
+    <div class="rv-note">How: ${c.recent} people joined in the last 28 days (about ${(c.perDay * 7).toFixed(1)} a week) and that pace continues.
+      ${pct(c.trialShare)} of everyone so far started a paid trial and ${pct(c.keepRate)} of finished trials kept paying,
+      so about ${(c.payShare * 100).toFixed(1)}% of new people end up paying. Everyone paying today is assumed to stay.
+      ARR is MRR &times; 12: a run rate if everyone keeps paying, not money collected.</div>
+    ${c.resolved < 10 ? `<div class="rv-warn">Rough. The paying rate rests on ${c.resolved} finished trial${c.resolved === 1 ? '' : 's'}, and most people so far joined free on a beta code. Expect this to move a lot once the 60-day trial with a card starts.</div>` : ''}`;
 }
 
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
