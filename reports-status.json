@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-10-24T14:54:32.906424+00:00",
+  "generated_at": "2026-10-24T20:57:14.072925+00:00",
   "two_week": {
     "sprints": [
       63,
       64
     ],
-    "tasks": 362,
-    "done": 28
+    "tasks": 365,
+    "done": 29
   },
   "monthly": {
     "sprints": [
@@ -15,7 +15,7 @@
       63,
       64
     ],
-    "tasks": 461,
-    "done": 127
+    "tasks": 464,
+    "done": 128
   }
 }
