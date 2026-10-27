@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>AI Sponsor · Weekly Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0080D4; --blue-dark:#0068AC; --ink:#212529; --muted:#6B7280;
+  --bg:#F0F4F8; --card:#FFFFFF; --line:#E5E7EB; --gold:#B45309; --gold-bg:#FEF3C7;
+  --chart:#2a78d6; --chart-fill:rgba(42,120,214,0.12);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#F3F4F6; --muted:#9CA3AF; --bg:#0f1720; --card:#182230; --line:#26303e;
+    --gold:#fad98c; --gold-bg:#2a2415; --chart:#3987e5; --chart-fill:rgba(57,135,229,0.16);
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 16px 44px}
+.wrap{max-width:520px;margin:0 auto}
+
+.hero{background:linear-gradient(160deg,var(--blue),var(--blue-dark));color:#fff;border-radius:22px;
+  padding:32px 24px 26px;text-align:center;box-shadow:0 8px 28px rgba(0,128,212,0.30);
+  position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-70px;right:-70px;width:200px;height:200px;
+  border-radius:50%;background:rgba(255,255,255,0.08)}
+.hero::after{content:'';position:absolute;bottom:-90px;left:-60px;width:220px;height:220px;
+  border-radius:50%;background:rgba(255,255,255,0.06)}
+.hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85}
+.hero .big{font-size:74px;font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin:8px 0 2px;
+  font-variant-numeric:tabular-nums}
+.hero .unit{font-size:17px;font-weight:600;opacity:0.95}
+.hero .meaning{font-size:13.5px;margin-top:12px;opacity:0.9;line-height:1.55;position:relative}
+.hero .growth{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.16);
+  border:1px solid rgba(255,255,255,0.28);border-radius:99px;padding:6px 14px;margin-top:14px;
+  font-size:12.5px;font-weight:700;position:relative}
+.pulse{width:8px;height:8px;border-radius:50%;background:#7CFCB1;animation:pu 1.6s infinite;flex:none}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.25}}
+.stamp{text-align:center;font-size:11.5px;color:var(--muted);margin:10px 0 20px}
+
+.chips{display:flex;gap:8px;margin-bottom:14px}
+.chip{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;
+  text-align:center}
+.chip .n{font-size:17px;font-weight:800;margin-top:2px}
+.chip .l{font-size:10px;line-height:1.25;color:var(--muted);font-weight:600;margin-top:1px;text-transform:uppercase;letter-spacing:0.03em}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 12px;margin-bottom:14px}
+.card h2{font-size:14px;font-weight:700}
+.card .sub{font-size:11.5px;color:var(--muted);margin:2px 0 12px}
+.chart{position:relative;height:160px}
+/* Height comes from the content (columns + x-axis band + peak line), so the
+   axis is never excluded and an empty state doesn't leave a dead 160px hole. */
+.chart-auto{height:auto;padding-bottom:4px}
+.chart svg{width:100%;height:100%;display:block;overflow:visible}
+.gridline{stroke:var(--line);stroke-width:1}
+.tick{font-size:9.5px;fill:var(--muted)}
+.tooltip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);
+  border-radius:8px;padding:6px 9px;font-size:11.5px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.16);
+  display:none;white-space:nowrap;z-index:2}
+
+/* ── Figures read as instrument, labels read as language ──────────────────────
+   Every number on this page is mono and tabular so columns line up and a digit
+   never shifts as it counts. Labels stay Inter. The split is the point: words
+   are for people, figures are for measuring. */
+.fig{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+
+/* ── Week on week: the signature ─────────────────────────────────────────────
+   Last week is a ghost bar, this week is drawn over it, so the growth IS the
+   overhang. A percentage asks you to trust it; an overhang shows you. */
+.wk-row{padding:11px 0;border-bottom:1px solid var(--line)}
+.wk-row:last-child{border-bottom:0}
+.wk-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
+.wk-lab{font-size:12.5px;font-weight:650;letter-spacing:-0.01em}
+.wk-sub{font-size:10.5px;color:var(--muted);font-weight:500}
+.wk-right{display:flex;align-items:baseline;gap:8px;flex:none}
+.wk-now{font-size:20px;font-weight:700;line-height:1}
+.wk-delta{font-size:10.5px;font-weight:700;padding:2.5px 7px;border-radius:99px;
+  border:1px solid currentColor;opacity:.95}
+.wk-track{position:relative;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.wk-prev{position:absolute;inset:0 auto 0 0;background:var(--muted);opacity:.32;border-radius:99px}
+.wk-now-bar{position:absolute;inset:0 auto 0 0;border-radius:99px;
+  background:linear-gradient(90deg,var(--blue-dark),var(--blue));
+  width:0;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.wk-foot{display:flex;justify-content:space-between;margin-top:5px;
+  font-size:10px;color:var(--muted);font-weight:500}
+.up{color:#1A7A4A}.down{color:#C0392B}.flat{color:var(--muted)}
+@media (prefers-color-scheme:dark){.up{color:#4ADE80}.down{color:#F1948A}}
+
+/* ── Money: deliberately quiet ───────────────────────────────────────────────
+   No boxes, no colour. Hairline-separated figures, because these numbers are
+   an account of fact and should not compete with the human ones above. */
+.mn-grid{display:grid;grid-template-columns:1fr 1fr}
+.mn{padding:12px 0 11px;border-top:1px solid var(--line)}
+.mn:nth-child(odd){padding-right:14px;border-right:1px solid var(--line)}
+.mn:nth-child(even){padding-left:14px}
+.mn:nth-child(1),.mn:nth-child(2){border-top:0;padding-top:2px}
+.mn-k{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
+.mn-v{font-size:23px;font-weight:600;margin-top:5px;line-height:1}
+.mn-n{font-size:10.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+/* The arithmetic behind the committed figure. Quieter than the note above it:
+   it is there for the one time somebody asks where the odd cents came from,
+   not to be read every visit. */
+.mn-work{display:inline-block;margin-top:3px;font-size:10px;opacity:.75}
+.mn-zero{opacity:.45}
+
+/* ── The trial funnel: one population, one bar ───────────────────────────────
+   Four separate tiles implied four unrelated numbers. Everyone here came in the
+   same door and is somewhere along the same path, so it is drawn as one bar. */
+.fn-bar{display:flex;height:34px;border-radius:11px;overflow:hidden;background:var(--line);margin-bottom:12px}
+.fn-seg{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;
+  min-width:0;width:0;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.fn-trial{background:linear-gradient(180deg,var(--blue),var(--blue-dark))}
+.fn-conv{background:#1A7A4A}
+.fn-drop{background:#C0392B}
+.fn-key{display:flex;flex-wrap:wrap;gap:9px 16px}
+.fn-item{display:flex;align-items:baseline;gap:6px;font-size:11px;color:var(--muted);font-weight:600}
+.fn-dot{width:8px;height:8px;border-radius:3px;flex:none;transform:translateY(-1px)}
+.fn-n{font-size:13px;font-weight:700;color:var(--ink)}
+.fn-empty{font-size:12px;color:var(--muted);line-height:1.5}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px}
+.tile .label{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
+.tile .value{font-size:21px;font-weight:750;margin-top:3px}
+/* A qualifier on a heading, so the reader knows what the number is made of. */
+.subnote{font-weight:500;color:var(--muted);font-size:10.5px;letter-spacing:0}
+.notes{font-size:11px;color:var(--muted);line-height:1.6;padding:2px 6px 0}
+.notes li{margin-left:15px;margin-bottom:3px}
+.state{text-align:center;padding:48px 12px;color:var(--muted);font-size:13.5px;line-height:1.7}
+
+/* ── Breakdowns ──────────────────────────────────────────────────────────────
+   Ranked horizontal bars, one hue for every bar. The category is already named
+   on its own row, so colouring bars by category would double-encode length as
+   hue and burn the only free channel on nothing. Value sits at the tip, so the
+   list reads as a table and no value is gated behind a hover. */
+.bd-row{display:grid;grid-template-columns:102px 1fr 30px;align-items:center;gap:9px;margin-bottom:7px}
+.bd-row .k{font-size:11.5px;color:var(--muted);font-weight:600;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bd-track{height:14px;position:relative}
+.bd-bar{height:14px;background:var(--chart);border-radius:0 4px 4px 0;min-width:2px;
+  transition:width .5s cubic-bezier(.22,1,.36,1)}
+.bd-row .v{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.bd-empty{font-size:11.5px;color:var(--muted);padding:2px 0 8px;line-height:1.6}
+/* What this card will show once people arrive — an empty card teaches nothing,
+   and pre-launch is the only state anyone sees it in right now. */
+.bd-soon{font-size:11.5px;color:var(--muted);line-height:1.75;padding:2px 0 4px}
+.bd-soon div{padding-left:13px;position:relative}
+.bd-soon div::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--chart);opacity:0.55}
+.bd-soon b{color:var(--ink);font-weight:650}
+.subhead{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.05em;margin:14px 0 8px}
+.subhead:first-of-type{margin-top:2px}
+
+/* ── Messages per day ────────────────────────────────────────────────────────
+   Columns in HTML rather than SVG: the sibling chart stretches its viewBox with
+   preserveAspectRatio="none", which is fine for a path but would squash a 4px
+   corner radius into an ellipse. Plain divs keep the geometry exact. */
+.msgwrap{position:relative;padding-left:26px}
+.msgcols{display:flex;gap:2px;align-items:flex-end;height:112px;position:relative}
+.msgcol{flex:1;height:100%;display:flex;align-items:flex-end;cursor:default}
+.msgfill{width:100%;background:var(--chart);border-radius:4px 4px 0 0;
+  transition:height .5s cubic-bezier(.22,1,.36,1)}
+.msgcol:hover .msgfill{background:var(--blue-dark)}
+.msgline{position:absolute;left:0;right:0;border-top:1px solid var(--line);pointer-events:none}
+.msgytick{position:absolute;left:-26px;font-size:9.5px;color:var(--muted);
+  transform:translateY(-50%);font-variant-numeric:tabular-nums}
+.msgx{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-top:7px}
+.msgpeak{font-size:10.5px;color:var(--muted);margin-top:8px}
+.msgpeak b{color:var(--ink)}
+
+/* ── Shortcuts ───────────────────────────────────────────────────────────────
+   Matt, 9 Sep: a nav inside the north star so he can jump straight to the
+   places he checks anyway, starting with the Amends casting list in GHL.
+
+   DELIBERATELY OUTSIDE #dash. Everything else on this page waits on the API,
+   and the backend is on Render's free tier, so a cold start is up to a minute
+   of blank screen. A shortcut that only works once the metrics have loaded is
+   not a shortcut. These render instantly and still work when the API is down.
+
+   Row shaped rather than icon-tiled: the label has to say what he is about to
+   open, and on a phone a full-width row is the easiest thing to hit. */
+/* ── The layout ──────────────────────────────────────────────────────────────
+   Wide enough and the shortcuts sit in a rail on the left, beside the metrics
+   rather than on top of them, and the rail sticks so it is reachable from
+   anywhere down the page.
+
+   ⚠️ THE COLUMN IS NOT ALLOWED TO MOVE FOR IT. The whole page is built at
+   520px because Matt reads it on a phone, and pushing that column off-centre
+   to make room for navigation would trade the main thing for the side thing.
+   The rail only appears when there is genuinely spare room either side, which
+   is why the breakpoint is 940px and not the usual 768px. Below that it goes
+   back to full-width rows above the hero, exactly as before. */
+.page{max-width:520px;margin:0 auto}
+@media(min-width:940px){
+  .page{max-width:none;display:flex;gap:26px;align-items:flex-start;
+    justify-content:center}
+  /* margin:0 auto on .wrap is what centres it everywhere else, but an auto
+     margin on a flex item eats the free space and pins the rail to the far
+     left. Dropped here so justify-content can centre the pair together. */
+  .page > .wrap{flex:0 0 520px;margin:0}
+  .shortcuts{position:sticky;top:20px;flex:0 0 208px;margin-bottom:0}
+  .shortcuts .sc{padding:11px 12px;min-height:0}
+  .shortcuts .sc-a{display:none}
+  .shortcuts .sc-t b{font-size:12.5px}
+  .shortcuts .sc-t i{font-size:10.5px}
+}
+.shortcuts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.sc{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:13px 14px;text-decoration:none;color:var(--ink);min-height:56px;
+  transition:border-color .15s,transform .06s}
+.sc:hover{border-color:var(--blue)}
+.sc:active{transform:scale(0.995)}
+.sc-i{font-size:19px;line-height:1;flex:none;width:34px;height:34px;border-radius:10px;
+  display:grid;place-items:center;background:var(--gold-bg)}
+.sc-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.sc-t b{font-size:13.5px;font-weight:700;letter-spacing:-0.01em}
+.sc-t i{font-style:normal;font-size:11px;color:var(--muted);line-height:1.35}
+.sc-a{flex:none;color:var(--muted);font-size:15px;font-weight:700}
+
+/* ── Revenue & forecast (Matt, 8 Oct) ──────────────────────────────────────── */
+.rv-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:14px}
+.rv-toggle button{flex:1;border:0;background:transparent;color:var(--muted);font:600 12.5px 'Inter',sans-serif;
+  padding:8px 0;border-radius:8px;cursor:pointer}
+.rv-toggle button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+.rv-mix{display:flex;height:26px;border-radius:9px;overflow:hidden;background:var(--line);margin:8px 0}
+.rv-mix div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;min-width:22px}
+.rv-free{background:#94A3B8}.rv-trial{background:var(--blue)}.rv-pay{background:#1A7A4A}
+.rv-key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--muted);margin-bottom:14px;align-items:center}
+.rv-key b{color:var(--ink)}
+.rv-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.rv-head{font-size:13px;color:var(--muted)}
+.rv-head b{color:var(--ink);font-size:15px}
+.rv-head .up{color:#1A7A4A;font-weight:700}
+.rv-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:6px}
+.rv-tbl th{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;text-align:right;padding:6px 0 6px 6px}
+.rv-tbl th:first-child,.rv-tbl td:first-child{text-align:left;padding-left:0}
+.rv-tbl td{padding:8px 0 8px 6px;border-top:1px solid var(--line);text-align:right;vertical-align:top}
+.rv-tbl td:first-child{font-weight:600;padding-right:6px}
+.rv-tbl .rv-s{display:block;font-size:10px;color:var(--muted);font-weight:500;margin-top:2px}
+.rv-h3{font-size:12px;font-weight:700;margin:16px 0 4px}
+.rv-warn{font-size:11px;line-height:1.45;color:var(--gold);background:var(--gold-bg);border-radius:9px;padding:8px 10px;margin-top:10px}
+.rv-note{font-size:10.5px;color:var(--muted);line-height:1.45;margin-top:8px}
+.rv-tbl td.rv-span{text-align:center}
+.rv-tbl td .fig{font-weight:600}
+.rv-bars{display:flex;align-items:flex-end;gap:5px;height:110px;margin:12px 0 2px}
+.rv-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.rv-bar{background:var(--chart-fill);border:1px solid var(--chart);border-bottom:0;border-radius:5px 5px 0 0}
+.rv-col.now .rv-bar{background:var(--chart)}
+.rv-add{font-size:9.5px;color:#1A7A4A;text-align:center;height:13px;font-weight:600}
+.rv-wk{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.rv-cap{font-size:10.5px;color:var(--muted);margin:20px 0 14px}
+.rv-note b{color:var(--ink);font-weight:600}
+</style>
+<style>
+.back{display:inline-block;font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;margin:0 0 12px 2px}
+.wk{padding:10px 0;border-top:1px solid var(--line)}
+.wk:first-child{border-top:0;padding-top:2px}
+.wk-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600}
+.wk-head b{font-size:15px;font-variant-numeric:tabular-nums}
+.wk-bar{height:8px;background:var(--line);border-radius:99px;margin:7px 0 6px;overflow:hidden}
+.wk-bar span{display:block;height:100%;background:var(--chart);border-radius:99px}
+.wk-line{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tile .subnote{display:block;margin-top:2px}
+.so-far{font-style:normal;font-size:10.5px;font-weight:700;color:var(--gold);background:var(--gold-bg);border-radius:99px;padding:1px 7px;margin-left:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="ai-sponsor-northstar.html">&larr; North Star</a>
+
+  <div id="loading" class="state">Connecting to live data…<br>
+    <span style="font-size:11.5px">(up to ~1 min if the server is waking up)</span></div>
+
+  <div id="dash" style="display:none">
+    <div class="hero">
+      <div class="eyebrow">📬 AI Sponsor · Weekly review</div>
+      <div class="big" id="wr-value">0%</div>
+      <div class="unit">opened their weekly review</div>
+      <div class="meaning" id="wr-meaning"></div>
+      <div class="growth" id="wr-growth-wrap"><span class="pulse"></span><span id="wr-growth"></span></div>
+    </div>
+    <div class="stamp" id="stamp"></div>
+
+    <div class="subhead">Last Sunday, step by step</div>
+    <div class="tiles" id="funnel"></div>
+
+    <div class="card">
+      <h2>Week by week</h2>
+      <div class="sub">Share of everyone who opened their review page in the 7 days after each Sunday</div>
+      <div id="weeks"></div>
+    </div>
+
+    <ul class="notes">
+      <li><b>Everyone</b> is every person registered by that Sunday, active or not. Team and test accounts are left out, and each person counts once.</li>
+      <li><b>Opened</b> means they opened their AI Sponsor page, where the weekly review lives, within 7 days of it going out.</li>
+      <li><b>Read</b> comes from WhatsApp read receipts. People can switch those off, so the real number is at least this.</li>
+      <li>Before 18 October most reviews were not delivered: WhatsApp was blocking our messages over billing until 13 October.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const API = 'https://ai-sponsor-f7de.onrender.com/api/metrics/northstar';
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const day = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
+// A week's 7-day window is still open until the Monday after next.
+const stillCounting = (w) => Date.now() < Date.parse(w.sunday + 'T00:00:00Z') + 8 * 86400000;
+const closes = (w) => day(new Date(Date.parse(w.sunday + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function render(d) {
+  const weeks = (d.weeklyReview || []).filter((w) => w.sent > 0);
+  if (!weeks.length) {
+    document.getElementById('loading').innerHTML = 'No weekly reviews recorded yet.';
+    return;
+  }
+  const [last, prev] = weeks;
+  document.getElementById('wr-value').textContent = pct(last.opened, last.everyone) + '%';
+  document.getElementById('wr-meaning').textContent =
+    stillCounting(last)
+      ? `${last.opened} of ${last.everyone} people, active or not, have opened their page so far after ${day(last.sunday)}'s review. Still counting until ${closes(last)}.`
+      : `${last.opened} of ${last.everyone} people, active or not, opened their page in the 7 days after ${day(last.sunday)}'s review.`;
+  if (prev) {
+    const now = pct(last.opened, last.everyone);
+    const before = pct(prev.opened, prev.everyone);
+    document.getElementById('wr-growth').textContent = stillCounting(last)
+      ? `The week before ended at ${before}%`
+      : now === before ? `Same as the week before (${before}%)` : `${now > before ? 'Up' : 'Down'} from ${before}% the week before`;
+  } else {
+    document.getElementById('wr-growth-wrap').style.display = 'none';
+  }
+  document.getElementById('stamp').textContent =
+    'Live from the AI Sponsor database · ' + new Date(d.generatedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  const steps = [
+    ['Sent to', last.sent, `of ${last.everyone} people`],
+    ['Delivered', last.delivered, `${pct(last.delivered, last.sent)}% of sent`],
+    ['Read', last.read, `${pct(last.read, last.sent)}% of sent, at least`],
+    ['Opened', last.opened, `${pct(last.opened, last.sent)}% of sent${stillCounting(last) ? ', so far' : ''}`],
+  ];
+  document.getElementById('funnel').innerHTML = steps.map(([label, n, note]) =>
+    `<div class="tile"><div class="label">${label}</div><div class="value">${n}</div><div class="subnote">${esc(note)}</div></div>`).join('');
+
+  const top = Math.max(...weeks.map((w) => pct(w.opened, w.everyone)), 1);
+  document.getElementById('weeks').innerHTML = weeks.map((w) => {
+    const share = pct(w.opened, w.everyone);
+    return `<div class="wk">
+      <div class="wk-head"><span>${esc(day(w.sunday))}${stillCounting(w) ? ' <i class="so-far">so far</i>' : ''}</span><b>${share}%</b></div>
+      <div class="wk-bar"><span style="width:${Math.max(2, (share / top) * 100)}%"></span></div>
+      <div class="wk-line">Sent to ${w.sent} · delivered ${w.delivered} · read ${w.read} · opened ${w.opened} · of ${w.everyone}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+}
+
+fetch(API, { cache: 'no-store' })
+  .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(render)
+  .catch((e) => {
+    document.getElementById('loading').innerHTML = 'Could not reach live data right now (' + esc(e.message) + ').<br>Try again in a minute.';
+  });
+</script>
+</body>
+</html>
