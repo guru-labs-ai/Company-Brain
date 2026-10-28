@@ -12,11 +12,14 @@
 # the URL both wakes the instance and tells it to run the checks, which is the
 # only combination that works. Same reasoning as the weekly review beside it.
 #
-# WHY EVERY SIX HOURS and not daily. A daily check means up to 24 hours of a
-# silent outage, and the failure this is built around already ran for two days.
-# Six hours is a reasonable worst case. It is not noisy: the backend posts to
-# Slack ONLY when something is wrong (Mariam, 9 Sep), and an ongoing problem is
-# repeated at most once every twelve hours rather than every single run.
+# WHY EVERY HOUR. It ran every six hours until 28 Oct, when Matt asked how long
+# the sponsor could be down at night before anyone knew; six hours was the
+# answer, and too long once people are paying (Mariam, 28 Oct). It is not
+# noisy: the backend posts to Slack ONLY when something is wrong (Mariam,
+# 9 Sep), and an ongoing problem is repeated at most once every twelve hours
+# rather than every single run. Minute 23, not 0: GitHub drops many scheduled
+# runs at minute 0 (see the weekly review beside it), and the six-hourly 00:00
+# run on 28 Oct only started at 03:17 UTC.
 #
 # The secret is the same repository secret the weekly review uses,
 # AI_SPONSOR_CRON_SECRET, and must match CRON_SECRET on the Render service. An
@@ -26,7 +29,7 @@ name: AI Sponsor status check
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch: {}   # so it can be run by hand the moment something feels off
 
 jobs:
@@ -81,8 +84,8 @@ jobs:
 
           # A failing CHECK is not a failing JOB. "AI Sponsor is broken" is
           # reported to Slack and shown on the page; this step only fails when
-          # the check itself could not be run, because a red X here every six
-          # hours for a known problem trains everyone to ignore the X.
+          # the check itself could not be run, because a red X here every hour
+          # for a known problem trains everyone to ignore the X.
           if res.get("error"):
               raise SystemExit(f"The status check could not run: {res['error']}")
           PY
