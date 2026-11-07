@@ -122,6 +122,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .fn-dot{width:8px;height:8px;border-radius:3px;flex:none;transform:translateY(-1px)}
 .fn-n{font-size:13px;font-weight:700;color:var(--ink)}
 .fn-empty{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── The newsletter: one row of four numbers per issue, newest first ─────── */
+.nl-issue{padding:11px 0 12px;border-top:1px solid var(--line)}
+.nl-issue:first-child{border-top:0;padding-top:2px}
+.nl-head{font-size:12px;line-height:1.4;margin-bottom:8px}
+.nl-head b{font-weight:700}
+.nl-new{font-size:10.5px;color:var(--gold);font-weight:600;white-space:nowrap}
+.nl-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nl-v{font-size:20px;font-weight:600;margin-top:4px;line-height:1}
+.nl-foot{font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px;padding-top:10px;border-top:1px solid var(--line)}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px}
 .tile .label{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
@@ -365,6 +375,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <div class="chart chart-auto" id="msgchart"><div class="tooltip" id="msgtip"></div></div>
     </div>
 
+    <div class="card" id="card-news" style="display:none">
+      <h2>Newsletter</h2>
+      <div class="sub" id="news-sub">Each issue, from GHL · real people only, the team left out</div>
+      <div id="news-body"></div>
+    </div>
+
     <div class="card" id="card-who">
       <h2>Who's here</h2>
       <div class="sub">Every person who has signed up · aggregate only, never names or conversations</div>
@@ -476,6 +492,69 @@ function render(d) {
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
   drawForecast(d);
+  drawNewsletter(d.newsletter);
+}
+
+/* ── Newsletter ──────────────────────────────────────────────────────────────
+   Mariam, 6 Nov: who opens the newsletter, on this page. The newsletter is sent
+   from GHL, so the server reads the numbers back from there every 3 hours and
+   sends totals only. The card says when they were counted, because unlike the
+   rest of this page they are not live to the minute.
+
+   Opens are labelled rough: some mail apps open every email as it arrives, so
+   an open is not proof somebody read it. Clicks and replies are the sure sign.
+   No percentages: on 41 people one extra open moves a rate by 2 points, and
+   the raw numbers sit side by side so the reader can see that for themselves.
+
+   Hidden when the server is older than this card (no newsletter field at all).
+   A null field means the server restarted and is still counting. */
+function drawNewsletter(n) {
+  const card = document.getElementById('card-news');
+  if (n === undefined) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const body = document.getElementById('news-body');
+
+  if (n === null) {
+    body.innerHTML = '<div class="fn-empty">Counting the newsletter. Back in a few minutes.</div>';
+    return;
+  }
+  if (!n.issues || !n.issues.length) {
+    body.innerHTML = '<div class="fn-empty">No newsletter has gone out yet. Each issue shows up here once it is sent.</div>';
+    return;
+  }
+
+  const counted = new Date(n.updatedAt);
+  document.getElementById('news-sub').textContent =
+    'Each issue, from GHL · real people only, the team left out · counted ' +
+    counted.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+
+  const z = (v) => (Number(v) === 0 ? ' mn-zero' : '');
+  const cell = (label, v, note) => `
+    <div><div class="mn-k">${label}</div>
+      <div class="nl-v fig${z(v)}">${v}</div>
+      ${note ? `<div class="mn-n">${note}</div>` : ''}</div>`;
+
+  body.innerHTML = n.issues.map((i) => {
+    const sent = new Date(i.sentAt);
+    const day = sent.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    const fresh = Date.now() - sent.getTime() < 3 * 86400000;
+    const sentNote = [
+      i.didNotArrive ? `${i.didNotArrive} didn't arrive` : '',
+      i.unsubscribed ? `${i.unsubscribed} unsubscribed` : '',
+    ].filter(Boolean).join(' · ');
+    return `
+      <div class="nl-issue">
+        <div class="nl-head"><b>${esc(day)}</b> · ${esc(i.title)}${fresh ? ' <span class="nl-new">· still coming in</span>' : ''}</div>
+        <div class="nl-row">
+          ${cell('Sent to', i.sent, sentNote)}
+          ${cell('Opened', i.opened, 'rough')}
+          ${cell('Clicked', i.clicked)}
+          ${cell('Replied', i.replied)}
+        </div>
+      </div>`;
+  }).join('') + `
+    <div class="nl-foot">${n.peopleWhoOpenedAny} different ${n.peopleWhoOpenedAny === 1 ? 'person has' : 'people have'} opened at least one issue.
+      Opens are rough because some mail apps open every email as it arrives. Clicks and replies are the sure sign somebody read it.</div>`;
 }
 
 /* ── Revenue & forecast ──────────────────────────────────────────────────────
