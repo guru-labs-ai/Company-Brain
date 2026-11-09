@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>AI Sponsor · Newsletter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<!--
+  The newsletter, issue by issue. Mariam, 9 Nov 2026: "a separate nav link as
+  the others and there it's like click rates and analyze stuff inside the link".
+  Opened from the shortcut on ai-sponsor-northstar.html, the same way the
+  weekly review page is.
+
+  Same live endpoint as the North Star page. The server reads the numbers back
+  from GHL (where the newsletter is sent) every 3 hours and sends totals only,
+  never names or addresses (ai-sponsor-backend/newsletter.js).
+-->
+<style>
+:root{
+  --blue:#0080D4; --blue-dark:#0068AC; --ink:#212529; --muted:#6B7280;
+  --bg:#F0F4F8; --card:#FFFFFF; --line:#E5E7EB; --gold:#B45309; --gold-bg:#FEF3C7;
+  --chart:#2a78d6; --good:#1A7A4A; --none:#94A3B8;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#F3F4F6; --muted:#9CA3AF; --bg:#0f1720; --card:#182230; --line:#26303e;
+    --gold:#fad98c; --gold-bg:#2a2415; --chart:#3987e5; --good:#2E9E62; --none:#4B5563;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 16px 44px}
+.wrap{max-width:520px;margin:0 auto}
+.back{display:inline-block;font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;margin:0 0 12px 2px}
+
+.hero{background:linear-gradient(160deg,var(--blue),var(--blue-dark));color:#fff;border-radius:22px;
+  padding:32px 24px 26px;text-align:center;box-shadow:0 8px 28px rgba(0,128,212,0.30);
+  position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-70px;right:-70px;width:200px;height:200px;
+  border-radius:50%;background:rgba(255,255,255,0.08)}
+.hero::after{content:'';position:absolute;bottom:-90px;left:-60px;width:220px;height:220px;
+  border-radius:50%;background:rgba(255,255,255,0.06)}
+.hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85}
+.hero .big{font-size:74px;font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin:8px 0 2px;
+  font-variant-numeric:tabular-nums}
+.hero .unit{font-size:17px;font-weight:600;opacity:0.95}
+.hero .meaning{font-size:13.5px;margin-top:12px;opacity:0.9;line-height:1.55;position:relative}
+.hero .growth{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.16);
+  border:1px solid rgba(255,255,255,0.28);border-radius:99px;padding:6px 14px;margin-top:14px;
+  font-size:12.5px;font-weight:700;position:relative}
+.pulse{width:8px;height:8px;border-radius:50%;background:#7CFCB1;animation:pu 1.6s infinite;flex:none}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.25}}
+.stamp{text-align:center;font-size:11.5px;color:var(--muted);margin:10px 0 20px}
+
+.fig{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+.subhead{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.05em;margin:2px 0 8px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px}
+.tile .label{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
+.tile .value{font-size:21px;font-weight:750;margin-top:3px}
+.tile .value small{font-size:13px;font-weight:600;color:var(--muted);margin-left:4px}
+.tile .note{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 14px;margin-bottom:14px}
+.card h2{font-size:14px;font-weight:700}
+.card .sub{font-size:11.5px;color:var(--muted);margin:2px 0 12px;line-height:1.45}
+
+/* ── Issue by issue ──────────────────────────────────────────────────────────
+   Each rate is drawn against the full 100%, not against the best issue, so a
+   short bar means few people, not "less than last time". */
+.is{padding:12px 0;border-top:1px solid var(--line)}
+.is:first-child{border-top:0;padding-top:2px}
+.is-head{font-size:12.5px;line-height:1.4;margin-bottom:9px}
+.is-head b{font-weight:700}
+.so-far{font-style:normal;font-size:10.5px;font-weight:700;color:var(--gold);background:var(--gold-bg);
+  border-radius:99px;padding:1px 7px;margin-left:4px;white-space:nowrap}
+.br{display:grid;grid-template-columns:58px 1fr 74px;align-items:center;gap:9px;margin-bottom:6px}
+.br .k{font-size:11px;color:var(--muted);font-weight:600}
+.br .t{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.br .t span{display:block;height:100%;border-radius:99px;background:var(--chart);min-width:2px}
+.br .t span.c{background:var(--good)}
+.br .v{font-size:11.5px;font-weight:600;text-align:right;white-space:nowrap}
+.br .v i{font-style:normal;color:var(--muted);font-weight:500}
+.is-foot{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px}
+
+/* ── Who reads it: one group of people, one bar ─────────────────────────────── */
+.wb{display:flex;height:30px;border-radius:10px;overflow:hidden;background:var(--line);margin-bottom:11px}
+.wb div{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;min-width:0}
+.w-every{background:var(--good)}.w-some{background:var(--chart)}.w-none{background:var(--none)}
+.wk{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px}
+.wk span{display:flex;align-items:baseline;gap:6px;font-size:11px;color:var(--muted);font-weight:600}
+.wk i{width:8px;height:8px;border-radius:3px;flex:none;transform:translateY(-1px)}
+.wk b{font-size:13px;color:var(--ink)}
+.mg{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.mg > div{padding:11px 0 4px}
+.mg > div:nth-child(odd){padding-right:12px;border-right:1px solid var(--line)}
+.mg > div:nth-child(even){padding-left:12px}
+.mg > div:nth-child(n+3){border-top:1px solid var(--line)}
+.mk{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
+.mv{font-size:21px;font-weight:600;margin-top:5px;line-height:1}
+.mn{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+.tell li{font-size:12.5px;line-height:1.55;margin:0 0 7px 16px}
+.tell li:last-child{margin-bottom:0}
+.notes{font-size:11px;color:var(--muted);line-height:1.6;padding:2px 6px 0}
+.notes li{margin-left:15px;margin-bottom:3px}
+.state{text-align:center;padding:48px 12px;color:var(--muted);font-size:13.5px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="ai-sponsor-northstar.html">&larr; North Star</a>
+
+  <div id="loading" class="state">Connecting to live data…<br>
+    <span style="font-size:11.5px">(up to ~1 min if the server is waking up)</span></div>
+
+  <div id="dash" style="display:none">
+    <div class="hero">
+      <div class="eyebrow">&#128240; AI Sponsor · Newsletter</div>
+      <div class="big" id="h-value">0%</div>
+      <div class="unit">opened the latest issue</div>
+      <div class="meaning" id="h-meaning"></div>
+      <div class="growth" id="h-growth-wrap"><span class="pulse"></span><span id="h-growth"></span></div>
+    </div>
+    <div class="stamp" id="stamp"></div>
+
+    <div class="subhead" id="last-head">Latest issue</div>
+    <div class="tiles" id="last-tiles"></div>
+
+    <div class="card">
+      <h2>Issue by issue</h2>
+      <div class="sub">Open and click rate of each issue, out of the people it arrived to · newest first</div>
+      <div id="issues"></div>
+    </div>
+
+    <div class="card" id="card-readers" style="display:none">
+      <h2>Who reads it</h2>
+      <div class="sub" id="readers-sub"></div>
+      <div id="readers"></div>
+    </div>
+
+    <div class="card" id="card-tell" style="display:none">
+      <h2>What the numbers say</h2>
+      <div class="sub">Worked out from the figures above, nothing added</div>
+      <ul class="tell" id="tell"></ul>
+    </div>
+
+    <ul class="notes">
+      <li><b>Sent to</b> is everyone on the newsletter list. The team, test addresses and QA Guru are left out, and each person counts once.</li>
+      <li><b>Opened is rough.</b> Some mail apps open every email the moment it arrives, so an open is not proof somebody read it.</li>
+      <li><b>Clicked</b> means they clicked at least one link. Clicks and replies are the sure sign somebody read it.</li>
+      <li>Rates are out of the people it arrived to. With about 40 people, one person moves a rate by 2 to 3 points.</li>
+      <li>An issue is still coming in for 3 days after it is sent. Counted from GHL every 3 hours, and each new issue shows up here on its own.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const API = 'https://ai-sponsor-f7de.onrender.com/api/metrics/northstar';
+const FRESH_MS = 3 * 86400000;
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const arrived = (i) => Math.max(0, i.sent - (i.didNotArrive || 0));
+const fresh = (i) => Date.now() - Date.parse(i.sentAt) < FRESH_MS;
+const dShort = (i) => new Date(i.sentAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const dLong = (i) => new Date(i.sentAt).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+function say(html) {
+  document.getElementById('dash').style.display = 'none';
+  const el = document.getElementById('loading');
+  el.style.display = 'block';
+  el.innerHTML = html;
+}
+
+function render(d) {
+  const n = d.newsletter;
+  if (n === undefined) return say('The server is not sending newsletter numbers yet.');
+  // null: the server has just restarted and is still counting (about a minute).
+  if (n === null) { say('Counting the newsletter.<br><span style="font-size:11.5px">This page tries again in a minute.</span>'); setTimeout(load, 60000); return; }
+  if (!n.issues || !n.issues.length) return say('No newsletter has gone out yet. Each issue shows up here once it is sent.');
+
+  const issues = n.issues;
+  const [last, prev] = issues;
+  const lastRate = pct(last.opened, arrived(last));
+
+  // ── Hero: the latest issue ────────────────────────────────────────────────
+  document.getElementById('h-value').textContent = lastRate + '%';
+  document.getElementById('h-meaning').textContent =
+    `${last.opened} of ${arrived(last)} people opened "${last.title}", sent ${dLong(last)}.` +
+    (fresh(last) ? ' Still coming in.' : '');
+  if (prev) {
+    const before = pct(prev.opened, arrived(prev));
+    document.getElementById('h-growth').textContent = fresh(last)
+      ? `The issue before reached ${before}%`
+      : lastRate === before ? `Same as the issue before (${before}%)` : `${lastRate > before ? 'Up' : 'Down'} from ${before}% the issue before`;
+  } else {
+    document.getElementById('h-growth-wrap').style.display = 'none';
+  }
+  document.getElementById('stamp').textContent = 'From GHL · counted ' +
+    new Date(n.updatedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) +
+    ' · updates every 3 hours';
+
+  // ── Latest issue, step by step ────────────────────────────────────────────
+  const a = arrived(last);
+  document.getElementById('last-head').textContent = `Latest issue, ${dShort(last)}` + (fresh(last) ? ', so far' : '');
+  const tile = (label, v, rate, note) => `<div class="tile"><div class="label">${label}</div>
+    <div class="value fig">${v}${rate !== null ? `<small>${rate}%</small>` : ''}</div>
+    ${note ? `<span class="note">${note}</span>` : ''}</div>`;
+  document.getElementById('last-tiles').innerHTML = [
+    tile('Arrived', a, null, a === last.sent ? `all ${last.sent} it was sent to` : `of ${last.sent} sent · ${last.didNotArrive} bounced`),
+    tile('Opened', last.opened, pct(last.opened, a), 'rough, see below'),
+    tile('Clicked', last.clicked, pct(last.clicked, a), `${pct(last.clicked, last.opened)}% of the people who opened`),
+    tile('Replied', last.replied, pct(last.replied, a), last.unsubscribed ? `${last.unsubscribed} unsubscribed` : 'nobody unsubscribed'),
+  ].join('');
+
+  // ── Issue by issue ────────────────────────────────────────────────────────
+  const bar = (label, v, base, cls) => {
+    const r = pct(v, base);
+    return `<div class="br"><span class="k">${label}</span>
+      <span class="t"><span class="${cls || ''}" style="width:${r}%"></span></span>
+      <span class="v fig">${r}% <i>· ${v}</i></span></div>`;
+  };
+  document.getElementById('issues').innerHTML = issues.map((i) => {
+    const ar = arrived(i);
+    const foot = [
+      `${plural(i.replied, 'reply', 'replies')}`,
+      `${pct(i.clicked, i.opened)}% of openers clicked`,
+      i.unsubscribed ? `${i.unsubscribed} unsubscribed` : '',
+      i.didNotArrive ? `${i.didNotArrive} bounced` : '',
+      `of ${ar}`,
+    ].filter(Boolean).join(' · ');
+    return `<div class="is">
+      <div class="is-head"><b>${esc(dShort(i))}</b> · ${esc(i.title)}${fresh(i) ? '<i class="so-far">so far</i>' : ''}</div>
+      ${bar('Opened', i.opened, ar)}
+      ${bar('Clicked', i.clicked, ar, 'c')}
+      <div class="is-foot">${foot}</div>
+    </div>`;
+  }).join('');
+
+  // ── Who reads it (needs a server from 9 Nov on; hidden on an older one) ──
+  const r = n.readers;
+  if (r && r.reached) {
+    document.getElementById('card-readers').style.display = 'block';
+    let html = '';
+    if (r.sentMoreThanOne) {
+      document.getElementById('readers-sub').textContent =
+        `The ${r.sentMoreThanOne} people who were sent more than one issue, split by how many they opened`;
+      const seg = (v, cls) => v ? `<div class="${cls}" style="width:${(v / r.sentMoreThanOne) * 100}%">${v / r.sentMoreThanOne >= 0.08 ? v : ''}</div>` : '';
+      html += `<div class="wb">${seg(r.openedEvery, 'w-every')}${seg(r.openedSome, 'w-some')}${seg(r.openedNone, 'w-none')}</div>
+        <div class="wk">
+          <span><i class="w-every"></i>Opened every one <b class="fig">${r.openedEvery}</b></span>
+          <span><i class="w-some"></i>Opened some <b class="fig">${r.openedSome}</b></span>
+          <span><i class="w-none"></i>Never opened <b class="fig">${r.openedNone}</b></span>
+        </div>`;
+    } else {
+      document.getElementById('readers-sub').textContent = 'Everyone the newsletter has reached so far';
+    }
+    const cell = (k, v, note) => `<div><div class="mk">${k}</div><div class="mv fig">${v}</div><div class="mn">${note}</div></div>`;
+    html += `<div class="mg">
+      ${cell('Reached', r.reached, 'got at least one issue')}
+      ${cell('Opened any', r.openedAny, `${pct(r.openedAny, r.reached)}% of them`)}
+      ${cell('Clicked any', r.clickedAny, `${pct(r.clickedAny, r.reached)}% of them`)}
+      ${cell('Replied', r.repliedAny, `${pct(r.repliedAny, r.reached)}% of them`)}
+    </div>`;
+    document.getElementById('readers').innerHTML = html;
+  }
+
+  // ── What the numbers say: plain sentences, each one read straight off a figure ──
+  const tell = [];
+  if (prev) {
+    const now = pct(last.opened, arrived(last)), before = pct(prev.opened, arrived(prev));
+    tell.push(`Opens: ${now}% for ${dShort(last)}${fresh(last) ? ' so far' : ''}, against ${before}% for ${dShort(prev)}.`);
+    if (last.clicked === 0 && prev.clicked > 0) {
+      tell.push(`Nobody has clicked a link in the ${dShort(last)} issue${fresh(last) ? ' yet' : ''}. The ${dShort(prev)} issue got ${plural(prev.clicked, 'click', 'clicks')}.`);
+    } else {
+      tell.push(`Clicks: ${last.clicked} for ${dShort(last)}${fresh(last) ? ' so far' : ''}, ${prev.clicked} for ${dShort(prev)}.`);
+    }
+  }
+  if (r && r.sentMoreThanOne) {
+    tell.push(`${r.openedNone} of the ${r.sentMoreThanOne} people sent more than one issue have never opened any of them.`);
+    tell.push(`${plural(r.openedEvery, 'person', 'people')} opened every issue they were sent.`);
+  }
+  const unsub = issues.reduce((s, i) => s + (i.unsubscribed || 0), 0);
+  const bounced = issues.reduce((s, i) => s + (i.didNotArrive || 0), 0);
+  if (!unsub && !bounced) tell.push('Nobody has unsubscribed, and no issue has bounced.');
+  else tell.push(`${plural(unsub, 'unsubscribe', 'unsubscribes')} and ${bounced} bounced, across ${plural(issues.length, 'issue', 'issues')}.`);
+  if (tell.length) {
+    document.getElementById('card-tell').style.display = 'block';
+    document.getElementById('tell').innerHTML = tell.map((t) => `<li>${esc(t)}</li>`).join('');
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+}
+
+function load() {
+  fetch(API, { cache: 'no-store' })
+    .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(render)
+    .catch((e) => say('Could not reach live data right now (' + esc(e.message) + ').<br>Try again in a minute.'));
+}
+load();
+</script>
+</body>
+</html>
