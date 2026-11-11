@@ -108,6 +108,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .mn-work{display:inline-block;margin-top:3px;font-size:10px;opacity:.75}
 .mn-zero{opacity:.45}
 
+/* ── Working the steps (11 Nov) ──────────────────────────────────────────────
+   Twelve thin columns, one per step, height = people on it. Counts only. */
+.stp-bars{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;height:64px;margin:6px 0 4px}
+.stp-col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:0}
+.stp-bar{width:100%;background:linear-gradient(180deg,var(--blue),var(--blue-dark));border-radius:4px 4px 0 0;min-height:0}
+.stp-bar.zero{background:var(--line);height:2px!important}
+.stp-n{font-size:10px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.stp-axis{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;font-size:9.5px;color:var(--muted);text-align:center;margin-bottom:12px}
+
 /* ── The trial funnel: one population, one bar ───────────────────────────────
    Four separate tiles implied four unrelated numbers. Everyone here came in the
    same door and is somewhere along the same path, so it is drawn as one bar. */
@@ -382,6 +391,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <div id="funnel-body"></div>
     </div>
 
+    <div class="card" id="card-steps" style="display:none">
+      <h2>Working the steps</h2>
+      <div class="sub" id="steps-sub">People whose sponsor has saved which step they are on</div>
+      <div id="steps-body"></div>
+    </div>
+
     <div class="card" id="card-activity">
       <h2>Messages per day</h2>
       <div class="sub">How much people actually lean on their sponsor · last 14 days</div>
@@ -498,6 +513,7 @@ function render(d) {
   drawMessages(d.breakdowns);
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
+  drawSteps(d.steps);
   drawForecast(d);
 }
 
@@ -689,6 +705,42 @@ function drawWow(w) {
    When nothing has been collected yet the date of the first possible charge is
    shown beside the zero, so it reads as a product on schedule rather than a
    broken metric. */
+/* Working the steps (Mariam, 11 Nov). The sponsor only started saving steps
+   that day, so the card says when counting began and never implies a history
+   it does not have. Hidden until the server sends the numbers. */
+function drawSteps(st) {
+  const card = document.getElementById('card-steps');
+  if (!st) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const since = st.countingSince
+    ? new Date(st.countingSince).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+    : '11 Nov';
+  document.getElementById('steps-sub').textContent =
+    'People whose sponsor has saved which step they are on · counted since ' + since;
+  const body = document.getElementById('steps-body');
+  if (!st.peopleWithAStep) {
+    body.innerHTML = '<div class="fn-empty">No step is saved for anyone yet. The sponsor started saving steps on 11 Nov, so this fills in as people work the steps with it.</div>';
+    return;
+  }
+  const per = st.byStep || {};
+  const max = Math.max(1, ...Object.values(per));
+  let bars = '', axis = '';
+  for (let i = 1; i <= 12; i++) {
+    const n = per[i] || 0;
+    bars += `<div class="stp-col">${n ? `<div class="stp-n fig">${n}</div>` : ''}<div class="stp-bar${n ? '' : ' zero'}" style="height:${n ? Math.max(8, (n / max) * 100) : 0}%"></div></div>`;
+    axis += `<div>${i}</div>`;
+  }
+  const cell = (k, v, note) => `<div class="mn"><div class="mn-k">${esc(k)}</div><div class="mn-v fig${v ? '' : ' mn-zero'}">${v}</div>${note ? `<div class="mn-n">${esc(note)}</div>` : ''}</div>`;
+  body.innerHTML = `
+    <div class="stp-bars">${bars}</div>
+    <div class="stp-axis">${axis}</div>
+    <div class="mn-grid">
+      ${cell('People working a step', st.peopleWithAStep, 'with a saved step, any program')}
+      ${cell('Steps finished', st.finishedLast7d, 'last 7 days')}
+      ${cell('Steps started', st.startedLast7d, 'last 7 days')}
+    </div>`;
+}
+
 function drawMoney(r, f) {
   const moneyCard = document.getElementById('card-money');
   const funnelCard = document.getElementById('card-funnel');
