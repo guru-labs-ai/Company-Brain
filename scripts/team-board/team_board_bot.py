@@ -29,7 +29,14 @@ COL = {
     "done_on": "Col0CGTMY1LF9", "completed": "Col00", "owner": "Col01", "due": "Col02",
     "when": "Col0CHCUF0HM2", "carried": "Col0CJ3JTSE2U", "rolled": "Col0CH311HLHH",
     "reported": "Col0CHD395FRS", "created_by": "Col0CH96K4BMY", "week_of": "Col0CJ42KSM7S",
+    "week": "Col0CH80Z445C",
 }
+# The "Week" column holds readable headings like "9 - 13 Nov 2026" for the Timeline view.
+# Slack does not let a bot add options to a column, so every week was created in advance
+# (12 Nov 2026), one option per Monday from FIRST_WEEK to LAST_WEEK, value "wYYYYMMDD",
+# plus "later" for the backlog. Before LAST_WEEK, add more weeks (newest first) the same way.
+FIRST_WEEK = date(2026, 10, 26)
+LAST_WEEK = date(2028, 9, 4)
 STUCK_AFTER = 3  # weeks carried over before the Monday post lists a task as stuck
 PRODUCT = {"ai_sponsor": "AI Sponsor", "qa_guru": "QA Guru", "drm": "DRM", "upwork_os": "Upwork OS",
            "rebuild": "Rebuild", "rekindle": "Rekindle", "founders": "Founders", "conscious_labs": "Conscious Labs",
@@ -93,6 +100,7 @@ def rows():
                 "rolled": date.fromisoformat(d("rolled_over_on_(bot)")) if d("rolled_over_on_(bot)") else None,
                 "reported": date.fromisoformat(d("in_friday_post_(bot)")) if d("in_friday_post_(bot)") else None,
                 "week_of": date.fromisoformat(d("week_of")) if d("week_of") else None,
+                "week": (g("week", "select") or [""])[0],
             })
         cursor = (r.get("response_metadata") or {}).get("next_cursor")
         if not cursor:
@@ -142,6 +150,15 @@ def week_of_for(done, done_on, when, t):
     if done:
         return monday_of(done_on or t)
     return {"this_week": monday_of(t), "next_week": monday_of(t) + timedelta(days=7)}.get(when)
+
+
+def week_label_value(week_of):
+    """The Week option for a Monday: 'wYYYYMMDD', 'later' for no week, None if outside the options."""
+    if week_of is None:
+        return "later"
+    if FIRST_WEEK <= week_of <= LAST_WEEK:
+        return "w" + week_of.strftime("%Y%m%d")
+    return None
 
 
 def sync(dry=False):
@@ -204,6 +221,9 @@ def sync(dry=False):
                 wk = week_of_for(False, None, when_for(nd, t), t)
                 if wk:
                     fields.append({"column_id": COL["week_of"], "date": [wk.isoformat()]})
+                wv = week_label_value(wk)
+                if wv:
+                    fields.append({"column_id": COL["week"], "select": [wv]})
                 for key, val in (("product", r["product"]), ("type", r["type"])):
                     if val:
                         fields.append({"column_id": COL[key], "select": [val]})
@@ -222,6 +242,14 @@ def sync(dry=False):
             log.append(f"Week of -> {want or 'none (Later)'}: {r['task']}")
             if not dry:
                 update(r["id"], week_of={"date": [want.isoformat()] if want else []})
+        # Week: the readable heading ("9 - 13 Nov 2026") the Timeline view groups by.
+        wv = week_label_value(want)
+        if wv is None:
+            log.append(f"Week {want} is outside the prepared weeks, skipped: {r['task']}")
+        elif wv != r["week"]:
+            log.append(f"Week heading -> {wv}: {r['task']}")
+            if not dry:
+                update(r["id"], week={"select": [wv]})
     print("\n".join(log) or "sync: nothing to change")
 
 
@@ -327,6 +355,9 @@ def morning(dry, monday=False):
         parts.append("\n:bust_in_silhouette: *No owner yet*\n" + "\n".join(
             f"• <{BOARD_URL}?record_id={r['id']}|{r['task']}>" + (f"  ·  {PRODUCT[r['product']]}" if r["product"] in PRODUCT else "")
             for r in no_owner))
+    if monday and t >= LAST_WEEK - timedelta(weeks=8):
+        parts.append(f"\n:warning: The board's prepared weeks run out after the week of {day(LAST_WEEK)}. "
+                     "Ask Claude to add the next batch of weeks to the Week column.")
     parts.append(f"\n<{BOARD_URL}|Open the Team board>")
     post("\n".join(parts), dry)
 
