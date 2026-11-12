@@ -1,0 +1,88 @@
+# Team board bot: the light ClickUp replacement in Slack.
+#
+# Reads the Slack List "Team board (TEST)" (F0CH74LRCTY) and posts into
+# #team-board (C0CH3MMN469). Still a TEST: the channel is Mariam and the bots only.
+# The script is scripts/team-board/team_board_bot.py; every job is explained there.
+#
+# All times follow MATT'S time zone (Mariam's rule). His Slack profile says
+# America/Cancun, which is UTC-5 all year with no clock change, so these UTC
+# times never need moving. GitHub can start a scheduled run up to ~30 min late.
+#
+# The bot is its own Slack app "Team Board" (A0CJ3DJ2KPS), NOT AI Sponsor Metrics.
+# Its token is the repository secret TEAM_BOARD_TOKEN.
+
+name: Team board bot
+
+on:
+  schedule:
+    - cron: "7 14 * * 1"     # Mon 9:07 Cancun: "New week" post (rolls the week forward)
+    - cron: "7 14 * * 2-5"   # Tue-Fri 9:07 Cancun: "Deadlines" post (silent on a quiet day)
+    - cron: "7 21 * * 5"     # Fri 16:07 Cancun: "Shipped this week"
+    - cron: "37 */3 * * *"   # every 3 hours: Done tracking, repeats, empty When (never posts)
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Which job to run"
+        type: choice
+        options: [sync, morning, monday, friday, link]
+        default: sync
+      dry:
+        description: "Dry run: print the message instead of posting, change nothing on the board"
+        type: boolean
+        default: true
+
+concurrency:
+  group: team-board-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick the job
+        id: pick
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_JOB: ${{ inputs.job }}
+          INPUT_DRY: ${{ inputs.dry }}
+        run: |
+          case "$SCHEDULE" in
+            "7 14 * * 1")   job=monday ;;
+            "7 14 * * 2-5") job=morning ;;
+            "7 21 * * 5")   job=friday ;;
+            "37 */3 * * *") job=sync ;;
+            *)              job="$INPUT_JOB" ;;
+          esac
+          dry=""
+          if [ "$INPUT_DRY" = "true" ]; then dry="--dry"; fi
+          echo "job=$job" >> "$GITHUB_OUTPUT"
+          echo "dry=$dry" >> "$GITHUB_OUTPUT"
+          echo "Running: $job $dry"
+
+      - name: Run the bot
+        env:
+          TEAM_BOARD_TOKEN: ${{ secrets.TEAM_BOARD_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: python3 -I scripts/team-board/team_board_bot.py "${{ steps.pick.outputs.job }}" ${{ steps.pick.outputs.dry }}
+
+      # If anything above fails, say so in the channel instead of failing silently.
+      - name: Tell #team-board it failed
+        if: failure()
+        env:
+          TEAM_BOARD_TOKEN: ${{ secrets.TEAM_BOARD_TOKEN }}
+          JOB: ${{ steps.pick.outputs.job }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          text = (f":warning: The Team board bot failed (job: {os.environ.get('JOB') or 'unknown'}). "
+                  f"Nothing was posted for this run. <{os.environ['RUN_URL']}|See what went wrong>")
+          req = urllib.request.Request("https://slack.com/api/chat.postMessage",
+              data=json.dumps({"channel": "C0CH3MMN469", "text": text, "unfurl_links": False}).encode(),
+              headers={"Authorization": "Bearer " + os.environ["TEAM_BOARD_TOKEN"],
+                       "Content-Type": "application/json; charset=utf-8"})
+          print(json.load(urllib.request.urlopen(req, timeout=30)).get("ok"))
+          PY
