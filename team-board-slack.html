@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Team Board in Slack</title>
+<meta name="description" content="A lighter ClickUp, built inside Slack: one board, one channel, one bot.">
+<link rel="icon" href="favicon.png">
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #161b27;
+    --panel-2: #1b2130;
+    --line: #262d3d;
+    --text: #e2e8f0;
+    --strong: #f8fafc;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --accent: #a78bfa;
+    --green: #4ade80;
+    --green-bg: #052e16;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --slack-bg: #1a1d21;
+    --slack-link: #1d9bd1;
+    --mention-bg: rgba(242, 199, 68, 0.16);
+    --mention: #f2c744;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  section { padding: 40px 0; border-top: 1px solid var(--line); }
+  .eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  h1 { font-size: 32px; line-height: 1.15; font-weight: 800; color: var(--strong); letter-spacing: -0.8px; }
+  h2 { font-size: 22px; line-height: 1.25; font-weight: 750; color: var(--strong); letter-spacing: -0.3px; margin-bottom: 8px; }
+  h3 { font-size: 15px; font-weight: 700; color: var(--strong); margin-bottom: 4px; }
+  p.lead { font-size: 17px; color: var(--muted); margin-top: 14px; max-width: 640px; }
+  p.sub { color: var(--muted); max-width: 640px; }
+  .small { font-size: 12px; color: var(--faint); }
+
+  /* hero */
+  .hero { padding-top: 48px; padding-bottom: 36px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .pill.go { background: var(--green-bg); border-color: #166534; color: var(--green); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 28px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 12px; }
+  .stat b { display: block; font-size: 24px; color: var(--strong); line-height: 1.1; }
+  .stat span { font-size: 12px; color: var(--muted); }
+
+  /* week strip */
+  .week { display: grid; gap: 10px; margin-top: 20px; }
+  .day {
+    display: grid; grid-template-columns: 74px 1fr; gap: 12px; align-items: start;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  }
+  .day .when { font-size: 12px; font-weight: 700; color: var(--accent); line-height: 1.3; }
+  .day .when small { display: block; color: var(--faint); font-weight: 500; }
+  .day p { color: var(--muted); font-size: 14px; }
+
+  /* steps */
+  .steps { display: grid; gap: 10px; margin-top: 20px; counter-reset: s; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 16px 56px; position: relative; }
+  .step::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 16px; top: 15px; width: 26px; height: 26px; border-radius: 50%;
+    background: #241c3d; color: var(--accent); font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; border: 1px solid #3d2f6b;
+  }
+  .step p { color: var(--muted); font-size: 14px; }
+
+  /* the board mock */
+  .board { margin-top: 20px; background: var(--slack-bg); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .board-top { padding: 16px 16px 10px; border-bottom: 1px solid var(--line); }
+  .board-top .title { font-size: 18px; font-weight: 800; color: var(--strong); }
+  .board-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tool { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; background: #20242b; }
+  .tool.on { color: var(--green); border-color: #166534; background: #0c1f14; }
+  .group { padding: 12px 12px 4px; }
+  .group-h { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+  .g-now { background: #10243f; color: var(--blue); }
+  .g-past { background: #0c2a1a; color: var(--green); }
+  .g-later { background: #22262e; color: var(--muted); }
+  .group-h span { font-weight: 500; opacity: .8; }
+  .rows { margin-top: 8px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: none; }
+  .row .t { font-size: 14px; color: var(--strong); }
+  .row .t.done { text-decoration: line-through; color: var(--faint); }
+  .row .meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .chip { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+  .c-todo { background: #2a2f39; color: #cbd5e1; }
+  .c-doing { background: #3a2e0a; color: var(--amber); }
+  .c-blocked { background: #3b1414; color: var(--red); }
+  .c-done { background: #0c2a1a; color: var(--green); }
+  .c-prod { background: #1e2240; color: #a5b4fc; }
+  .av { width: 22px; height: 22px; border-radius: 50%; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; color: #0f1117; }
+  .row .prod-wide { display: none; }
+
+  /* slack message mocks */
+  .msgs { display: grid; gap: 14px; margin-top: 20px; }
+  .msg { background: var(--slack-bg); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+  .msg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bot { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+  .who { font-weight: 800; color: var(--strong); font-size: 14px; }
+  .app { font-size: 9px; font-weight: 800; color: var(--muted); background: #2b2f36; border-radius: 3px; padding: 1px 4px; margin-left: 6px; vertical-align: 2px; }
+  .time { font-size: 11px; color: var(--faint); }
+  .msg-body { font-size: 14px; color: #d1d2d3; }
+  .msg-body b { color: var(--strong); }
+  .msg-body .sec { margin-top: 10px; }
+  .msg-body ul { list-style: none; margin-top: 3px; }
+  .msg-body li { padding-left: 14px; position: relative; margin-top: 3px; }
+  .msg-body li::before { content: "•"; position: absolute; left: 2px; color: var(--faint); }
+  .mention { background: var(--mention-bg); color: var(--mention); border-radius: 3px; padding: 0 2px; font-weight: 600; }
+  .lnk { color: var(--slack-link); }
+  .dim { color: var(--faint); }
+  .msg-cap { font-size: 12px; color: var(--faint); margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+
+  /* mapping */
+  .map { margin-top: 20px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .map-row { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--panel); }
+  .map-row:first-child { border-top: none; }
+  .map-row .from { font-size: 12px; color: var(--faint); }
+  .map-row .to { font-size: 14px; color: var(--strong); }
+  .map-row .to em { font-style: normal; color: var(--muted); }
+
+  /* drive callout */
+  .callout { margin-top: 20px; background: linear-gradient(135deg, #10243f, #161b27); border: 1px solid #1e3a8a; border-radius: 16px; padding: 18px; }
+  .callout h3 { font-size: 17px; }
+  .callout p { color: var(--muted); margin-top: 6px; font-size: 14px; }
+  .flow { display: grid; gap: 8px; margin-top: 14px; }
+  .flow div { background: rgba(15, 17, 23, .55); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .flow b { color: var(--strong); }
+
+  /* optional */
+  .opts { display: grid; gap: 10px; margin-top: 20px; }
+  .opt { background: var(--panel); border: 1px dashed #3d2f6b; border-radius: 14px; padding: 16px; }
+  .opt p { color: var(--muted); font-size: 14px; }
+  .q { margin-top: 8px; display: grid; gap: 4px; }
+  .q span { font-size: 13px; color: var(--text); background: var(--panel-2); border-radius: 8px; padding: 6px 10px; }
+
+  footer { padding: 30px 0 48px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; }
+
+  @media (min-width: 720px) {
+    h1 { font-size: 44px; }
+    .hero { padding-top: 72px; padding-bottom: 48px; }
+    .stats { gap: 14px; }
+    .stat b { font-size: 30px; }
+    .week { grid-template-columns: repeat(4, 1fr); }
+    .day { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(3, 1fr); }
+    .msgs { grid-template-columns: repeat(3, 1fr); align-items: start; }
+    .row { grid-template-columns: 1fr 120px 110px 70px; }
+    .row .meta { display: contents; }
+    .row .chip, .row .av { justify-self: start; }
+    .row .prod-wide { display: block; }
+    .row .prod-narrow { display: none; }
+    .map-row { grid-template-columns: 220px 1fr; gap: 16px; align-items: baseline; }
+    .flow { grid-template-columns: repeat(3, 1fr); }
+    .opts { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap hero">
+  <div class="eyebrow">Guru Labs · Option for a lighter ClickUp</div>
+  <h1>ClickUp, rebuilt inside Slack.</h1>
+  <p class="lead">One board, one channel, one bot. The team adds tasks and marks them done. The bot chases deadlines, runs the weekly sprint and writes the Friday summary. Nobody fills in a report.</p>
+  <div class="pills">
+    <span class="pill"><span class="dot"></span>Built and tested · 12 Nov 2026</span>
+    <span class="pill go">Ready for a 2-week trial</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>0</b><span>reports or docs to fill in</span></div>
+    <div class="stat"><b>1</b><span>place: the #team-board channel</span></div>
+    <div class="stat"><b>−1</b><span>subscription, Slack is already paid</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">What the team does</div>
+    <h2>Three things. Everything else is the bot's job.</h2>
+    <div class="steps">
+      <div class="step"><h3>Add a task</h3><p>Add a row to the board, tap "New task" in the channel, or turn any Slack message into a task with "Add to list". Your asks in Slack become tasks the same way.</p></div>
+      <div class="step"><h3>Work on it</h3><p>Set it to Doing. If it gets stuck, set it to Blocked and pick who it's waiting on. Watchers get told about changes.</p></div>
+      <div class="step"><h3>Mark it Done</h3><p>That's the last click. The bot records the day, adds it to Friday's summary and, for repeating tasks, adds the next one.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">The board</div>
+    <h2>This week on top, past weeks underneath.</h2>
+    <p class="sub">Every task belongs to a work week. Each Monday the bot opens the new week and moves anything unfinished into it. Finished tasks stay in the week they were done, so the board doubles as a record of what shipped when.</p>
+    <div class="board" aria-label="Example of the Team board">
+      <div class="board-top">
+        <div class="title">📋 Team board</div>
+        <div class="board-tools"><span class="tool on">Timeline</span><span class="tool">Open</span><span class="tool">Completed</span><span class="tool">All items</span></div>
+      </div>
+      <div class="group">
+        <div class="group-h g-now">16 - 20 Nov 2026 <span>· this week</span></div>
+        <div class="rows">
+          <div class="row"><div class="t">Newsletter issue 4</div><div class="meta"><span class="chip c-prod prod-narrow">AI Sponsor</span><span class="chip c-prod prod-wide">AI Sponsor</span><span class="chip c-doing">Doing</span><span class="av" style="background:#fda4af">M</span></div></div>
+          <div class="row"><div class="t">Checkout test on live site</div><div class="meta"><span class="chip c-prod prod-narrow">DRM</span><span class="chip c-prod prod-wide">DRM</span><span class="chip c-blocked">Blocked</span><span class="av" style="background:#93c5fd">B</span></div></div>
+          <div class="row"><div class="t">Landing page copy</div><div class="meta"><span class="chip c-prod prod-narrow">Rebuild</span><span class="chip c-prod prod-wide">Rebuild</span><span class="chip c-todo">To do</span><span class="av" style="background:#fda4af">M</span></div></div>
+          <div class="row"><div class="t done">Scan report for new sign-ups</div><div class="meta"><span class="chip c-prod prod-narrow">QA Guru</span><span class="chip c-prod prod-wide">QA Guru</span><span class="chip c-done">Done</span><span class="av" style="background:#93c5fd">B</span></div></div>
+        </div>
+      </div>
+      <div class="group">
+        <div class="group-h g-past">9 - 13 Nov 2026 <span>· 2 done</span></div>
+        <div class="rows">
+          <div class="row"><div class="t done">Weekly review email</div><div class="meta"><span class="chip c-prod prod-narrow">AI Sponsor</span><span class="chip c-prod prod-wide">AI Sponsor</span><span class="chip c-done">Done</span><span class="av" style="background:#fda4af">M</span></div></div>
+          <div class="row"><div class="t done">Nurture emails set up</div><div class="meta"><span class="chip c-prod prod-narrow">Founders</span><span class="chip c-prod prod-wide">Founders</span><span class="chip c-done">Done</span><span class="av" style="background:#fcd34d">M</span></div></div>
+        </div>
+      </div>
+      <div class="group" style="padding-bottom:14px">
+        <div class="group-h g-later">Later (no week yet) <span>· backlog</span></div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:8px">Sample tasks for illustration. Each task can also hold a description, files, links, an Urgent flag, a due date and a comment thread.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">How a week runs</div>
+    <h2>The bot keeps the rhythm, on your time.</h2>
+    <p class="sub">All times are Cancun time. It runs on its own from GitHub, the same way the company reports do, and posts a warning in the channel if anything ever fails.</p>
+    <div class="week">
+      <div class="day"><div class="when">Mon<small>9:00</small></div><p>New week. Unfinished tasks roll forward, carry-overs are counted, and anything stuck for 3 weeks is called out.</p></div>
+      <div class="day"><div class="when">Tue to Fri<small>9:00</small></div><p>Deadlines. Overdue, blocked, due today and tomorrow, owners tagged. Silent when nothing is due.</p></div>
+      <div class="day"><div class="when">All day<small>every 3 hours</small></div><p>Quiet upkeep. Done dates, repeating tasks, new tasks put in the right week. No messages.</p></div>
+      <div class="day"><div class="when">Fri<small>16:00</small></div><p>Shipped this week. Everything finished, grouped by product. The one post worth reading.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">What the bot posts</div>
+    <h2>Short posts that point at the work.</h2>
+    <div class="msgs">
+      <div class="msg">
+        <div class="msg-head"><div class="bot">📋</div><div><div class="who">Team Board<span class="app">APP</span></div><div class="time">Fri 9:00</div></div></div>
+        <div class="msg-body">
+          <b>Deadlines, Fri 20 Nov</b>
+          <div class="sec">🔴 <b>Overdue</b><ul><li><span class="mention">@Mariam</span> <span class="lnk">Landing page copy</span> · Rebuild <span class="dim">(was due Thu 19 Nov)</span></li></ul></div>
+          <div class="sec">⛔ <b>Blocked</b><ul><li><span class="mention">@Bilal</span> <span class="lnk">Checkout test on live site</span> · waiting on <span class="mention">@Mariam</span></li></ul></div>
+          <div class="sec">🟡 <b>Due today</b><ul><li>⚡ <span class="mention">@Mariam</span> <span class="lnk">Newsletter issue 4</span> · AI Sponsor</li></ul></div>
+        </div>
+        <div class="msg-cap">Tags the person who can unblock it, not just the owner.</div>
+      </div>
+      <div class="msg">
+        <div class="msg-head"><div class="bot">📋</div><div><div class="who">Team Board<span class="app">APP</span></div><div class="time">Mon 9:00</div></div></div>
+        <div class="msg-body">
+          <b>New week, Mon 23 Nov</b><br>
+          <span class="dim">9 open tasks this week, 3 carried over from last week.</span>
+          <div class="sec">⏳ <b>Carried over 3+ weeks</b><ul><li><span class="mention">@Mariam</span> <span class="lnk">Podcast ad test plan</span> <span class="dim">(3 weeks)</span></li></ul></div>
+          <div class="sec">🤔 <b>No due date, carried 3+ weeks:</b> split it, give it a date, or move it to Later?</div>
+        </div>
+        <div class="msg-cap">Stuck work surfaces on its own. Nobody has to chase.</div>
+      </div>
+      <div class="msg">
+        <div class="msg-head"><div class="bot">📋</div><div><div class="who">Team Board<span class="app">APP</span></div><div class="time">Fri 16:00</div></div></div>
+        <div class="msg-body">
+          <b>Shipped this week</b> <span class="dim">· 4 done</span>
+          <div class="sec"><b>QA Guru</b><ul><li><span class="mention">@Bilal</span> <span class="lnk">Scan report for new sign-ups</span></li></ul></div>
+          <div class="sec"><b>AI Sponsor</b><ul><li><span class="mention">@Mariam</span> <span class="lnk">Newsletter issue 4</span></li></ul></div>
+          <div class="sec"><b>Conscious Labs</b><ul><li><span class="mention">@Ambar</span> <span class="lnk">Site copy, first draft</span></li></ul></div>
+          <div class="sec"><b>Founders</b><ul><li><span class="mention">@Mubashir</span> <span class="lnk">Nurture emails live</span></li></ul></div>
+        </div>
+        <div class="msg-cap">Replaces the sprint review doc. Every task links back to the board.</div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:8px">Sample posts. The real ones use the same format and are live in the test channel today.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">ClickUp to Slack</div>
+    <h2>What we keep, and what we drop on purpose.</h2>
+    <div class="map">
+      <div class="map-row"><div class="from">Weekly sprint lists</div><div class="to">Weekly timeline on the board <em>· the bot rolls it over every Monday</em></div></div>
+      <div class="map-row"><div class="from">Assignee and followers</div><div class="to">One Owner, plus Watchers who get notified</div></div>
+      <div class="map-row"><div class="from">Comments</div><div class="to">A Slack thread on every task</div></div>
+      <div class="map-row"><div class="from">Recurring tasks</div><div class="to">"Repeats" weekly, every 2 weeks or monthly <em>· next copy added automatically</em></div></div>
+      <div class="map-row"><div class="from">Priority levels</div><div class="to">One Urgent tick, so not everything becomes high</div></div>
+      <div class="map-row"><div class="from">Sprint review docs</div><div class="to">The Friday "Shipped this week" post</div></div>
+      <div class="map-row"><div class="from">Dashboards</div><div class="to">Bookmarked in the channel <em>· 2-week, monthly, Master Board, Scoreboard</em></div></div>
+      <div class="map-row"><div class="from">Time tracking and estimates</div><div class="to">Dropped <em>· hours stay in Upwork</em></div></div>
+      <div class="map-row"><div class="from">Docs and files</div><div class="to">The company Google Drive <em>· see below</em></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Files and documents</div>
+    <h2>Everything ends up in the company Google account.</h2>
+    <div class="callout">
+      <h3>Slack is where we work. The company Google Drive is where things are kept.</h3>
+      <p>Anything uploaded to Slack, and every doc that lives in ClickUp today, gets stored in the company Google account. Tasks on the board carry the link, so nothing lives only in a chat or only in one person's account.</p>
+      <div class="flow">
+        <div><b>Day to day</b><br>Screenshots can sit on the task. Documents go in the company Drive and the task holds the link.</div>
+        <div><b>From ClickUp</b><br>All ClickUp docs move to the company Drive before ClickUp is cancelled: the active ones into product folders, the rest into an archive folder.</div>
+        <div><b>One owner</b><br>The company account owns the Drive and shares the top folder with the team once, so every link just opens.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Optional</div>
+    <h2>Two extras, only if you want them.</h2>
+    <div class="opts">
+      <div class="opt">
+        <h3>A weekly sprint review people write themselves</h3>
+        <p>Every Friday the bot creates a Slack doc with a section per person, using your five questions, with what the board already knows shown under each one. Each person writes their own answers, and the Friday post lists who hasn't yet.</p>
+        <div class="q"><span>What shipped this week?</span><span>What ships next week?</span><span>What's blocked, and who's needed?</span><span>What's late?</span><span>What metric moved?</span></div>
+      </div>
+      <div class="opt">
+        <h3>A revenue line in the Friday post</h3>
+        <p>One line above "Shipped this week" with the week's revenue per product, straight from Stripe, so the team sees the work next to the money. Your call whether the whole team should see it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">To switch</div>
+    <h2>Four steps, no big bang.</h2>
+    <div class="steps" style="grid-template-columns:1fr">
+      <div class="step"><h3>Your yes</h3><p>Everything is built and running in a test channel today.</p></div>
+      <div class="step"><h3>Two-week trial</h3><p>Ambar, Bilal and Mubashir use the board alongside ClickUp. We compare tasks added, tasks done and deadlines missed.</p></div>
+      <div class="step"><h3>Move docs, re-point dashboards</h3><p>ClickUp docs go to the company Drive. The 2-week and monthly dashboards switch from counting ClickUp tasks to counting the board.</p></div>
+      <div class="step"><h3>Cancel ClickUp at renewal</h3><p>Nothing is left behind in it.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Team Board in Slack · built and tested 12 Nov 2026 · runs on GitHub Actions in Matt's time zone · prepared by Mariam with Claude</div>
+</footer>
+
+</body>
+</html>
