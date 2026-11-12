@@ -28,7 +28,7 @@ COL = {
     "watchers": "Col0CH74M1686", "details": "Col0CH3QE4VLM", "repeats": "Col0CHCQ8N12Q",
     "done_on": "Col0CGTMY1LF9", "completed": "Col00", "owner": "Col01", "due": "Col02",
     "when": "Col0CHCUF0HM2", "carried": "Col0CJ3JTSE2U", "rolled": "Col0CH311HLHH",
-    "reported": "Col0CHD395FRS", "created_by": "Col0CH96K4BMY",
+    "reported": "Col0CHD395FRS", "created_by": "Col0CH96K4BMY", "week_of": "Col0CJ42KSM7S",
 }
 STUCK_AFTER = 3  # weeks carried over before the Monday post lists a task as stuck
 PRODUCT = {"ai_sponsor": "AI Sponsor", "qa_guru": "QA Guru", "drm": "DRM", "upwork_os": "Upwork OS",
@@ -92,6 +92,7 @@ def rows():
                 "carried": int((g("carried_over", "number") or [0])[0] or 0),
                 "rolled": date.fromisoformat(d("rolled_over_on_(bot)")) if d("rolled_over_on_(bot)") else None,
                 "reported": date.fromisoformat(d("in_friday_post_(bot)")) if d("in_friday_post_(bot)") else None,
+                "week_of": date.fromisoformat(d("week_of")) if d("week_of") else None,
             })
         cursor = (r.get("response_metadata") or {}).get("next_cursor")
         if not cursor:
@@ -131,8 +132,20 @@ def when_for(due, t):
     return "later"
 
 
+def monday_of(d):
+    return d - timedelta(days=d.weekday())
+
+
+def week_of_for(done, done_on, when, t):
+    """The Monday of the week a task belongs to, for the Timeline view.
+    Done tasks stay in the week they were finished; open ones follow When; Later has no week."""
+    if done:
+        return monday_of(done_on or t)
+    return {"this_week": monday_of(t), "next_week": monday_of(t) + timedelta(days=7)}.get(when)
+
+
 def sync(dry=False):
-    """Keep Status and Completed in step, stamp Done on, fill an empty When, roll repeating tasks forward."""
+    """Keep Status and Completed in step, stamp Done on, fill an empty When and Week of, roll repeating tasks forward."""
     t = today_local()
     log = []
     for r in rows():
@@ -151,6 +164,7 @@ def sync(dry=False):
             log.append(f"When empty -> {w}: {r['task']}")
             if not dry:
                 update(r["id"], when={"select": [w]})
+            r["when"] = w
         # Someone ticked Completed but left Status alone: treat it as Done.
         if r["completed"] and not done and not r["done_on"]:
             log.append(f"ticked -> Done: {r['task']}")
@@ -187,6 +201,9 @@ def sync(dry=False):
                     {"column_id": COL["due"], "date": [nd.isoformat()]},
                     {"column_id": COL["when"], "select": [when_for(nd, t)]},
                 ]
+                wk = week_of_for(False, None, when_for(nd, t), t)
+                if wk:
+                    fields.append({"column_id": COL["week_of"], "date": [wk.isoformat()]})
                 for key, val in (("product", r["product"]), ("type", r["type"])):
                     if val:
                         fields.append({"column_id": COL[key], "select": [val]})
@@ -199,6 +216,12 @@ def sync(dry=False):
                     fields.append({"column_id": COL["details"], "rich_text": r["details_rt"]})
                 call("slackLists.items.create", {"list_id": LIST_ID, "initial_fields": fields})
                 update(r["id"], repeats={"select": []})
+        # Week of: keep it matching, so the Timeline view puts every task under the right week.
+        want = week_of_for(done, r["done_on"], r["when"], t)
+        if want != r["week_of"]:
+            log.append(f"Week of -> {want or 'none (Later)'}: {r['task']}")
+            if not dry:
+                update(r["id"], week_of={"date": [want.isoformat()] if want else []})
     print("\n".join(log) or "sync: nothing to change")
 
 
@@ -343,6 +366,7 @@ if __name__ == "__main__":
     elif job == "monday":
         sync(dry)
         roll(dry)
+        sync(dry)  # again, so Week of follows the tasks the roll just moved into this week
         morning(dry, monday=True)
     elif job == "friday":
         sync(dry)
