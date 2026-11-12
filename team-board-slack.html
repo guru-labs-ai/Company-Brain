@@ -156,6 +156,15 @@
   .q { margin-top: 8px; display: grid; gap: 4px; }
   .q span { font-size: 13px; color: var(--text); background: var(--panel-2); border-radius: 8px; padding: 6px 10px; }
 
+  /* real screenshots */
+  .shots { display: grid; gap: 18px; margin-top: 20px; }
+  .shot { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 10px; }
+  .shot img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid #23272e; background: var(--slack-bg); }
+  .shot.narrow img { max-width: 460px; margin: 0 auto; }
+  .shot figcaption { font-size: 13px; color: var(--muted); padding: 10px 4px 2px; }
+  .shot figcaption b { color: var(--strong); font-weight: 700; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-bg); border: 1px solid #166534; border-radius: 999px; padding: 3px 9px; margin-left: 8px; vertical-align: 3px; }
+
   footer { padding: 30px 0 48px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; }
 
   @media (min-width: 720px) {
@@ -175,6 +184,8 @@
     .map-row { grid-template-columns: 220px 1fr; gap: 16px; align-items: baseline; }
     .flow { grid-template-columns: repeat(3, 1fr); }
     .opts { grid-template-columns: 1fr 1fr; }
+    .shots { grid-template-columns: 1fr 1fr; align-items: start; }
+    .shot.wide { grid-column: 1 / -1; }
   }
 </style>
 </head>
@@ -194,6 +205,44 @@
     <div class="stat"><b>−1</b><span>subscription, Slack is already paid</span></div>
   </div>
 </header>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Live in Slack today</div>
+    <h2>This is the real thing, running in a test channel.<span class="live">● Live</span></h2>
+    <p class="sub">Screenshots from the #team-board test channel on 12 Nov 2026. The tasks on it are test examples. Tap any screenshot to open it full size.</p>
+    <div class="shots">
+      <figure class="shot wide">
+        <a href="team-board-slack/board-this-week.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/board-this-week.png" width="1249" height="903" loading="lazy" alt="The Team board open on this week, 9 to 13 Nov 2026, with tasks, products, statuses and types"></a>
+        <figcaption><b>The board, open on this week.</b> It sits as a tab inside the #team-board channel, next to the messages.</figcaption>
+      </figure>
+      <figure class="shot wide">
+        <a href="team-board-slack/board-past-weeks.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/board-past-weeks.png" width="1229" height="574" loading="lazy" alt="Weeks stacked on the board: 9 to 13 Nov, 2 to 6 Nov, and Later"></a>
+        <figcaption><b>Past weeks stack underneath.</b> Each week keeps what was finished in it. The backlog sits at the bottom under Later.</figcaption>
+      </figure>
+      <figure class="shot">
+        <a href="team-board-slack/task-details.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/task-details.png" width="883" height="878" loading="lazy" alt="Inside a task: product, status Blocked, type, urgent, waiting on, watchers, details and files"></a>
+        <figcaption><b>Inside a task.</b> Status, who it's waiting on, watchers, a description with Drive links, and files.</figcaption>
+      </figure>
+      <figure class="shot narrow">
+        <a href="team-board-slack/new-task-form.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/new-task-form.png" width="650" height="794" loading="lazy" alt="The New task form with task, product, type, urgent, watchers and details"></a>
+        <figcaption><b>The New task form.</b> One click from the channel. Anything said in Slack can also become a task with "Add to list".</figcaption>
+      </figure>
+      <figure class="shot wide">
+        <a href="team-board-slack/post-deadlines.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/post-deadlines.png" width="1236" height="300" loading="lazy" alt="The bot's Deadlines post: blocked with who it's waiting on, due today, and tasks with no owner"></a>
+        <figcaption><b>The bot's morning post.</b> Blocked tasks tag who they're waiting on, and tasks nobody owns get flagged.</figcaption>
+      </figure>
+      <figure class="shot">
+        <a href="team-board-slack/post-shipped.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/post-shipped.png" width="851" height="126" loading="lazy" alt="The bot's Shipped this week post, grouped by product"></a>
+        <figcaption><b>The Friday post.</b> What got finished, grouped by product.</figcaption>
+      </figure>
+      <figure class="shot">
+        <a href="team-board-slack/channel-bookmarks.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/channel-bookmarks.png" width="1236" height="663" loading="lazy" alt="The channel bookmarks: Company Brain, 2-week sprint report, Monthly overview, Guru Master Board, Team Scoreboard and New task"></a>
+        <figcaption><b>Everything one click away.</b> The dashboards and the New task form are bookmarked in the channel.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
 
 <section>
   <div class="wrap">
