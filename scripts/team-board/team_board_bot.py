@@ -139,6 +139,12 @@ def sync(dry=False):
         if not r["task"] and not r["owner"]:
             continue  # empty row someone is still filling in
         done = r["status"] == "done"
+        # Tasks from the form or "Add to list" arrive with no Status: start them at To do.
+        if not r["status"] and not r["completed"]:
+            log.append(f"Status empty -> To do: {r['task']}")
+            if not dry:
+                update(r["id"], status={"select": ["to_do"]})
+            r["status"] = "to_do"
         # New task with no week picked: put it in a week from its due date (no date = this week).
         if not done and not r["when"]:
             w = when_for(r["due"], t)
