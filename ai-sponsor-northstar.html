@@ -155,6 +155,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
   transition:width .5s cubic-bezier(.22,1,.36,1)}
 .bd-row .v{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
 .bd-empty{font-size:11.5px;color:var(--muted);padding:2px 0 8px;line-height:1.6}
+/* Long labels (a blog post's title, a search) cannot fit the 102px label
+   column without being cut to a few letters, so they sit on their own line
+   above the bar. */
+.bd-row.wide{grid-template-columns:1fr 30px;row-gap:3px;margin-bottom:9px}
+.bd-row.wide .k{grid-column:1 / -1;text-align:left;white-space:normal;overflow:visible;
+  color:var(--ink);font-weight:550;line-height:1.35}
+.bd-key{font-size:11px;color:var(--muted);line-height:1.55;margin:-4px 0 8px}
+.bd-key b{color:var(--ink);font-weight:650}
+.gs-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:7px 0;border-top:1px solid var(--line);font-size:12px}
+.gs-row:first-of-type{border-top:none}
+.gs-q{color:var(--ink);font-weight:550;overflow-wrap:anywhere}
+.gs-n{color:var(--muted);font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gs-n b{color:var(--ink);font-weight:700}
 /* What this card will show once people arrive — an empty card teaches nothing,
    and pre-launch is the only state anyone sees it in right now. */
 .bd-soon{font-size:11.5px;color:var(--muted);line-height:1.75;padding:2px 0 4px}
@@ -409,6 +423,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <div id="who-body"></div>
     </div>
 
+    <div class="card" id="card-google" style="display:none">
+      <h2>From Google search</h2>
+      <div class="sub" id="google-sub">Searches that brought people to the site</div>
+      <div id="google-body"></div>
+    </div>
+
     <ul class="notes" id="notes"></ul>
   </div>
 
@@ -514,6 +534,7 @@ function render(d) {
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
   drawSteps(d.steps);
+  drawGoogle(d.google);
   drawForecast(d);
 }
 
@@ -833,14 +854,14 @@ function drawMoney(r, f) {
   });
 }
 
-function bdList(obj, order) {
+function bdList(obj, order, wide) {
   const entries = Object.entries(obj || {});
   if (!entries.length) return '<div class="bd-empty">—</div>';
   if (order) entries.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
   else entries.sort((a, b) => b[1] - a[1]);
   const max = Math.max(...entries.map(e => e[1]), 1);
   return entries.map(([k, n]) => `
-    <div class="bd-row">
+    <div class="bd-row${wide ? ' wide' : ''}">
       <div class="k" title="${esc(k)}">${esc(k)}</div>
       <div class="bd-track"><div class="bd-bar" style="width:${Math.max((n / max) * 100, 1.5)}%"></div></div>
       <div class="v">${n.toLocaleString()}</div>
@@ -850,6 +871,53 @@ function bdList(obj, order) {
 // Recovery stage is ordinal — keep the journey's own order, never rank by size.
 const STAGE_ORDER = ['Just starting out', 'Starting over', 'Under 3 months', '3-12 months',
   '1-5 years', '5+ years', 'unknown'];
+
+/* "Direct" and "Unknown" are the dashboard's grouping labels and mean little
+   on their own (Matt had to ask, 12 Nov 2026). The bars keep short names and
+   a one-line key underneath says what each means. */
+const SOURCE_NAMES = { Direct: 'No source given', Unknown: 'No website visit' };
+function sourceList(bySource) {
+  const named = {};
+  Object.entries(bySource || {}).forEach(([k, n]) => {
+    const name = SOURCE_NAMES[k] || k;
+    named[name] = (named[name] || 0) + n;
+  });
+  const key = [];
+  if (bySource && bySource.Direct) key.push('<b>No source given</b>: typed the address in, or opened a link from WhatsApp, a text or an email, which arrive without saying where they came from.');
+  if (bySource && bySource.Unknown) key.push('<b>No website visit</b>: started on WhatsApp without visiting the site, or signed up before we recorded this.');
+  return bdList(named) + (key.length ? '<div class="bd-key">' + key.join('<br>') + '</div>' : '');
+}
+
+/* Search Console (12 Nov 2026). Totals only: Google never tells a website what
+   one person searched, so this is "which searches bring people to us", never
+   "what did this person type". Hidden until the server has a key and sends
+   numbers, so it never shows a zero that really means "not connected". */
+function drawGoogle(g) {
+  const card = document.getElementById('card-google');
+  if (!g) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const day = (s) => new Date(s + 'T00:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  document.getElementById('google-sub').textContent =
+    'Searches that brought people to the site · ' + day(g.from) + ' to ' + day(g.to) + ' · totals from Google, never per person';
+  const cell = (k, v, note) => `<div class="mn"><div class="mn-k">${esc(k)}</div><div class="mn-v fig${v ? '' : ' mn-zero'}">${v}</div>${note ? `<div class="mn-n">${esc(note)}</div>` : ''}</div>`;
+  const prev = g.previous ? 'week before: ' + g.previous.clicks : '';
+  const rows = (list, label) => (list || []).map((r) => `
+    <div class="gs-row"><span class="gs-q">${esc(r[label])}</span>
+      <span class="gs-n"><b>${r.clicks}</b> click${r.clicks === 1 ? '' : 's'} · shown ${r.impressions}</span></div>`).join('');
+  const searches = rows(g.topSearches, 'search');
+  const pages = rows(g.topPages, 'page');
+  document.getElementById('google-body').innerHTML = `
+    <div class="mn-grid">
+      ${cell('Clicks from Google', g.clicks, prev)}
+      ${cell('Times shown in results', g.impressions, '')}
+      ${cell('Average position', g.position == null ? '—' : g.position, '1 is the top result')}
+    </div>
+    <div class="subhead">Top searches</div>
+    ${searches || '<div class="bd-empty">No searches reported this week.</div>'}
+    <div class="subhead">Pages people landed on</div>
+    ${pages || '<div class="bd-empty">No pages reported this week.</div>'}
+    <div class="bd-key" style="margin-top:10px">Google leaves out searches that only a few people made, so these lists never add up to the total. Numbers settle about three days late, so the week shown ends three days ago.</div>`;
+}
 
 function drawWho(b) {
   const el = document.getElementById('who-body');
@@ -882,11 +950,19 @@ function drawWho(b) {
     ? '<div class="subhead">US states <span class="subnote">by area code</span></div>' + bdList(b.byState)
     : '';
 
+  /* The first page each person saw (12 Nov 2026). Only people who signed up
+     from that day have one, so the heading says so rather than implying the
+     list covers everyone. Hidden until the first one exists. */
+  const firstPage = b.byFirstPage && Object.keys(b.byFirstPage).length
+    ? '<div class="subhead">First page they saw <span class="subnote">sign-ups from 12 Nov on</span></div>' + bdList(b.byFirstPage, null, true)
+    : '';
+
   el.innerHTML =
     country + state +
     '<div class="subhead">Program</div>' + bdList(b.byProgram) +
     '<div class="subhead">Where they are in recovery</div>' + bdList(b.byStage, STAGE_ORDER) +
-    '<div class="subhead">Where they came from</div>' + bdList(b.bySource) +
+    '<div class="subhead">Where they came from</div>' + sourceList(b.bySource) +
+    firstPage +
     '<div class="subhead">How they got here</div>' + bdList(b.byChannel) +
     '<div class="subhead">Access</div>' + bdList(b.byAccess);
 }
