@@ -9,6 +9,7 @@ Jobs:
            Monday post with the week's numbers and any task carried 3+ weeks
 --today=YYYY-MM-DD acts as if it were that day (for testing).
   friday   sync, then the "Shipped this week" post
+  export   write team-timeline-data.json for Matt's timeline page (reads the board, changes nothing)
 --dry prints the message instead of posting (sync still writes to the board unless --dry).
 The token is never stored in this file.
 """
@@ -29,7 +30,7 @@ COL = {
     "done_on": "Col0CGTMY1LF9", "completed": "Col00", "owner": "Col01", "due": "Col02",
     "when": "Col0CHCUF0HM2", "carried": "Col0CJ3JTSE2U", "rolled": "Col0CH311HLHH",
     "reported": "Col0CHD395FRS", "created_by": "Col0CH96K4BMY", "week_of": "Col0CJ42KSM7S",
-    "week": "Col0CH80Z445C",
+    "week": "Col0CH80Z445C", "hours": "Col0CJNC73M0U",
 }
 # The "Week" column holds readable headings like "9 - 13 Nov 2026" for the Timeline view.
 # Slack does not let a bot add options to a column, so every week was created in advance
@@ -101,6 +102,8 @@ def rows():
                 "reported": date.fromisoformat(d("in_friday_post_(bot)")) if d("in_friday_post_(bot)") else None,
                 "week_of": date.fromisoformat(d("week_of")) if d("week_of") else None,
                 "week": (g("week", "select") or [""])[0],
+                "hours": (g("hours_(estimate)", "number") or [None])[0],
+                "created": datetime.fromtimestamp(int(it.get("date_created") or 0), timezone.utc),
             })
         cursor = (r.get("response_metadata") or {}).get("next_cursor")
         if not cursor:
@@ -385,6 +388,54 @@ def friday(dry):
                 {"row_id": r["id"], "column_id": COL["reported"], "date": [t.isoformat()]} for r in done[i:i + 100]]})
 
 
+def names(user_ids, cache={}):
+    """Slack user IDs -> display names, for the timeline page (it shows names, never IDs)."""
+    out = []
+    for u in user_ids:
+        if u not in cache:
+            q = "https://slack.com/api/users.info?user=" + u
+            req = urllib.request.Request(q, headers={"Authorization": "Bearer " + TOKEN})
+            r = json.load(urllib.request.urlopen(req, timeout=30))
+            p = (r.get("user") or {}).get("profile") or {}
+            cache[u] = (p.get("display_name") or r.get("user", {}).get("real_name") or "Someone") if r.get("ok") else "Someone"
+        out.append(cache[u])
+    return out
+
+
+def export(path="team-timeline-data.json"):
+    """Write the board as JSON for Matt's timeline page (team-timeline.html).
+    Leaves out Details, Files and Watchers. Only rewrites the file when a task changed,
+    so the page's 'updated' time is the last time something on the board moved."""
+    t = today_local()
+    local = lambda dt: (dt - timedelta(hours=5)).date()  # Cancun: UTC-5 all year
+    iso = lambda d: d.isoformat() if d else None
+    tasks = []
+    for r in rows():
+        if not r["task"]:
+            continue
+        tasks.append({
+            "id": r["id"], "task": r["task"],
+            "product": PRODUCT.get(r["product"], ""), "status": r["status"] or "to_do",
+            "type": r["type"], "urgent": r["urgent"],
+            "owner": names(r["owner"]), "waiting": names(r["waiting"]),
+            "created": iso(local(r["created"])), "due": iso(r["due"]), "done_on": iso(r["done_on"]),
+            "week_of": iso(r["week_of"]), "when": r["when"], "carried": r["carried"], "hours": r["hours"],
+        })
+    tasks.sort(key=lambda x: (x["owner"][:1] or ["~"], x["due"] or "9999", x["task"]))
+    try:
+        old = json.load(open(path, encoding="utf-8"))
+    except Exception:
+        old = {}
+    if old.get("tasks") == tasks:
+        print("export: no change on the board, file left as it was")
+        return
+    data = {"updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "today": t.isoformat(),
+            "board_url": BOARD_URL, "tasks": tasks}
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=1)
+    print(f"export: wrote {len(tasks)} tasks to {path}")
+
+
 if __name__ == "__main__":
     job, dry = sys.argv[1], "--dry" in sys.argv
     if job == "link":
@@ -402,5 +453,7 @@ if __name__ == "__main__":
     elif job == "friday":
         sync(dry)
         friday(dry)
+    elif job == "export":
+        export()
     else:
         sys.exit("unknown job " + job)

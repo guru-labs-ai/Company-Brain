@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Team Timeline</title>
+<meta name="description" content="Matt's view of the Slack Team board: every task on a timeline, by person, with estimated hours.">
+<link rel="icon" href="favicon.png">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #6f6d68;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --wash: rgba(11, 11, 11, 0.04);
+    --todo: #959490;
+    --doing: #2a78d6;
+    --blocked: #d03b3b;
+    --done: #0ca30c;
+    --open-hours: #2a78d6;
+    --today: #0b0b0b;
+    --chip-on-bg: #0b0b0b;
+    --chip-on-ink: #fcfcfb;
+    --shadow: 0 8px 28px rgba(11, 11, 11, 0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #9a9890;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --wash: rgba(255, 255, 255, 0.05);
+      --todo: #75746e;
+      --doing: #3987e5;
+      --open-hours: #3987e5;
+      --today: #f0efec;
+      --chip-on-bg: #f0efec;
+      --chip-on-ink: #1a1a19;
+      --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --muted: #9a9890;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --wash: rgba(255, 255, 255, 0.05);
+    --todo: #75746e;
+    --doing: #3987e5;
+    --open-hours: #3987e5;
+    --today: #f0efec;
+    --chip-on-bg: #f0efec;
+    --chip-on-ink: #1a1a19;
+    --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px 48px; }
+  header { padding: 28px 0 18px; }
+  h1 { font-size: 26px; line-height: 1.15; font-weight: 750; letter-spacing: -0.4px; }
+  h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; }
+  .sub { color: var(--ink-2); margin-top: 6px; max-width: 640px; }
+  .fresh { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+  /* headline numbers */
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 6px 0 22px; }
+  @media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .tile .k { font-size: 12px; color: var(--ink-2); font-weight: 600; }
+  .tile .v { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tile .n { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* filters: one row above the charts */
+  .filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .row::-webkit-scrollbar { display: none; }
+  .row .lab { font-size: 12px; color: var(--muted); align-self: center; white-space: nowrap; margin-right: 2px; min-width: 52px; }
+  .chip {
+    font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap;
+    padding: 6px 11px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); color: var(--ink-2); border: 1px solid var(--border);
+  }
+  .chip:hover { background: var(--wash); }
+  .chip[aria-pressed="true"] { background: var(--chip-on-bg); color: var(--chip-on-ink); border-color: var(--chip-on-bg); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 14px 10px; margin-bottom: 22px; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .card-head p { color: var(--muted); font-size: 13px; }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-2); margin-bottom: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 18px; height: 8px; border-radius: 4px; display: inline-block; }
+
+  /* gantt */
+  .gantt { position: relative; }
+  .axis { position: sticky; top: 0; z-index: 3; background: var(--surface); height: 26px; border-bottom: 1px solid var(--axis); }
+  .axis .wk { position: absolute; top: 4px; font-size: 11px; color: var(--muted); white-space: nowrap; padding-left: 4px; font-variant-numeric: tabular-nums; }
+  .axis .wk.now { color: var(--ink); font-weight: 700; }
+  .body { position: relative; }
+  .gridlines { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .gridlines i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+  .todayline { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--today); opacity: 0.4; z-index: 0; pointer-events: none; border-radius: 1px; }
+  .grp { position: relative; z-index: 1; padding-top: 12px; }
+  .grp-h { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 0 0 4px; }
+  .grp-h .nm { font-weight: 700; font-size: 14px; }
+  .grp-h .st { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .task { padding: 5px 0 7px; border-top: 1px solid var(--grid); cursor: pointer; }
+  .task:hover .tl { color: var(--ink); }
+  .tl { font-size: 13px; color: var(--ink); line-height: 1.35; display: flex; gap: 6px; align-items: baseline; }
+  .tl .ic { width: 14px; flex: none; text-align: center; font-size: 12px; }
+  .tl .tx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .tm { font-size: 11.5px; color: var(--muted); margin: 1px 0 5px 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .tm .od { color: var(--blocked); font-weight: 700; }
+  .track { position: relative; height: 12px; }
+  .bar { position: absolute; top: 0; height: 12px; border-radius: 4px; min-width: 6px; }
+  .bar.to_do { background: var(--todo); }
+  .bar.doing { background: var(--doing); }
+  .bar.blocked { background: var(--blocked) repeating-linear-gradient(45deg, rgba(255,255,255,0.0) 0 4px, rgba(255,255,255,0.45) 4px 6px); }
+  .bar.done { background: var(--done); opacity: 0.85; }
+  .bar.nodate { border-top-right-radius: 0; border-bottom-right-radius: 0; -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent); mask-image: linear-gradient(90deg, #000 70%, transparent); }
+  .bar.cutl { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .bar.cutr { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .over { position: absolute; top: 2px; height: 8px; border-radius: 0 4px 4px 0; background: repeating-linear-gradient(135deg, var(--blocked) 0 2px, transparent 2px 5px); border: 1px solid var(--blocked); border-left: 0; }
+  .hidden-note { font-size: 12px; color: var(--muted); padding: 10px 0 2px; }
+  .empty { color: var(--muted); font-size: 14px; padding: 18px 0; }
+
+  /* hours */
+  .hrow { display: grid; grid-template-columns: 92px minmax(0, 1fr) 44px; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--grid); cursor: default; }
+  .hrow:first-of-type { border-top: 0; }
+  .hrow .nm { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .htrack { display: flex; gap: 2px; height: 14px; }
+  .htrack i { display: block; height: 14px; }
+  .htrack i:first-child { border-top-left-radius: 0; }
+  .htrack i:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+  .htrack .d { background: var(--done); }
+  .htrack .o { background: var(--open-hours); }
+  .hrow .tot { font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .warn { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; display: flex; gap: 6px; }
+  details { margin-top: 10px; font-size: 13px; }
+  summary { cursor: pointer; color: var(--ink-2); font-weight: 600; padding: 4px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 4px; border-top: 1px solid var(--grid); }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+  /* later list */
+  .later li { list-style: none; padding: 7px 0; border-top: 1px solid var(--grid); font-size: 13.5px; display: flex; justify-content: space-between; gap: 10px; }
+  .later li:first-child { border-top: 0; }
+  .later .who { color: var(--muted); white-space: nowrap; font-size: 12.5px; }
+  .later a { color: inherit; text-decoration: none; }
+  .later a:hover { text-decoration: underline; }
+
+  /* tooltip */
+  #tip {
+    position: fixed; z-index: 20; max-width: 300px; width: max-content;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow); padding: 12px 14px; font-size: 13px;
+    display: none;
+  }
+  #tip .t { font-weight: 700; margin-bottom: 6px; line-height: 1.35; }
+  #tip dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; }
+  #tip dt { color: var(--muted); }
+  #tip dd { font-variant-numeric: tabular-nums; }
+  #tip a { display: inline-block; margin-top: 10px; font-weight: 700; color: var(--doing); text-decoration: none; }
+  #tip a:hover { text-decoration: underline; }
+
+  footer { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+  footer a { color: inherit; }
+  @media (forced-colors: active) { .bar, .htrack i, .sw { forced-color-adjust: none; border: 1px solid CanvasText; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Team timeline</h1>
+    <p class="sub">Everything on the Slack Team board, on a timeline by person. Tap any task for the details and a link to it in Slack.</p>
+    <p class="fresh" id="fresh">Loading the board...</p>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="filters" id="filters"></div>
+
+  <section class="card" aria-labelledby="g-h">
+    <div class="card-head">
+      <h2 id="g-h">Who is doing what, and when</h2>
+      <p id="g-range"></p>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span><i class="sw" style="background:var(--todo)"></i>○ To do</span>
+      <span><i class="sw" style="background:var(--doing)"></i>◐ Doing</span>
+      <span><i class="sw" style="background:var(--blocked) repeating-linear-gradient(45deg,transparent 0 4px,rgba(255,255,255,.45) 4px 6px)"></i>⛔ Blocked</span>
+      <span><i class="sw" style="background:var(--done);opacity:.85"></i>✓ Done</span>
+      <span><i class="sw" style="background:repeating-linear-gradient(135deg,var(--blocked) 0 2px,transparent 2px 5px);border:1px solid var(--blocked)"></i>Past its deadline</span>
+      <span><i style="width:2px;height:12px;background:var(--today);opacity:.4;display:inline-block"></i>Today</span>
+    </div>
+    <div class="gantt" id="gantt"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-h">
+    <div class="card-head">
+      <h2 id="h-h">Estimated hours by person</h2>
+      <div class="row" id="hweek" role="group" aria-label="Which week"></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--done)"></i>✓ Done</span>
+      <span><i class="sw" style="background:var(--open-hours)"></i>Still open</span>
+    </div>
+    <div id="hours"></div>
+  </section>
+
+  <section class="card later" aria-labelledby="l-h" id="later-card">
+    <div class="card-head">
+      <h2 id="l-h">No date yet</h2>
+      <p>Tasks in Later with no deadline, so they can't sit on the timeline.</p>
+    </div>
+    <ul id="later"></ul>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+<div id="tip" role="dialog" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  var DAY = 86400000;
+  var STATUS = {
+    to_do:   { label: "To do",   icon: "○" },
+    doing:   { label: "Doing",   icon: "◐" },
+    blocked: { label: "Blocked", icon: "⛔" },
+    done:    { label: "Done",    icon: "✓" }
+  };
+  var state = {
+    group: "person", person: "all", product: "all", showDone: true,
+    range: window.innerWidth < 640 ? 4 : 8, hweek: 0, pinned: null
+  };
+  var DATA = null;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function P(s) { if (!s) return null; var a = s.split("-"); return Date.UTC(+a[0], +a[1] - 1, +a[2]); }
+  // "Today" in Matt's time zone (Cancun, UTC-5 all year), worked out here so a quiet board never shows an old today.
+  function todayCancun() { var n = new Date(Date.now() - 5 * 3600000); return Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()); }
+  function mondayOf(t) { var wd = (new Date(t).getUTCDay() + 6) % 7; return t - wd * DAY; }
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  function dm(t) { var d = new Date(t); return d.getUTCDate() + " " + MON[d.getUTCMonth()]; }
+  function wdm(t) { return WD[new Date(t).getUTCDay()] + " " + dm(t); }
+  function weekLabel(mon) {
+    var fri = mon + 4 * DAY, a = new Date(mon), b = new Date(fri);
+    return a.getUTCMonth() === b.getUTCMonth() ? a.getUTCDate() + " - " + dm(fri) : dm(mon) + " - " + dm(fri);
+  }
+  function hrs(h) { return h == null ? "" : (Math.round(h * 10) / 10) + "h"; }
+  function owner(t) { return t.owner && t.owner.length ? t.owner[0] : "No owner yet"; }
+
+  // Where a task sits on the timeline. Start = the day it was added; end = done date, else deadline,
+  // else the Friday of its week (no deadline). Later tasks with no deadline have no place on it.
+  function span(t, today) {
+    var created = P(t.created), due = P(t.due), done = P(t.done_on), wk = P(t.week_of);
+    var end, noDate = false;
+    if (t.status === "done") end = done || due || wk;
+    else if (due) end = due;
+    else if (wk) { end = wk + 4 * DAY; noDate = true; }
+    if (end == null) return null;
+    var start = created != null ? Math.min(created, end) : end;
+    var overdue = t.status !== "done" && due != null && due < today;
+    return { start: start, end: end, noDate: noDate, overdue: overdue, daysLate: overdue ? Math.round((today - due) / DAY) : 0 };
+  }
+
+  function filtered() {
+    return DATA.tasks.filter(function (t) {
+      if (state.person !== "all" && owner(t) !== state.person) return false;
+      if (state.product !== "all" && (t.product || "No product") !== state.product) return false;
+      return true;
+    });
+  }
+
+  function chips(label, key, options) {
+    return '<div class="row" role="group" aria-label="' + esc(label) + '"><span class="lab">' + esc(label) + "</span>" +
+      options.map(function (o) {
+        return '<button class="chip" data-k="' + key + '" data-v="' + esc(o[0]) + '" aria-pressed="' + (String(state[key]) === String(o[0])) + '">' + esc(o[1]) + "</button>";
+      }).join("") + "</div>";
+  }
+
+  function renderFilters() {
+    var people = {}, products = {};
+    DATA.tasks.forEach(function (t) { people[owner(t)] = 1; products[t.product || "No product"] = 1; });
+    var pl = Object.keys(people).sort(), pr = Object.keys(products).sort();
+    document.getElementById("filters").innerHTML =
+      chips("Person", "person", [["all", "Everyone"]].concat(pl.map(function (p) { return [p, p]; }))) +
+      chips("Product", "product", [["all", "All products"]].concat(pr.map(function (p) { return [p, p]; }))) +
+      chips("View", "range", [[2, "2 weeks"], [4, "4 weeks"], [8, "8 weeks"]]) +
+      chips("Group", "group", [["person", "By person"], ["product", "By product"]]) +
+      chips("Done", "showDone", [[true, "Show done"], [false, "Hide done"]]);
+  }
+
+  function renderTiles(tasks, today) {
+    var open = tasks.filter(function (t) { return t.status !== "done"; });
+    var overdue = open.filter(function (t) { var d = P(t.due); return d != null && d < today; });
+    var blocked = open.filter(function (t) { return t.status === "blocked"; });
+    var mon = mondayOf(today), wk = tasks.filter(function (t) { return P(t.week_of) === mon; });
+    var h = 0, missing = 0;
+    wk.forEach(function (t) { if (t.hours == null) missing++; else h += t.hours; });
+    function tile(k, v, n) { return '<div class="tile"><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="n">' + n + "</div></div>"; }
+    document.getElementById("tiles").innerHTML =
+      tile("Open tasks", open.length, open.filter(function (t) { return t.status === "doing"; }).length + " being worked on") +
+      tile("Past deadline", overdue.length, overdue.length ? "oldest " + Math.max.apply(null, overdue.map(function (t) { return Math.round((today - P(t.due)) / DAY); })) + " days late" : "nothing late") +
+      tile("Blocked", blocked.length, blocked.length ? "waiting on someone" : "nothing stuck") +
+      tile("Hours this week", hrs(h) || "0h", missing ? missing + " task" + (missing > 1 ? "s" : "") + " with no estimate" : "estimated, not tracked");
+  }
+
+  function renderGantt(tasks, today) {
+    var weeks = state.range;
+    var ws = mondayOf(today) - (weeks >= 4 ? 7 * DAY : 0);
+    var days = weeks * 7, we = ws + days * DAY;
+    function pct(t) { return ((t - ws) / DAY) / days * 100; }
+    document.getElementById("g-range").textContent = dm(ws) + " to " + dm(we - DAY);
+
+    var axis = "", grid = "";
+    for (var i = 0; i < weeks; i++) {
+      var m = ws + i * 7 * DAY;
+      axis += '<span class="wk' + (m === mondayOf(today) ? " now" : "") + '" style="left:' + pct(m) + '%">' + esc(weekLabel(m)) + "</span>";
+      if (i > 0) grid += '<i style="left:' + pct(m) + '%"></i>';
+    }
+
+    var groups = {}, hidden = 0;
+    tasks.forEach(function (t) {
+      if (!state.showDone && t.status === "done") return;
+      var s = span(t, today);
+      if (!s) return;
+      var barEnd = s.end + DAY, lateEnd = s.overdue ? today + DAY : barEnd;
+      if (Math.max(barEnd, lateEnd) <= ws || s.start >= we) { hidden++; return; }
+      var key = state.group === "person" ? owner(t) : (t.product || "No product");
+      (groups[key] = groups[key] || []).push({ t: t, s: s });
+    });
+
+    var mon = mondayOf(today);
+    var keys = Object.keys(groups).sort(function (a, b) {
+      if (a === "No owner yet" || a === "No product") return 1;
+      if (b === "No owner yet" || b === "No product") return -1;
+      return a.localeCompare(b);
+    });
+    var html = "";
+    keys.forEach(function (k) {
+      var items = groups[k].sort(function (a, b) { return a.s.end - b.s.end || a.s.start - b.s.start; });
+      var openN = items.filter(function (x) { return x.t.status !== "done"; }).length;
+      var h = 0;
+      items.forEach(function (x) { if (P(x.t.week_of) === mon && x.t.hours != null) h += x.t.hours; });
+      html += '<div class="grp"><div class="grp-h"><span class="nm">' + esc(k) + '</span><span class="st">' + openN + " open" + (h ? " · " + hrs(h) + " this week" : "") + "</span></div>";
+      items.forEach(function (x) {
+        var t = x.t, s = x.s, st = STATUS[t.status] || STATUS.to_do;
+        var l = Math.max(0, pct(s.start)), r = Math.min(100, pct(s.end + DAY));
+        var cls = "bar " + (STATUS[t.status] ? t.status : "to_do") + (s.noDate ? " nodate" : "") + (pct(s.start) < 0 ? " cutl" : "") + (pct(s.end + DAY) > 100 ? " cutr" : "");
+        var bar = r > l ? '<i class="' + cls + '" style="left:' + l + "%;width:" + (r - l) + '%"></i>' : "";
+        var over = "";
+        if (s.overdue) {
+          var ol = Math.max(0, pct(s.end + DAY)), orr = Math.min(100, pct(today + DAY));
+          if (orr > ol) over = '<i class="over" style="left:' + ol + "%;width:" + (orr - ol) + '%"></i>';
+        }
+        var meta = [];
+        if (state.group === "person" && t.product) meta.push(esc(t.product));
+        if (state.group === "product") meta.push(esc(owner(t)));
+        meta.push(st.label);
+        if (t.hours != null) meta.push(hrs(t.hours));
+        if (t.status === "done" && t.done_on) meta.push("done " + wdm(P(t.done_on)));
+        else if (t.due) meta.push("due " + wdm(P(t.due)));
+        else meta.push("no deadline");
+        if (s.overdue) meta.push('<span class="od">' + s.daysLate + " day" + (s.daysLate === 1 ? "" : "s") + " late</span>");
+        html += '<div class="task" tabindex="0" data-id="' + esc(t.id) + '">' +
+          '<div class="tl"><span class="ic" aria-hidden="true">' + (t.urgent ? "⚡" : st.icon) + '</span><span class="tx">' + esc(t.task) + "</span></div>" +
+          '<div class="tm">' + meta.join(" · ") + "</div>" +
+          '<div class="track">' + bar + over + "</div></div>";
+      });
+      html += "</div>";
+    });
+
+    var todayL = pct(today + DAY / 2);
+    document.getElementById("gantt").innerHTML =
+      '<div class="axis">' + axis + "</div>" +
+      '<div class="body"><div class="gridlines">' + grid + "</div>" +
+      (todayL > 0 && todayL < 100 ? '<div class="todayline" style="left:calc(' + todayL + '% - 1px)"></div>' : "") +
+      (html || '<p class="empty">Nothing on the board in these weeks.</p>') + "</div>" +
+      (hidden ? '<p class="hidden-note">' + (hidden > 1 ? hidden + " more tasks fall" : "1 more task falls") + " outside these weeks." + (state.range < 8 ? " Switch to 8 weeks to see more." : "") + "</p>" : "");
+  }
+
+  function renderHours(tasks, today) {
+    var mon = mondayOf(today) + state.hweek * 7 * DAY;
+    document.getElementById("hweek").innerHTML = [[-1, "Last week"], [0, "This week"], [1, "Next week"]].map(function (o) {
+      return '<button class="chip" data-k="hweek" data-v="' + o[0] + '" aria-pressed="' + (state.hweek === o[0]) + '">' + o[1] + "</button>";
+    }).join("");
+    var by = {};
+    tasks.forEach(function (t) {
+      if (P(t.week_of) !== mon) return;
+      var k = owner(t), r = by[k] = by[k] || { d: 0, o: 0, miss: 0, n: 0 };
+      r.n++;
+      if (t.hours == null) { r.miss++; return; }
+      if (t.status === "done") r.d += t.hours; else r.o += t.hours;
+    });
+    var names = Object.keys(by).sort(function (a, b) { return (by[b].d + by[b].o) - (by[a].d + by[a].o); });
+    if (!names.length) {
+      document.getElementById("hours").innerHTML = '<p class="empty">No tasks on the board for ' + esc(weekLabel(mon)) + ".</p>";
+      return;
+    }
+    var max = Math.max(1, Math.max.apply(null, names.map(function (n) { return by[n].d + by[n].o; })));
+    var miss = 0, rows = "", table = "";
+    names.forEach(function (n) {
+      var r = by[n], tot = r.d + r.o;
+      miss += r.miss;
+      var tip = n + ": " + hrs(r.d) + " done, " + hrs(r.o) + " still open" + (r.miss ? ", " + r.miss + " task(s) with no estimate" : "");
+      rows += '<div class="hrow" title="' + esc(tip) + '"><span class="nm">' + esc(n) + '</span><div class="htrack">' +
+        (r.d ? '<i class="d" style="width:' + (r.d / max * 100) + '%"></i>' : "") +
+        (r.o ? '<i class="o" style="width:' + (r.o / max * 100) + '%"></i>' : "") +
+        '</div><span class="tot">' + (hrs(tot) || "0h") + "</span></div>";
+      table += "<tr><td>" + esc(n) + "</td><td>" + hrs(r.d) + "</td><td>" + hrs(r.o) + "</td><td><b>" + (hrs(tot) || "0h") + "</b></td><td>" + (r.miss || "") + "</td></tr>";
+    });
+    document.getElementById("hours").innerHTML =
+      '<p class="sub" style="font-size:13px;margin:0 0 6px">Week of ' + esc(weekLabel(mon)) + ". Compare these with what each person bills.</p>" +
+      rows +
+      (miss ? '<p class="warn"><span aria-hidden="true">⚠️</span><span>' + miss + " task" + (miss > 1 ? "s" : "") + " in this week have no hours estimate yet, so the real totals are higher.</span></p>" : "") +
+      "<details><summary>See as a table</summary><table><thead><tr><th>Person</th><th>Done</th><th>Open</th><th>Total</th><th>No estimate</th></tr></thead><tbody>" + table + "</tbody></table></details>";
+  }
+
+  function renderLater(tasks) {
+    var later = tasks.filter(function (t) { return t.status !== "done" && !t.due && !t.week_of; });
+    document.getElementById("later-card").style.display = later.length ? "" : "none";
+    document.getElementById("later").innerHTML = later.map(function (t) {
+      return '<li><a href="' + esc(DATA.board_url + "?record_id=" + t.id) + '" target="_blank" rel="noopener">' + esc(t.task) + '</a><span class="who">' + esc(owner(t)) + (t.hours != null ? " · " + hrs(t.hours) : "") + "</span></li>";
+    }).join("");
+  }
+
+  function render() {
+    var today = todayCancun(), tasks = filtered();
+    renderFilters();
+    renderTiles(tasks, today);
+    renderGantt(tasks, today);
+    renderHours(tasks, today);
+    renderLater(tasks);
+    hideTip();
+  }
+
+  // Tooltip: hover shows it, a click or tap pins it so the Slack link can be used.
+  var tip = document.getElementById("tip");
+  function showTip(id, x, y, pin) {
+    var t = DATA.tasks.filter(function (z) { return z.id === id; })[0];
+    if (!t) return;
+    var st = STATUS[t.status] || STATUS.to_do, s = span(t, todayCancun());
+    var rows = [["Owner", owner(t)], ["Status", st.icon + " " + st.label + (t.urgent ? " · ⚡ Urgent" : "")]];
+    if (t.product) rows.push(["Product", t.product]);
+    rows.push(["Hours", t.hours != null ? hrs(t.hours) + " estimated" : "no estimate yet"]);
+    if (t.created) rows.push(["Added", wdm(P(t.created))]);
+    rows.push(["Deadline", t.due ? wdm(P(t.due)) + (s && s.overdue ? " (" + s.daysLate + " days late)" : "") : "none"]);
+    if (t.done_on) rows.push(["Done", wdm(P(t.done_on))]);
+    if (t.waiting && t.waiting.length) rows.push(["Waiting on", t.waiting.join(", ")]);
+    if (t.carried) rows.push(["Carried over", t.carried + " week" + (t.carried > 1 ? "s" : "")]);
+    tip.innerHTML = '<div class="t">' + esc(t.task) + "</div><dl>" + rows.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("") + "</dl>" +
+      (pin ? '<a href="' + esc(DATA.board_url + "?record_id=" + t.id) + '" target="_blank" rel="noopener">Open in Slack ↗</a>' : "");
+    tip.style.display = "block";
+    var w = tip.offsetWidth, h = tip.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    var left = Math.min(Math.max(8, x + 14), vw - w - 8), top = y + 16;
+    if (top + h > vh - 8) top = Math.max(8, y - h - 12);
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+    state.pinned = pin ? id : null;
+  }
+  function hideTip() { tip.style.display = "none"; state.pinned = null; }
+
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest(".chip");
+    if (c) {
+      var k = c.getAttribute("data-k"), v = c.getAttribute("data-v");
+      state[k] = (k === "range" || k === "hweek") ? +v : (k === "showDone" ? v === "true" : v);
+      render();
+      return;
+    }
+    if (e.target.closest("#tip")) return;
+    var row = e.target.closest(".task");
+    if (row) { showTip(row.getAttribute("data-id"), e.clientX, e.clientY, true); return; }
+    hideTip();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") hideTip();
+    if (e.key === "Enter" && e.target.classList && e.target.classList.contains("task")) {
+      var r = e.target.getBoundingClientRect();
+      showTip(e.target.getAttribute("data-id"), r.left, r.bottom - 10, true);
+    }
+  });
+  document.addEventListener("pointermove", function (e) {
+    if (e.pointerType !== "mouse" || state.pinned) return;
+    var row = e.target.closest && e.target.closest(".task");
+    if (row) showTip(row.getAttribute("data-id"), e.clientX, e.clientY, false);
+    else if (tip.style.display === "block") tip.style.display = "none";
+  });
+  window.addEventListener("scroll", function () { if (!state.pinned) tip.style.display = "none"; }, { passive: true });
+
+  fetch("team-timeline-data.json?ts=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (d) {
+      DATA = d;
+      var u = new Date(d.updated), c = new Date(u.getTime() - 5 * 3600000);
+      var hh = c.getUTCHours(), mm = String(c.getUTCMinutes()).padStart(2, "0");
+      var when = wdm(Date.UTC(c.getUTCFullYear(), c.getUTCMonth(), c.getUTCDate())) + ", " + ((hh % 12) || 12) + ":" + mm + (hh < 12 ? " am" : " pm");
+      document.getElementById("fresh").textContent = "Last change on the board: " + when + " (Cancun time). The bot checks every 3 hours.";
+      document.getElementById("foot").innerHTML = 'From the <a href="' + esc(d.board_url) + '" target="_blank" rel="noopener">Team board in Slack</a>. Hours are the estimates people put on their tasks, not tracked time.';
+      render();
+    })
+    .catch(function () {
+      document.getElementById("fresh").textContent = "Couldn't load the board data. Try refreshing in a minute.";
+    });
+})();
+</script>
+</body>
+</html>

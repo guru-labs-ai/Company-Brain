@@ -1,0 +1,159 @@
+{
+ "updated": "2026-11-17T16:53:35Z",
+ "today": "2026-11-17",
+ "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
+ "tasks": [
+  {
+   "id": "Rec0CH8TPGFDY",
+   "task": "Example: a task finished in an earlier week (week of 2 Nov)",
+   "product": "Founders",
+   "status": "done",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": "2026-11-10",
+   "done_on": "2026-11-04",
+   "week_of": "2026-11-02",
+   "when": "",
+   "carried": 0,
+   "hours": 6
+  },
+  {
+   "id": "Rec0CH74QQ1N2",
+   "task": "Example: a blocked task",
+   "product": "Operations",
+   "status": "blocked",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [
+    "Mariam"
+   ],
+   "created": "2026-11-12",
+   "due": "2026-11-11",
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 2
+  },
+  {
+   "id": "Rec0CH3QJ7EQ5",
+   "task": "Example: an urgent task due today, with two watchers",
+   "product": "QA Guru",
+   "status": "to_do",
+   "type": "bug",
+   "urgent": true,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": "2026-11-12",
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 3
+  },
+  {
+   "id": "Rec0CHCQD0HAQ",
+   "task": "Example: a task due later this week",
+   "product": "AI Sponsor",
+   "status": "done",
+   "type": "marketing",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": "2026-11-13",
+   "done_on": "2026-11-12",
+   "week_of": "2026-11-09",
+   "when": "this_week",
+   "carried": 0,
+   "hours": 4
+  },
+  {
+   "id": "Rec0CJ3ES34C8",
+   "task": "Example: a monthly task (when it's done, the bot adds next month's copy)",
+   "product": "Operations",
+   "status": "done",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": "2026-11-15",
+   "done_on": "2026-11-12",
+   "week_of": "2026-11-09",
+   "when": "",
+   "carried": 0,
+   "hours": 1
+  },
+  {
+   "id": "Rec0CHCRTPVAQ",
+   "task": "Example: a monthly task (when it's done, the bot adds next month's copy)",
+   "product": "Operations",
+   "status": "to_do",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": "2026-12-15",
+   "done_on": null,
+   "week_of": null,
+   "when": "later",
+   "carried": 0,
+   "hours": 1
+  },
+  {
+   "id": "Rec0CJ3ES8AL8",
+   "task": "Example: a task with no deadline",
+   "product": "Rebuild",
+   "status": "to_do",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 5
+  },
+  {
+   "id": "Rec0CHD3QN6MS",
+   "task": "Example: a task added from a Slack message, nobody assigned yet",
+   "product": "QA Guru",
+   "status": "to_do",
+   "type": "",
+   "urgent": false,
+   "owner": [],
+   "waiting": [],
+   "created": "2026-11-12",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 2
+  }
+ ]
+}
