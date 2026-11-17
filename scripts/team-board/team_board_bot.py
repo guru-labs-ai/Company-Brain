@@ -30,7 +30,7 @@ COL = {
     "done_on": "Col0CGTMY1LF9", "completed": "Col00", "owner": "Col01", "due": "Col02",
     "when": "Col0CHCUF0HM2", "carried": "Col0CJ3JTSE2U", "rolled": "Col0CH311HLHH",
     "reported": "Col0CHD395FRS", "created_by": "Col0CH96K4BMY", "week_of": "Col0CJ42KSM7S",
-    "week": "Col0CH80Z445C", "hours": "Col0CJNC73M0U",
+    "week": "Col0CH80Z445C", "hours": "Col0CJDN597AR",
 }
 # The "Week" column holds readable headings like "9 - 13 Nov 2026" for the Timeline view.
 # Slack does not let a bot add options to a column, so every week was created in advance
@@ -102,7 +102,7 @@ def rows():
                 "reported": date.fromisoformat(d("in_friday_post_(bot)")) if d("in_friday_post_(bot)") else None,
                 "week_of": date.fromisoformat(d("week_of")) if d("week_of") else None,
                 "week": (g("week", "select") or [""])[0],
-                "hours": (g("hours_(estimate)", "number") or [None])[0],
+                "hours": (g("hours", "number") or [None])[0],
                 "created": datetime.fromtimestamp(int(it.get("date_created") or 0), timezone.utc),
             })
         cursor = (r.get("response_metadata") or {}).get("next_cursor")
