@@ -1,6 +1,6 @@
 {
- "updated": "2026-11-18T01:14:00Z",
- "today": "2026-11-17",
+ "updated": "2026-11-19T20:55:40Z",
+ "today": "2026-11-19",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
   {
@@ -21,6 +21,223 @@
    "when": "",
    "carried": 0,
    "hours": 1
+  },
+  {
+   "id": "Rec0CJXU1MK55",
+   "task": "AI Sponsor survey email to the newsletter list",
+   "product": "AI Sponsor",
+   "status": "blocked",
+   "type": "marketing",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [
+    "matt"
+   ],
+   "created": "2026-11-19",
+   "due": "2026-11-20",
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CKH10Q3M2",
+   "task": "DRM: weekly Stripe check",
+   "product": "DRM",
+   "status": "to_do",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": "2026-11-20",
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CKD49A67L",
+   "task": "conscious-labs.ai live, plus .si coming-soon redirect",
+   "product": "Conscious Labs",
+   "status": "blocked",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [
+    "matt"
+   ],
+   "created": "2026-11-19",
+   "due": "2026-12-01",
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "next_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CK730H70T",
+   "task": "Evals: two new time-of-day scenarios (midday, bedtime)",
+   "product": "AI Sponsor",
+   "status": "blocked",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [
+    "Mariam"
+   ],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CK730KE2F",
+   "task": "QA Guru: review Bilal's Self Healing and journey packages",
+   "product": "QA Guru",
+   "status": "doing",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CKBASBB8W",
+   "task": "ROI view of our agentic work on Miro, with Mariam",
+   "product": "Operations",
+   "status": "to_do",
+   "type": "content",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": null,
+   "when": "later",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CKF6HBHGR",
+   "task": "Recovery LLM: literature index and sources sheet",
+   "product": "AI Sponsor",
+   "status": "doing",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CL7LRG316",
+   "task": "Recovery LLM: self-evolving model research, bold ideas and first small-model experiment",
+   "product": "AI Sponsor",
+   "status": "doing",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CK8121PKP",
+   "task": "Rekindle: move code and domain off Polsia",
+   "product": "Rekindle",
+   "status": "doing",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CK7310LHH",
+   "task": "Upwork OS: purchase tracking",
+   "product": "Upwork OS",
+   "status": "blocked",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": null,
+   "when": "later",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CKD49SE5Q",
+   "task": "mattcrowe.com funnel in GHL for Richard's team",
+   "product": "Rebuild",
+   "status": "blocked",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "waiting": [
+    "matt"
+   ],
+   "created": "2026-11-19",
+   "due": null,
+   "done_on": null,
+   "week_of": null,
+   "when": "later",
+   "carried": 0,
+   "hours": null
   }
  ]
 }
