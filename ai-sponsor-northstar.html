@@ -314,7 +314,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <span class="sc-i" aria-hidden="true">&#129534;</span>
       <span class="sc-t">
         <b>What it costs</b>
-        <i>8.8&cent; a reply, and whether $5 a month holds</i>
+        <i>September snapshot: 8.8&cent; a reply, and whether $5 a month holds</i>
       </span>
       <span class="sc-a" aria-hidden="true">&rarr;</span>
     </a>
@@ -397,6 +397,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <h2>Money</h2>
       <div class="sub" id="money-sub"></div>
       <div class="mn-grid" id="money-body"></div>
+    </div>
+
+    <!-- What Claude costs, members apart from us (Matt, 20 Nov: "is that cost
+         usage from users or is that cost us from building? ... both of those
+         need to be segregated"). Hidden until the backend sends aiCost. -->
+    <div class="card" id="card-aicost" style="display:none">
+      <h2>What the AI costs</h2>
+      <div class="sub" id="aicost-sub"></div>
+      <div class="mn-grid" id="aicost-body"></div>
     </div>
 
     <div class="card" id="card-funnel">
@@ -533,6 +542,7 @@ function render(d) {
   drawMessages(d.breakdowns);
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
+  drawAiCost(d.aiCost);
   drawSteps(d.steps);
   drawGoogle(d.google);
   drawForecast(d);
@@ -760,6 +770,54 @@ function drawSteps(st) {
       ${cell('Steps finished', st.finishedLast7d, 'last 7 days')}
       ${cell('Steps started', st.startedLast7d, 'last 7 days')}
     </div>`;
+}
+
+/* What Claude costs, split by who it was for. The Anthropic bill is one
+   number for everything on the account, and on test days our own test runs
+   were most of it, so a cost per person read off the bill was wrong by
+   whatever we tested that day. Here members are counted by the live server
+   from each reply's token counts; test runs and the team's own accounts are
+   counted apart and never touch the per-reply or per-person figures. */
+function drawAiCost(c) {
+  const card = document.getElementById('card-aicost');
+  if (!c) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const usd = (n) => '$' + Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const cents = (n) => (Number(n) * 100).toLocaleString(undefined, { maximumFractionDigits: 1 }) + '¢';
+  const z = (n) => (Number(n) === 0 ? ' mn-zero' : '');
+  const sub = document.getElementById('aicost-sub');
+  const body = document.getElementById('aicost-body');
+
+  if (!c.since) {
+    sub.textContent = 'Counting starts with the first reply after this update went live. Members and our own testing are counted separately.';
+    body.innerHTML = '';
+    return;
+  }
+
+  const since = new Date(c.since + 'T00:00:00Z');
+  const fullWeek = (Date.now() - since.getTime()) >= 6 * 86400000;
+  const windowLabel = fullWeek
+    ? 'last 7 days'
+    : 'since ' + since.toLocaleDateString(undefined, { day: 'numeric', month: 'long', timeZone: 'UTC' });
+  sub.textContent = (fullWeek ? 'Last 7 days. ' : 'Counting started ' + windowLabel.replace('since ', '') + '. ') +
+    'Members is every reply, note and Sunday review for real people. Our test runs and the team’s own accounts are counted apart, so they never move the cost per person.';
+
+  const L = c.last7 || {};
+  const members = Number(L.members || 0);
+  const us = Number(L.team || 0) + Number(L.testing || 0);
+  const replies = Number(c.memberReplies7d || 0);
+  const people = Number(c.memberPeople7d || 0);
+
+  body.innerHTML = `
+    <div class="mn"><div class="mn-k">Members</div>
+      <div class="mn-v fig${z(members)}">${usd(members)}</div>
+      <div class="mn-n">${replies} repl${replies === 1 ? 'y' : 'ies'} to ${people} ${people === 1 ? 'person' : 'people'} · ${esc(windowLabel)}</div></div>
+    <div class="mn"><div class="mn-k">Per reply</div>
+      <div class="mn-v fig">${replies ? cents(members / replies) : '–'}</div>
+      <div class="mn-n">${people ? usd(members / people) + ' per person who wrote' : 'nobody wrote yet'}</div></div>
+    <div class="mn"><div class="mn-k">Us: testing</div>
+      <div class="mn-v fig${z(us)}">${usd(us)}</div>
+      <div class="mn-n">test runs ${usd(L.testing)} · team accounts ${usd(L.team)}</div></div>`;
 }
 
 function drawMoney(r, f) {
