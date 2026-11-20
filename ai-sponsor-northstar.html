@@ -789,7 +789,7 @@ function drawAiCost(c) {
   const body = document.getElementById('aicost-body');
 
   if (!c.since) {
-    sub.textContent = 'Counting starts with the first reply after this update went live. Members and our own testing are counted separately.';
+    sub.textContent = 'Counting starts with the first reply after this update went live. Members and our own testing are counted separately. Claude only: voice is billed separately.';
     body.innerHTML = '';
     return;
   }
@@ -800,7 +800,7 @@ function drawAiCost(c) {
     ? 'last 7 days'
     : 'since ' + since.toLocaleDateString(undefined, { day: 'numeric', month: 'long', timeZone: 'UTC' });
   sub.textContent = (fullWeek ? 'Last 7 days. ' : 'Counting started ' + windowLabel.replace('since ', '') + '. ') +
-    'Members is every reply, note and Sunday review for real people. Our test runs and the team’s own accounts are counted apart, so they never move the cost per person.';
+    'Members is every reply, note and Sunday review for real people. Our test runs and the team’s own accounts are counted apart, so they never move the cost per person. Claude only: voice is billed separately.';
 
   const L = c.last7 || {};
   const members = Number(L.members || 0);
