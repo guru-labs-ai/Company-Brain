@@ -161,6 +161,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .bd-row.wide{grid-template-columns:1fr 30px;row-gap:3px;margin-bottom:9px}
 .bd-row.wide .k{grid-column:1 / -1;text-align:left;white-space:normal;overflow:visible;
   color:var(--ink);font-weight:550;line-height:1.35}
+/* Where they came from: "AA WhatsApp group" was cut to "AA WhatsApp g..." in
+   the 102px column (21 Nov), so this one list gets a wider label column. */
+.bd-src .bd-row{grid-template-columns:132px 1fr 30px}
 .bd-key{font-size:11px;color:var(--muted);line-height:1.55;margin:-4px 0 8px}
 .bd-key b{color:var(--ink);font-weight:650}
 .gs-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
@@ -1010,7 +1013,7 @@ function sourceList(bySource) {
   const key = [];
   if (bySource && bySource.Direct) key.push('<b>No source given</b>: typed the address in, or opened a link from WhatsApp, a text or an email, which arrive without saying where they came from.');
   if (bySource && bySource.Unknown) key.push('<b>No website visit</b>: started on WhatsApp without visiting the site, or signed up before we recorded this.');
-  return bdList(named) + (key.length ? '<div class="bd-key">' + key.join('<br>') + '</div>' : '');
+  return '<div class="bd-src">' + bdList(named) + '</div>' + (key.length ? '<div class="bd-key">' + key.join('<br>') + '</div>' : '');
 }
 
 /* Search Console (12 Nov 2026). Totals only: Google never tells a website what
