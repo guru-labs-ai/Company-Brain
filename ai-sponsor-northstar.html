@@ -279,6 +279,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
 .rv-wk{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
 .rv-cap{font-size:10.5px;color:var(--muted);margin:20px 0 14px}
 .rv-note b{color:var(--ink);font-weight:600}
+
+/* ── How each group uses it (21 Nov) ─────────────────────────────────────────
+   Same table as the revenue card. The group column takes the room it needs and
+   the four counts share the rest, so it still fits a 360px phone. */
+.gp-tbl{table-layout:fixed}
+.gp-tbl th:first-child{width:31%}
+.gp-tbl th{white-space:normal;line-height:1.25;vertical-align:bottom}
+.gp-tbl td .fig{font-size:14px;font-weight:650}
+.gp-tbl td:first-child{overflow-wrap:anywhere}
+.gp-all td{font-weight:700;border-top:2px solid var(--line)}
 </style>
 </head>
 <body>
@@ -391,6 +401,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-he
       <h2>This week vs last week</h2>
       <div class="sub">Rolling 7 days against the 7 before · the raw numbers sit beside every percentage on purpose</div>
       <div id="wow-body"></div>
+    </div>
+
+    <!-- Usage by group (Matt + Mariam, 21 Nov): how the AA WhatsApp group,
+         the beta testers and paying people each use the sponsor. Hidden until
+         the backend sends usageByGroup. -->
+    <div class="card" id="card-groups" style="display:none">
+      <h2>How each group uses it</h2>
+      <div class="sub">Each person counted once, in one group. Came back means they wrote on more than one day. This week is the last 7 days. Counts only, never names or words.</div>
+      <div id="groups-body"></div>
     </div>
 
     <div class="card" id="card-money">
@@ -543,6 +562,7 @@ function render(d) {
   drawWow(d.weekOverWeek);
   drawMoney(d.revenue, d.paidFunnel);
   drawAiCost(d.aiCost);
+  drawGroups(d.usageByGroup);
   drawSteps(d.steps);
   drawGoogle(d.google);
   drawForecast(d);
@@ -770,6 +790,53 @@ function drawSteps(st) {
       ${cell('Steps finished', st.finishedLast7d, 'last 7 days')}
       ${cell('Steps started', st.startedLast7d, 'last 7 days')}
     </div>`;
+}
+
+/* How each group uses it (21 Nov). Matt asked how the people from the AA
+   WhatsApp group are using the sponsor; Mariam asked for the same for the
+   beta testers and anyone paying. One row per group, each person in exactly
+   one, so the rows add up to the Everyone line. Someone who joined with a
+   group code stays in that group if they start paying, so a group can be
+   followed from the day it arrived; how many of them pay is said on the row.
+   Raw counts only: on groups this small a percentage would be noise. */
+function drawGroups(groups) {
+  const card = document.getElementById('card-groups');
+  if (!Array.isArray(groups) || !groups.length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const n = (v) => Number(v || 0).toLocaleString();
+  const codeName = (code) => String(code || '').replace(/FOUNDER$/i, '');
+  const describe = (g) => {
+    if (g.group === 'code') {
+      return { name: codeName(g.code) + ' WhatsApp group',
+               note: 'joined with the ' + codeName(g.code) + ' code' + (g.paying ? ' · ' + n(g.paying) + ' now paying' : '') };
+    }
+    if (g.group === 'paid') return { name: 'Paying', note: 'have paid access now' };
+    if (g.group === 'beta') return { name: 'Beta testers', note: 'free access, no group code' };
+    return { name: 'No plan on record', note: 'no free or paid access saved' };
+  };
+  const order = { code: 0, beta: 1, paid: 2, other: 3 };
+  const rows = groups
+    .filter((g) => g.people > 0)
+    .sort((a, b) => order[a.group] - order[b.group] || String(a.code).localeCompare(String(b.code)));
+  const total = { people: 0, joined7d: 0, wrote: 0, cameBack: 0, active7d: 0, messages7d: 0, messages: 0 };
+  rows.forEach((g) => Object.keys(total).forEach((k) => { total[k] += Number(g[k] || 0); }));
+
+  const cells = (g) => `
+      <td><span class="fig">${n(g.people)}</span><span class="rv-s">${g.joined7d ? n(g.joined7d) + ' new this week' : '&nbsp;'}</span></td>
+      <td><span class="fig">${n(g.cameBack)}</span><span class="rv-s">of ${n(g.wrote)} who wrote</span></td>
+      <td><span class="fig">${n(g.active7d)}</span></td>
+      <td><span class="fig">${n(g.messages7d)}</span><span class="rv-s">${n(g.messages)} all time</span></td>`;
+  const body = rows.map((g) => {
+    const d = describe(g);
+    return `<tr><td>${esc(d.name)}<span class="rv-s">${esc(d.note)}</span></td>${cells(g)}</tr>`;
+  }).join('');
+  document.getElementById('groups-body').innerHTML = `
+    <table class="rv-tbl gp-tbl">
+      <thead><tr><th></th><th>People</th><th>Came back</th><th>Active this week</th><th>Messages this week</th></tr></thead>
+      <tbody>${body}
+        <tr class="gp-all"><td>Everyone</td>${cells(total)}</tr>
+      </tbody>
+    </table>`;
 }
 
 /* What Claude costs, split by who it was for. The Anthropic bill is one
