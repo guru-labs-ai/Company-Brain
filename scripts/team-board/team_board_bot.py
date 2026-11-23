@@ -340,7 +340,15 @@ def morning(dry, monday=False):
     no_date = sorted([r for r in long_carried if not r["due"]], key=lambda r: -r["carried"])
     # Tasks added from a message or the form with nobody on them would otherwise sit unseen.
     no_owner = [r for r in open_rows if not r["owner"]]
-    if not (blocked or overdue or today or tomorrow or later_this_week or stuck or no_date or no_owner):
+    # Monday only: who still has tasks with no hours estimate (Mariam, 23 Nov). A count per person,
+    # not the full list, so the post stays short as the team grows.
+    no_estimate = {}
+    if monday:
+        for r in open_rows:
+            if not r["hours"]:
+                for u in (r["owner"] or ["nobody"]):
+                    no_estimate[u] = no_estimate.get(u, 0) + 1
+    if not (blocked or overdue or today or tomorrow or later_this_week or stuck or no_date or no_owner or no_estimate):
         print("nothing due, no post")
         return
     parts = [f"*{'New week' if monday else 'Deadlines'}, {day(t)}*"]
@@ -373,6 +381,10 @@ def morning(dry, monday=False):
         parts.append("\n:bust_in_silhouette: *No owner yet*\n" + "\n".join(
             f"• <{BOARD_URL}?record_id={r['id']}|{r['task']}>" + (f"  ·  {PRODUCT[r['product']]}" if r["product"] in PRODUCT else "")
             for r in no_owner))
+    if no_estimate:
+        parts.append("\n:stopwatch: *No hours estimate yet:* please add one in the Hours column\n" + "\n".join(
+            f"• {'No owner' if u == 'nobody' else who([u])}: {n} task{'s' if n != 1 else ''}"
+            for u, n in sorted(no_estimate.items(), key=lambda x: -x[1])))
     if monday and t >= LAST_WEEK - timedelta(weeks=8):
         parts.append(f"\n:warning: The board's prepared weeks run out after the week of {day(LAST_WEEK)}. "
                      "Ask Claude to add the next batch of weeks to the Week column.")
