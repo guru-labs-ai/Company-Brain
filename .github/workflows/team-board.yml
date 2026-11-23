@@ -6,7 +6,7 @@
 #
 # All times follow MATT'S time zone (Mariam's rule). His Slack profile says
 # America/Cancun, which is UTC-5 all year with no clock change, so these UTC
-# times never need moving. GitHub can start a scheduled run up to ~30 min late.
+# times never need moving.
 #
 # The bot is its own Slack app "Team Board" (A0CJ3DJ2KPS), NOT AI Sponsor Metrics.
 # Its token is the repository secret TEAM_BOARD_TOKEN.
@@ -18,16 +18,17 @@ name: Team board bot
 
 on:
   schedule:
-    - cron: "7 14 * * 1"     # Mon 9:07 Cancun: "New week" post (rolls the week forward)
-    - cron: "7 14 * * 2-5"   # Tue-Fri 9:07 Cancun: "Deadlines" post (silent on a quiet day)
-    - cron: "7 21 * * 5"     # Fri 16:07 Cancun: "Shipped this week"
-    - cron: "37 */3 * * *"   # every 3 hours: Done tracking, repeats, empty When (never posts)
+    # Every 15 minutes the "auto" job syncs the board and sends whichever post is due and not
+    # sent yet (Mon 9:00 new week, Tue-Fri 9:00 deadlines, Fri 16:00 week in numbers, Cancun time).
+    # Why not one cron per post: GitHub ran those 5 to 8 hours late or skipped them (Nov 2026).
+    # scripts/team-board/posted.json remembers what went out, so nothing posts twice.
+    - cron: "4,19,34,49 * * * *"
   workflow_dispatch:
     inputs:
       job:
         description: "Which job to run"
         type: choice
-        options: [sync, morning, monday, friday, link, export]
+        options: [auto, sync, morning, monday, friday, link, export]
         default: sync
       dry:
         description: "Dry run: print the message instead of posting, change nothing on the board"
@@ -55,13 +56,7 @@ jobs:
           INPUT_JOB: ${{ inputs.job }}
           INPUT_DRY: ${{ inputs.dry }}
         run: |
-          case "$SCHEDULE" in
-            "7 14 * * 1")   job=monday ;;
-            "7 14 * * 2-5") job=morning ;;
-            "7 21 * * 5")   job=friday ;;
-            "37 */3 * * *") job=sync ;;
-            *)              job="$INPUT_JOB" ;;
-          esac
+          if [ -n "$SCHEDULE" ]; then job=auto; else job="$INPUT_JOB"; fi
           dry=""
           if [ "$INPUT_DRY" = "true" ]; then dry="--dry"; fi
           echo "job=$job" >> "$GITHUB_OUTPUT"
@@ -88,8 +83,9 @@ jobs:
           git config user.name "Guru-Bot"
           git config user.email "guru-bot@users.noreply.github.com"
           git add team-timeline-data.json
+          if [ -f scripts/team-board/posted.json ]; then git add scripts/team-board/posted.json; fi
           if git diff --cached --quiet; then echo "Board unchanged, nothing to publish"; exit 0; fi
-          git commit -m "Team timeline: data refreshed from the Slack board ($(date -u +'%d %b %H:%M') UTC)"
+          git commit -m "Team board: timeline data / sent posts updated ($(date -u +'%d %b %H:%M') UTC)"
           for i in 1 2 3; do
             git pull --rebase origin "${GITHUB_REF_NAME}" && git push && exit 0
             sleep 10

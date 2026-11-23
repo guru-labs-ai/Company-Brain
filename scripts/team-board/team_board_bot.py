@@ -8,7 +8,11 @@ Jobs:
   monday   sync, start the new week (roll tasks forward, count carried over), then the
            Monday post with the week's numbers and any task carried 3+ weeks
 --today=YYYY-MM-DD acts as if it were that day (for testing).
-  friday   sync, then the "Shipped this week" post
+  friday   sync, then the short "Week in numbers" post (counts only, no per-person list)
+  auto     what the schedule runs every 15 minutes: sync, then whichever post is due now
+           (Mon 9:00 new week, Tue-Fri 9:00 deadlines, Fri 16:00 week in numbers, Matt's time).
+           Each post goes out once; posted.json next to this file remembers which went out.
+           --now=YYYY-MM-DDTHH:MM acts as if it were that moment (for testing).
   export   write team-timeline-data.json for Matt's timeline page (reads the board, changes nothing)
 --dry prints the message instead of posting (sync still writes to the board unless --dry).
 The token is never stored in this file.
@@ -54,11 +58,22 @@ def call(method, body):
 
 
 TODAY_OVERRIDE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--today=")), None)
+NOW_OVERRIDE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--now=")), None)
+CANCUN = timezone(timedelta(hours=-5))  # Matt's time zone: UTC-5 all year, no daylight saving
+STATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "posted.json")
+
+
+def now_local():
+    if NOW_OVERRIDE:
+        return datetime.fromisoformat(NOW_OVERRIDE)
+    return datetime.now(CANCUN).replace(tzinfo=None)
 
 
 def today_local():
     if TODAY_OVERRIDE:  # for testing, e.g. --today=2026-11-16 to act as if it were that Monday
         return date.fromisoformat(TODAY_OVERRIDE)
+    if NOW_OVERRIDE:
+        return now_local().date()
     # Matt's time zone (his Slack profile, checked 12 Nov 2026). Cancun is UTC-5 all year, no daylight saving.
     try:
         from zoneinfo import ZoneInfo
@@ -366,26 +381,70 @@ def morning(dry, monday=False):
 
 
 def friday(dry):
+    """Friday: a short summary in numbers. No list of who did what (Mariam, 23 Nov: too much as the team grows)."""
     t = today_local()
-    # Every Done task not reported yet, so a task finished after last Friday's post is never lost.
-    done = [r for r in rows() if r["status"] == "done" and r["done_on"] and not r["reported"] and r["done_on"] <= t]
-    head = "*Shipped this week*"
-    if not done:
-        post(head + "\nNothing was marked Done on the board since last Friday.", dry)
-        return
-    by_product = {}
-    for r in sorted(done, key=lambda r: r["done_on"]):
-        by_product.setdefault(PRODUCT.get(r["product"], "No product"), []).append(r)
-    parts = [head + f"  ·  {len(done)} done"]
-    for prod, items in by_product.items():
-        parts.append(f"\n*{prod}*\n" + "\n".join(
-            f"• {who(r['owner']) or 'No owner'}  <{BOARD_URL}?record_id={r['id']}|{r['task']}>  ({day(r['done_on'])})"
-            for r in items))
-    post("\n".join(parts), dry)
-    if not dry:  # mark them reported only after the post went out
+    all_rows = [r for r in rows() if r["task"]]
+    # Every Done task not counted yet, so a task finished after last Friday's post is never lost.
+    done = [r for r in all_rows if r["status"] == "done" and r["done_on"] and not r["reported"] and r["done_on"] <= t]
+    open_rows = [r for r in all_rows if r["status"] != "done"]
+    doing = sum(1 for r in open_rows if r["status"] == "doing")
+    blocked = sum(1 for r in open_rows if r["status"] == "blocked")
+    to_do = len(open_rows) - doing - blocked
+    monday = t - timedelta(days=t.weekday())
+    added = sum(1 for r in all_rows if r["created"].astimezone(CANCUN).date() >= monday)
+    text = (f"*Week in numbers, {day(t)}*\n"
+            f":white_check_mark: {len(done)} done  ·  :hammer_and_wrench: {doing} in progress  ·  "
+            f":no_entry: {blocked} blocked  ·  :spiral_note_pad: {to_do} to do\n"
+            f"{added} new task{'s' if added != 1 else ''} added this week.  <{BOARD_URL}|Open the Team board>")
+    post(text, dry)
+    if not dry and done:  # mark them counted only after the post went out
         for i in range(0, len(done), 100):
             call("slackLists.items.update", {"list_id": LIST_ID, "cells": [
                 {"row_id": r["id"], "column_id": COL["reported"], "date": [t.isoformat()]} for r in done[i:i + 100]]})
+
+
+def load_state():
+    try:
+        with open(STATE, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_state(state, dry):
+    if dry:
+        return
+    with open(STATE, "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=1, sort_keys=True)
+
+
+def auto(dry):
+    """Run by the schedule every 15 minutes. GitHub starts scheduled runs hours late or skips them,
+    so instead of one run per post, every run checks whether a post is due and not yet sent.
+    Posts (Matt's time): Mon 9:00-17:00 new week, Tue-Fri 9:00-17:00 deadlines (skipped if the
+    window passes, a deadline post in the evening is no use), Fri 16:00 to end of Sat week in numbers."""
+    now = now_local()
+    t, wd = now.date(), now.weekday()
+    state = load_state()
+    sync(dry)
+    if wd == 0 and now.hour >= 9 and state.get("rolled") != t.isoformat():
+        # The week rolls forward even if the post window is missed. roll() moves each row once a week.
+        roll(dry)
+        sync(dry)  # again, so Week of follows the tasks the roll just moved into this week
+        state["rolled"] = t.isoformat()
+        save_state(state, dry)
+    if 9 <= now.hour < 17 and wd <= 4:
+        key = "monday" if wd == 0 else "morning"
+        if state.get(key) != t.isoformat():
+            morning(dry, monday=(wd == 0))
+            state[key] = t.isoformat()
+            save_state(state, dry)
+    if (wd == 4 and now.hour >= 16) or wd == 5:
+        friday_date = (t - timedelta(days=wd - 4)).isoformat()
+        if state.get("friday") != friday_date:
+            friday(dry)
+            state["friday"] = friday_date
+            save_state(state, dry)
 
 
 def names(user_ids, cache={}):
@@ -453,6 +512,8 @@ if __name__ == "__main__":
     elif job == "friday":
         sync(dry)
         friday(dry)
+    elif job == "auto":
+        auto(dry)
     elif job == "export":
         export()
     else:
