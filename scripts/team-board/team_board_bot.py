@@ -29,7 +29,7 @@ BOARD_URL = f"https://standupeightx.slack.com/lists/{TEAM}/{LIST_ID}"
 # Column IDs of the board (read from the board on 12 Nov 2026).
 COL = {
     "task": "Col0CHB0ELRB3", "product": "Col0CHCQ8K3KN", "status": "Col0CGTMXUBL7",
-    "type": "Col0CJ3EMFPRN", "urgent": "Col0CH8TJKG8J", "waiting_on": "Col0CH2S96WRH",
+    "type": "Col0CJ3EMFPRN", "urgent": "Col0CH8TJKG8J",
     "watchers": "Col0CH74M1686", "details": "Col0CH3QE4VLM", "repeats": "Col0CHCQ8N12Q",
     "done_on": "Col0CGTMY1LF9", "completed": "Col00", "owner": "Col01", "due": "Col02",
     "when": "Col0CHCUF0HM2", "carried": "Col0CJ3JTSE2U", "rolled": "Col0CH311HLHH",
@@ -106,7 +106,6 @@ def rows():
                 "repeats": (g("repeats", "select") or [""])[0],
                 "owner": g("todo_assignee", "user") or [],
                 "watchers": g("watchers", "user") or [],
-                "waiting": g("waiting_on", "user") or [],
                 "urgent": bool(g("urgent", "checkbox")),
                 "completed": bool(g("todo_completed", "checkbox")),
                 "due": date.fromisoformat(d("todo_due_date")) if d("todo_due_date") else None,
@@ -360,9 +359,8 @@ def morning(dry, monday=False):
         parts.append("\n:red_circle: *Overdue*\n" + "\n".join(line(r, f"  (was due {day(r['due'])})") for r in overdue))
     if blocked:
         def b(r):
-            w = f"  ·  waiting on {who(r['waiting'])}" if r["waiting"] else "  ·  waiting on: not filled in"
             c = f"  ·  carried {r['carried']} week{'s' if r['carried'] != 1 else ''}" if r["carried"] else ""
-            return line(r, w + c)
+            return line(r, c)
         parts.append("\n:no_entry: *Blocked*\n" + "\n".join(b(r) for r in blocked))
     if today:
         parts.append("\n:large_yellow_circle: *Due today*\n" + "\n".join(line(r) for r in today))
@@ -488,7 +486,7 @@ def export(path="team-timeline-data.json"):
             "id": r["id"], "task": r["task"],
             "product": PRODUCT.get(r["product"], ""), "status": r["status"] or "to_do",
             "type": r["type"], "urgent": r["urgent"],
-            "owner": names(r["owner"]), "waiting": names(r["waiting"]),
+            "owner": names(r["owner"]),
             "created": iso(local(r["created"])), "due": iso(r["due"]), "done_on": iso(r["done_on"]),
             "week_of": iso(r["week_of"]), "when": r["when"], "carried": r["carried"], "hours": r["hours"],
         })

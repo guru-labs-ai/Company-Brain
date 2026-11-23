@@ -221,16 +221,16 @@
         <figcaption><b>Past weeks stack underneath.</b> Each week keeps what was finished in it. The backlog sits at the bottom under Later.</figcaption>
       </figure>
       <figure class="shot">
-        <a href="team-board-slack/task-details.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/task-details.png" width="883" height="878" loading="lazy" alt="Inside a task: product, status Blocked, type, urgent, waiting on, watchers, details and files"></a>
-        <figcaption><b>Inside a task.</b> Status, who it's waiting on, watchers, a description with Drive links, and files.</figcaption>
+        <a href="team-board-slack/task-details.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/task-details.png" width="883" height="878" loading="lazy" alt="Inside a task: product, status Blocked, type, urgent, watchers, details and files"></a>
+        <figcaption><b>Inside a task.</b> Status, watchers, a description with Drive links, and files.</figcaption>
       </figure>
       <figure class="shot narrow">
         <a href="team-board-slack/new-task-form.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/new-task-form.png" width="650" height="794" loading="lazy" alt="The New task form with task, product, type, urgent, watchers and details"></a>
         <figcaption><b>The New task form.</b> One click from the channel. Anything said in Slack can also become a task with "Add to list".</figcaption>
       </figure>
       <figure class="shot wide">
-        <a href="team-board-slack/post-deadlines.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/post-deadlines.png" width="1236" height="300" loading="lazy" alt="The bot's Deadlines post: blocked with who it's waiting on, due today, and tasks with no owner"></a>
-        <figcaption><b>The bot's morning post.</b> Blocked tasks tag who they're waiting on, and tasks nobody owns get flagged.</figcaption>
+        <a href="team-board-slack/post-deadlines.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/post-deadlines.png" width="1236" height="300" loading="lazy" alt="The bot's Deadlines post: blocked tasks, due today, and tasks with no owner"></a>
+        <figcaption><b>The bot's morning post.</b> Blocked tasks tag their owner, and tasks nobody owns get flagged.</figcaption>
       </figure>
       <figure class="shot">
         <a href="team-board-slack/post-shipped.png" target="_blank" rel="noopener" title="Open full size"><img src="team-board-slack/post-shipped.png" width="851" height="126" loading="lazy" alt="The bot's Shipped this week post, grouped by product"></a>
@@ -250,7 +250,7 @@
     <h2>Three things. Everything else is the bot's job.</h2>
     <div class="steps">
       <div class="step"><h3>Add a task</h3><p>Add a row to the board, tap "New task" in the channel, or turn any Slack message into a task with "Add to list". Your asks in Slack become tasks the same way.</p></div>
-      <div class="step"><h3>Work on it</h3><p>Set it to Doing. If it gets stuck, set it to Blocked and pick who it's waiting on. Watchers get told about changes.</p></div>
+      <div class="step"><h3>Work on it</h3><p>Set it to Doing. If it gets stuck, set it to Blocked and say in Details who or what it's waiting on. Watchers get told about changes.</p></div>
       <div class="step"><h3>Mark it Done</h3><p>That's the last click. The bot records the day, adds it to Friday's summary and, for repeating tasks, adds the next one.</p></div>
     </div>
   </div>
@@ -314,7 +314,7 @@
         <div class="msg-body">
           <b>Deadlines, Fri 20 Nov</b>
           <div class="sec">🔴 <b>Overdue</b><ul><li><span class="mention">@Mariam</span> <span class="lnk">Landing page copy</span> · Rebuild <span class="dim">(was due Thu 19 Nov)</span></li></ul></div>
-          <div class="sec">⛔ <b>Blocked</b><ul><li><span class="mention">@Bilal</span> <span class="lnk">Checkout test on live site</span> · waiting on <span class="mention">@Mariam</span></li></ul></div>
+          <div class="sec">⛔ <b>Blocked</b><ul><li><span class="mention">@Bilal</span> <span class="lnk">Checkout test on live site</span></li></ul></div>
           <div class="sec">🟡 <b>Due today</b><ul><li>⚡ <span class="mention">@Mariam</span> <span class="lnk">Newsletter issue 4</span> · AI Sponsor</li></ul></div>
         </div>
         <div class="msg-cap">Tags the person who can unblock it, not just the owner.</div>
