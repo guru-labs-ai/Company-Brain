@@ -1,26 +1,25 @@
 {
- "updated": "2026-11-19T20:55:40Z",
- "today": "2026-11-19",
+ "updated": "2026-11-23T22:06:02Z",
+ "today": "2026-11-23",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
   {
-   "id": "Rec0CJ3ES34C8",
-   "task": "Example: a monthly task (when it's done, the bot adds next month's copy)",
-   "product": "Operations",
-   "status": "done",
-   "type": "admin",
+   "id": "Rec0CL6GN3YG6",
+   "task": "Analyse and create a report from AI Sponsor survey",
+   "product": "AI Sponsor",
+   "status": "to_do",
+   "type": "research",
    "urgent": false,
    "owner": [
     "Mariam"
    ],
-   "waiting": [],
-   "created": "2026-11-12",
-   "due": "2026-11-15",
-   "done_on": "2026-11-12",
-   "week_of": "2026-11-09",
-   "when": "",
-   "carried": 0,
-   "hours": 1
+   "created": "2026-11-23",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 1,
+   "hours": null
   },
   {
    "id": "Rec0CJXU1MK55",
@@ -32,15 +31,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [
-    "matt"
-   ],
    "created": "2026-11-19",
    "due": "2026-11-20",
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -53,13 +49,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": "2026-11-20",
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -72,14 +67,11 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [
-    "matt"
-   ],
    "created": "2026-11-19",
    "due": "2026-12-01",
    "done_on": null,
    "week_of": "2026-11-23",
-   "when": "next_week",
+   "when": "this_week",
    "carried": 0,
    "hours": null
   },
@@ -93,15 +85,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [
-    "Mariam"
-   ],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -114,13 +103,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -133,7 +121,6 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
@@ -152,13 +139,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -171,13 +157,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -190,13 +175,12 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
-   "week_of": "2026-11-16",
+   "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 0,
+   "carried": 1,
    "hours": null
   },
   {
@@ -209,7 +193,6 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
@@ -228,15 +211,28 @@
    "owner": [
     "Mubashir"
    ],
-   "waiting": [
-    "matt"
-   ],
    "created": "2026-11-19",
    "due": null,
    "done_on": null,
    "week_of": null,
    "when": "later",
    "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CM2PUF8M6",
+   "task": "fyi since the survey email went out already i sent this to my whatsapp group also so we hopefully can get some good data by the EOW maybe we...",
+   "product": "",
+   "status": "to_do",
+   "type": "",
+   "urgent": false,
+   "owner": [],
+   "created": "2026-11-23",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 1,
    "hours": null
   }
  ]
