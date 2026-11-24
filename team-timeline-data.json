@@ -1,6 +1,6 @@
 {
- "updated": "2026-11-23T22:06:02Z",
- "today": "2026-11-23",
+ "updated": "2026-11-24T06:06:04Z",
+ "today": "2026-11-24",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
   {
@@ -25,7 +25,7 @@
    "id": "Rec0CJXU1MK55",
    "task": "AI Sponsor survey email to the newsletter list",
    "product": "AI Sponsor",
-   "status": "blocked",
+   "status": "done",
    "type": "marketing",
    "urgent": false,
    "owner": [
@@ -33,14 +33,50 @@
    ],
    "created": "2026-11-19",
    "due": "2026-11-20",
+   "done_on": "2026-11-20",
+   "week_of": "2026-11-16",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 2
+  },
+  {
+   "id": "Rec0CKH10Q3M2",
+   "task": "DRM: weekly Stripe check",
+   "product": "DRM",
+   "status": "done",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-19",
+   "due": "2026-11-20",
+   "done_on": "2026-11-24",
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 1,
+   "hours": 0.5
+  },
+  {
+   "id": "Rec0CL7LRG316",
+   "task": "Recovery LLM: self-evolving model research, bold ideas and first small-model experiment",
+   "product": "AI Sponsor",
+   "status": "doing",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-19",
+   "due": "2026-11-25",
    "done_on": null,
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 1,
-   "hours": null
+   "hours": 3
   },
   {
-   "id": "Rec0CKH10Q3M2",
+   "id": "Rec0CKZNAHMRD",
    "task": "DRM: weekly Stripe check",
    "product": "DRM",
    "status": "to_do",
@@ -49,12 +85,12 @@
    "owner": [
     "Mubashir"
    ],
-   "created": "2026-11-19",
-   "due": "2026-11-20",
+   "created": "2026-11-24",
+   "due": "2026-11-27",
    "done_on": null,
    "week_of": "2026-11-23",
    "when": "this_week",
-   "carried": 1,
+   "carried": 0,
    "hours": null
   },
   {
@@ -73,7 +109,61 @@
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 0,
-   "hours": null
+   "hours": 10
+  },
+  {
+   "id": "Rec0CLEG8V4JD",
+   "task": "guru-labs.ai page for 1 Jan, with Ambar (not before 1 Jan)",
+   "product": "Conscious Labs",
+   "status": "to_do",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-23",
+   "due": "2027-01-01",
+   "done_on": null,
+   "week_of": null,
+   "when": "later",
+   "carried": 0,
+   "hours": 1
+  },
+  {
+   "id": "Rec0CM712BREU",
+   "task": "AI Sponsor: American English on the site, legal pages and email copy",
+   "product": "AI Sponsor",
+   "status": "doing",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-23",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 0,
+   "hours": 2
+  },
+  {
+   "id": "Rec0CLCE12LBU",
+   "task": "AI Sponsor: ChatThero review for Matt",
+   "product": "AI Sponsor",
+   "status": "done",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-23",
+   "due": null,
+   "done_on": "2026-11-24",
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 0,
+   "hours": 1
   },
   {
    "id": "Rec0CK730H70T",
@@ -91,7 +181,25 @@
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 1,
-   "hours": null
+   "hours": 1
+  },
+  {
+   "id": "Rec0CLGASK8BE",
+   "task": "Matt's sites on his own stack (Lovable, GHL, Namecheap), starting with kampercrowe.com",
+   "product": "Operations",
+   "status": "blocked",
+   "type": "build",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-23",
+   "due": null,
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 0,
+   "hours": 4
   },
   {
    "id": "Rec0CK730KE2F",
@@ -109,7 +217,7 @@
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 1,
-   "hours": null
+   "hours": 3
   },
   {
    "id": "Rec0CKBASBB8W",
@@ -127,7 +235,7 @@
    "week_of": null,
    "when": "later",
    "carried": 0,
-   "hours": null
+   "hours": 3
   },
   {
    "id": "Rec0CKF6HBHGR",
@@ -145,25 +253,7 @@
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 1,
-   "hours": null
-  },
-  {
-   "id": "Rec0CL7LRG316",
-   "task": "Recovery LLM: self-evolving model research, bold ideas and first small-model experiment",
-   "product": "AI Sponsor",
-   "status": "doing",
-   "type": "research",
-   "urgent": false,
-   "owner": [
-    "Mubashir"
-   ],
-   "created": "2026-11-19",
-   "due": null,
-   "done_on": null,
-   "week_of": "2026-11-23",
-   "when": "this_week",
-   "carried": 1,
-   "hours": null
+   "hours": 2
   },
   {
    "id": "Rec0CK8121PKP",
@@ -181,7 +271,7 @@
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 1,
-   "hours": null
+   "hours": 6
   },
   {
    "id": "Rec0CK7310LHH",
@@ -199,7 +289,7 @@
    "week_of": null,
    "when": "later",
    "carried": 0,
-   "hours": null
+   "hours": 3
   },
   {
    "id": "Rec0CKD49SE5Q",
@@ -217,7 +307,7 @@
    "week_of": null,
    "when": "later",
    "carried": 0,
-   "hours": null
+   "hours": 2
   },
   {
    "id": "Rec0CM2PUF8M6",
