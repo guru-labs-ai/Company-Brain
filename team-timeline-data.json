@@ -1,8 +1,26 @@
 {
- "updated": "2026-11-25T02:06:44Z",
- "today": "2026-11-24",
+ "updated": "2026-11-25T20:36:34Z",
+ "today": "2026-11-25",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
+  {
+   "id": "Rec0CLWRACSSE",
+   "task": "Recovery LLM: lead the plan (small-model test, library, learning spec)",
+   "product": "AI Sponsor",
+   "status": "doing",
+   "type": "research",
+   "urgent": false,
+   "owner": [
+    "Mariam"
+   ],
+   "created": "2026-11-25",
+   "due": "2026-12-14",
+   "done_on": null,
+   "week_of": "2026-11-23",
+   "when": "this_week",
+   "carried": 0,
+   "hours": 17
+  },
   {
    "id": "Rec0CL6GN3YG6",
    "task": "Analyse and create a report from AI Sponsor survey",
