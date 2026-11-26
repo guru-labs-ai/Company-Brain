@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T20:36:34Z",
+ "updated": "2026-11-26T03:11:40Z",
  "today": "2026-11-25",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
@@ -169,7 +169,7 @@
    "id": "Rec0CKBASBB8W",
    "task": "ROI view of our agentic work on Miro, with Mariam",
    "product": "Operations",
-   "status": "to_do",
+   "status": "doing",
    "type": "content",
    "urgent": false,
    "owner": [
@@ -205,7 +205,7 @@
    "id": "Rec0CLQ34JCAW",
    "task": "AI Sponsor B4: test suite as the release gate",
    "product": "AI Sponsor",
-   "status": "to_do",
+   "status": "doing",
    "type": "build",
    "urgent": false,
    "owner": [
@@ -214,8 +214,8 @@
    "created": "2026-11-24",
    "due": "2026-12-11",
    "done_on": null,
-   "week_of": null,
-   "when": "later",
+   "week_of": "2026-11-23",
+   "when": "this_week",
    "carried": 0,
    "hours": 6
   },
