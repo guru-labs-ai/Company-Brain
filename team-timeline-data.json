@@ -1,6 +1,6 @@
 {
- "updated": "2026-11-26T03:11:40Z",
- "today": "2026-11-25",
+ "updated": "2026-11-27T22:22:08Z",
+ "today": "2026-11-27",
  "board_url": "https://standupeightx.slack.com/lists/T071T4U984F/F0CH74LRCTY",
  "tasks": [
   {
@@ -115,7 +115,7 @@
    "id": "Rec0CKZNAHMRD",
    "task": "DRM: weekly Stripe check",
    "product": "DRM",
-   "status": "to_do",
+   "status": "done",
    "type": "admin",
    "urgent": false,
    "owner": [
@@ -123,7 +123,7 @@
    ],
    "created": "2026-11-24",
    "due": "2026-11-27",
-   "done_on": null,
+   "done_on": "2026-11-27",
    "week_of": "2026-11-23",
    "when": "this_week",
    "carried": 0,
@@ -158,6 +158,24 @@
     "Mubashir"
    ],
    "created": "2026-11-24",
+   "due": "2026-12-04",
+   "done_on": null,
+   "week_of": "2026-11-30",
+   "when": "next_week",
+   "carried": 0,
+   "hours": null
+  },
+  {
+   "id": "Rec0CMDGNEU6P",
+   "task": "DRM: weekly Stripe check",
+   "product": "DRM",
+   "status": "to_do",
+   "type": "admin",
+   "urgent": false,
+   "owner": [
+    "Mubashir"
+   ],
+   "created": "2026-11-27",
    "due": "2026-12-04",
    "done_on": null,
    "week_of": "2026-11-30",
